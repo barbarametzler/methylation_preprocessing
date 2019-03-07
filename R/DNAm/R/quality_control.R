@@ -1,7 +1,6 @@
-#e1071::cmeans
 #mvoutlier::pcout
 
-remove.unreliable.samples = function(dnam, thresholdNA = 0.1) {
+remove_unreliable_samples = function(dnam, thresholdNA = 0.1) {
   # Remove samples with too many missing values
   dnam$samples = dnam$samples[dnam$samples$missing < thresholdNA, ]
 
@@ -11,60 +10,64 @@ remove.unreliable.samples = function(dnam, thresholdNA = 0.1) {
   dnam$samples = dnam$samples[outliers$wfinal01 == 1, ]
 
   # Also remove corresponding samples from other list-entries in dnam (ratios, snps, possibly controls and intensities)
-  dnam$cpgs = dnam$cpgs[dnam$samples$sample.id, ]
-  dnam$snps = dnam$snps[, dnam$samples$sample.id, ]
-  if (!is.null(dnam$intensities)) dnam$intensities = dnam$intensities[, dnam$samples$sample.id, ]
-  if (!is.null(dnam$controls)) dnam$controls = dnam$controls[, dnam$samples$sample.id, ]
+  dnam$cpgs = dnam$cpgs[rownames(dnam$samples), ]
+  dnam$snps = dnam$snps[rownames(dnam$samples), ]
+  if (!is.null(dnam$intensities_A)) dnam$intensities_A = dnam$intensities_A[rownames(dnam$samples), ]
+  if (!is.null(dnam$intensities_B)) dnam$intensities_B = dnam$intensities_B[rownames(dnam$samples), ]
+  if (!is.null(dnam$controls_red)) dnam$controls_red = dnam$controls_red[rownames(dnam$samples), ]
+  if (!is.null(dnam$controls_grn)) dnam$controls_grn = dnam$controls_grn[rownames(dnam$samples), ]
 
   dnam
 }
 
 
-infer.sex = function(dnam) {
-  tmp <- e1071::cmeans(dnam$samples[,c("median.chrX", "missing.chrY")], centers=2)
-  membership <- apply(tmp$membership, 1, function(x) {
-    if (any(x > 0.95)) {
-      which.max(x)
-    } else {
-      NA
-    }
-  })
-  idx.m <- which.min(tmp$centers[,"missing.chrY"])
-  idx.f <- which.max(tmp$centers[,"missing.chrY"])
+infer_sex = function(dnam, plot=F, threshold.chrX = 0.4, threshold.chrY = 0.4) {
+  sex = factor(rep(NA, times=nrow(dnam$samples)), levels=c("f", "m"))
+  names(sex) = rownames(dnam$sample)
 
-  # Return inferred sex
-  factor(membership, c(idx.m, idx.f), c("M", "F"))
+  # Female
+  sex[rownames(dnam$samples)[dnam$samples$median.chrX > threshold.chrX &
+                             dnam$samples$missing.chrY > threshold.chrY]] = "f"
+
+  # Male
+  sex[rownames(dnam$samples)[dnam$samples$median.chrX <= threshold.chrX &
+                               dnam$samples$missing.chrY <= threshold.chrY]] = "m"
+
+  if (plot) {
+    plot(dnam$samples$median.chrX, dnam$samples$missing.chrY, col=sex, xlim=c(0,1), ylim=c(0,1),
+      xlab = "Median methylation level Chr. X",
+      ylab = "Proportion missing Chr. Y")
+    rect(threshold.chrX, threshold.chrY, 1, 1, border = "red")
+    rect(0.0, 0.0, threshold.chrX, threshold.chrY, border = "blue")
+  }
+
+  sex
 }
 
 
-call.snps = function(dnam) {
-  membership = lapply(apply(dnam$snps["theta", dimnames(dnam$snps)[[2]],], 2, function(x) {
-    idx <- !is.na(x)
-    tmp <- e1071::cmeans(x[idx], centers=c(0, 0.5, 1))
-    results <- matrix(NA, length(x), 3, dimnames=list(names(x), 0:2))
-    results[which(idx),] <- tmp$membership
-    results[which(!idx),] <- 1/3
-    list(results)
-  }), `[[`, 1)
+call_snps = function(dnam, non.carrier.threshold = 0.2, homozygous.threshold = 0.8, plot = FALSE) {
+  calls = array(NA, dim=c(nrow(dnam$samples), ncol(dnam$snps)),
+                dimnames=list(rownames(dnam$samples), colnames(dnam$snps)))
 
-  calls = do.call(cbind, lapply(membership, function(x) {
-    apply(x, 1, function(x) {
-      if (any(x > 0.95)) {
-        which.max(x) - 1
-      } else {
-        NA
-      }
-    })
-  }))
+  calls[dnam$snps < non.carrier.threshold] = 0 # non-carrier
+  calls[dnam$snps > non.carrier.threshold & dnam$snps < homozygous.threshold] = 1 # heterozygous
+  calls[dnam$snps > homozygous.threshold] = 2 # homozygous
+
+  if (plot) {
+    title = paste(dim(eira$snps)[1], "samples, ", dim(eira$snps)[2], "SNPs")
+    boxplot(as.numeric(as.matrix(eira$snps)) ~ as.numeric(as.matrix(call_snps(eira))), xlab="Carrier status", ylab="Theta intensities", main = title)
+    abline(h=non.carrier.threshold)
+    abline(h=homozygous.threshold)
+  }
 
   calls
 }
 
 
-identify.replicates = function(dnam) {
+identify_replicates = function(dnam) {
   samples = dnam$samples
-  samples$inferred.sex = infer.sex(dnam)
-  calls = call.snps(dnam)
+  samples$inferred.sex = infer_sex(dnam)
+  calls = call_snps(dnam)
 
   # Merge SNPs
   samples <- cbind(samples, calls)
@@ -76,17 +79,15 @@ identify.replicates = function(dnam) {
   tmp <- t(data.matrix(samples[,c("inferred.sex", colnames(calls))]))
 
   for (i in 1:nrow(K)) {
-    K[i,] <- as.integer(apply((tmp[,i] - tmp) == 0, 2, all, na.rm=TRUE))
+    K[i,] <- as.integer(apply((tmp[,i] - tmp) == 0, 2, mean, na.rm=TRUE))
   }
-  table(K)
-  table(K[lower.tri(K)])
 
   # Identify duplicates from SNPs
   dups <- as.data.frame(which(K == 1, arr.ind=TRUE))
   dups$sample1 <- rownames(samples)[dups$row]
   dups$sample2 <- rownames(samples)[dups$col]
-  dups$id1 <- samples[dups$row,"sample.id"]
-  dups$id2 <- samples[dups$col,"sample.id"]
+  dups$id1 <- rownames(samples)[dups$row]
+  dups$id2 <- rownames(samples)[dups$col]
   dups$source <- "snps"
   dups$row = dups$col <- NULL
 
