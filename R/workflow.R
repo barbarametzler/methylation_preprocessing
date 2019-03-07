@@ -11,13 +11,16 @@ eira = preprocess("hm450", "../idat", return.intensities=TRUE)
 ### Quality control steps (according to Comp Epi Handbook)
 
 # Remove samples with too many missing values (>10%) and outliers
-eira = remove.unreliable.samples(eira, thresholdNA = 0.1)
+eira = remove_unreliable_samples(eira, thresholdNA = 0.1)
 
 # Infer sex
-infer.sex(eira)
+infer_sex(eira, plot=T)
+
+# Call SNPs
+snps = call_snps(eira, plot=T)
 
 # Identify replicates from the same individual according to inferred sex and SNPs
-identify.replicates(eira)
+identify_replicates(eira)
 
 # Remove CpG-sites with too many missing values (>10%)
 NA.proportion.columns = colMeans(eira$cpgs, na.rm=T)

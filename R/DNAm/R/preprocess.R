@@ -1,4 +1,4 @@
-preprocess = function(platform, input.folder, min.beads=3, detection=0.05, return.intensities = FALSE) {
+preprocess = function(platform, input.folder, min.beads=3, detection=0.05, return.intensities = FALSE, return.snps.r=FALSE) {
   stopifnot(platform %in% c("hm450"))
   stopifnot(dir.exists(input.folder))
   stopifnot(min.beads > 0)
@@ -152,13 +152,23 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
   dnam <- intensities["B",,!idx] / colSums(intensities[,,!idx])
 
   # Extract intensities for SNP beads using theta/r format (as in GenomeStudio)
-  snps <- array(NA, c(2, nrow(idat.files), sum(idx)),
-                dimnames=list(c("theta", "r"),
-                              idat.files$sample.id,
+  #snps <- array(NA, c(2, nrow(idat.files), sum(idx)),
+  #              dimnames=list(c("theta", "r"),
+  #                            idat.files$sample.id,
+  #                            rownames(probes)[idx]))
+  #snps["theta",,] <-
+  #  atan2(intensities["B",,idx], intensities["A",,idx]) / (pi / 2)
+  #snps["r",,] <- sqrt(colSums(intensities[,,idx]**2))
+  snps <- array(NA, c(nrow(idat.files), sum(idx)),
+                dimnames=list(idat.files$sample.id,
                               rownames(probes)[idx]))
-  snps["theta",,] <-
-    atan2(intensities["B",,idx], intensities["A",,idx]) / (pi / 2)
-  snps["r",,] <- sqrt(colSums(intensities[,,idx]**2))
+  # theta format
+  snps <- atan2(intensities["B",,idx], intensities["A",,idx]) / (pi / 2)
+  # r format
+  if (return.snps.r) {
+    snps_r <- sqrt(colSums(intensities[,,idx]**2))
+  }
+
 
   # Extract all control probes data, and add summary statistics to samples table
 
@@ -270,16 +280,24 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
   t1=Sys.time()
   print(t1-t0)
 
-  # Return list with sample table, SNPs, CpG DNAm ratios and controls
+  # Return list with sample table, SNPs theta values, CpG DNAm ratios and optionally: SNPs r values, intensities, controls
+  rownames(idat.files) = idat.files$sample.id
+  idat.files = idat.files[, 2:ncol(idat.files)]
   processed = list(
     samples = idat.files,
     cpgs = dnam,
     snps = snps
   )
 
+  if (return.snps.r) {
+    processed$snps_r = snps_r
+  }
+
   if (return.intensities) {
-    processed$intensities = intensities
-    processed$controls = controls
+    processed$intensities_A = intensities["A",,]
+    processed$intensities_B = intensities["B",,]
+    processed$controls_red = controls["red",,]
+    processed$controls_grn = controls["grn",,]
   }
 
   processed
