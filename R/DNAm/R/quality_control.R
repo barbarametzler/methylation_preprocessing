@@ -49,9 +49,9 @@ call_snps = function(dnam, non.carrier.threshold = 0.2, homozygous.threshold = 0
   calls = array(NA, dim=c(nrow(dnam$samples), ncol(dnam$snps)),
                 dimnames=list(rownames(dnam$samples), colnames(dnam$snps)))
 
-  calls[dnam$snps < non.carrier.threshold] = 0 # non-carrier
+  calls[dnam$snps <= non.carrier.threshold] = 0 # non-carrier
   calls[dnam$snps > non.carrier.threshold & dnam$snps < homozygous.threshold] = 1 # heterozygous
-  calls[dnam$snps > homozygous.threshold] = 2 # homozygous
+  calls[dnam$snps >= homozygous.threshold] = 2 # homozygous
 
   if (plot) {
     title = paste(dim(eira$snps)[1], "samples, ", dim(eira$snps)[2], "SNPs")
@@ -63,37 +63,46 @@ call_snps = function(dnam, non.carrier.threshold = 0.2, homozygous.threshold = 0
   calls
 }
 
+snp_distance = function(dnam, plot=FALSE) {
+  dist = dist(call_snps(dnam), method="manhattan")
 
-identify_replicates = function(dnam) {
-  samples = dnam$samples
-  samples$inferred.sex = infer_sex(dnam)
-  calls = call_snps(dnam)
-
-  # Merge SNPs
-  samples <- cbind(samples, calls)
-
-  # Compute similarity matrix
-  K <- matrix(0, nrow(samples), nrow(samples),
-              dimnames=list(rownames(samples), rownames(samples)))
-
-  tmp <- t(data.matrix(samples[,c("inferred.sex", colnames(calls))]))
-
-  for (i in 1:nrow(K)) {
-    K[i,] <- as.integer(apply((tmp[,i] - tmp) == 0, 2, mean, na.rm=TRUE))
+  if (plot) {
+    heatmap(as.matrix(dist))
   }
 
-  # Identify duplicates from SNPs
-  dups <- as.data.frame(which(K == 1, arr.ind=TRUE))
-  dups$sample1 <- rownames(samples)[dups$row]
-  dups$sample2 <- rownames(samples)[dups$col]
-  dups$id1 <- rownames(samples)[dups$row]
-  dups$id2 <- rownames(samples)[dups$col]
-  dups$source <- "snps"
-  dups$row = dups$col <- NULL
+  dist
+}
 
-  dups <- subset(dups,
-                 sample1 != sample2
-  )
+identify_replicates = function(dnam, snp.distance.error.margin = 0) {
+  inferred.sex = infer_sex(dnam)
+  snp.distance = snp_distance(dnam)
 
-  dups
+  # Identify possible replicate pairs: those with (near) zero SNP distance
+  replicate_ids_in_lower_tri = which(snp.distance < snp.distance.error.margin)
+
+  if (!length(replicate_ids_in_lower_tri)) return(0)
+
+  # Initalize empty dataframe (potentially too large)
+  replicates = data.frame(a = character(length(replicate_ids_in_lower_tri)),
+                          b = character(length(replicate_ids_in_lower_tri)),
+                          stringsAsFactors = F)
+
+  # Iterate over all possible pairs
+  for (i in 1:length(replicate_ids_in_lower_tri)) {
+    # Identify pair from position in distance matrix
+    # https://stackoverflow.com/questions/30376553/get-labels-of-distance-matrix-cell
+    pair = labels(snp.distance)[which(lower.tri(snp.distance),arr.ind=TRUE)[replicate_ids_in_lower_tri[i],]]
+
+    # Make sure sex is the same
+    if (inferred.sex[pair[1]] == inferred.sex[pair[2]]) {
+      replicates[i,] = pair
+    }
+  }
+
+  # Shrink dataframe to final size
+  replicates = replicates[replicates$a != "",]
+  rownames(replicates) = 1:nrow(replicates)
+
+
+  replicates
 }

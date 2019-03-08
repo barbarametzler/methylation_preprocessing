@@ -18,6 +18,7 @@ infer_sex(eira, plot=T)
 
 # Call SNPs
 snps = call_snps(eira, plot=T)
+snp_distance(eira, plot=T)
 
 # Identify replicates from the same individual according to inferred sex and SNPs
 identify_replicates(eira)
