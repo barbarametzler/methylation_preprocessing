@@ -14,7 +14,7 @@ eira = preprocess("hm450", "../idat", return.intensities=TRUE)
 eira = remove_unreliable_samples(eira, thresholdNA = 0.1)
 
 # Infer sex
-infer_sex(eira, plot=T)
+sex = infer_sex(eira, plot=T)
 
 # Call SNPs
 snps = call_snps(eira, plot=T)
@@ -28,3 +28,6 @@ NA.proportion.columns = colMeans(eira$cpgs, na.rm=T)
 table(NA.proportion.columns<0.1, useNA="always")
 excluded_cpgs = eira$cpgs[, NA.proportion.columns >= 0.1]
 eira$cpgs = eira$cpgs[, NA.proportion.columns < 0.1]
+
+# Estimate leukocytes
+estimate_leukocytes(eira)
