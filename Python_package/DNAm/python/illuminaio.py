@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 # For license information, see LICENSE.TXT
 
+#load requirements
+import pandas as pd
+import sys
+import os
+import re
+import glob
+
 def list_idat(path):
     file_list = [os.path.basename(x) for x in glob.glob(path + "/*.idat")]
 

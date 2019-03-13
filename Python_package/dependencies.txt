@@ -1,0 +1,9 @@
+### dependencies of the package
+
+numpy
+pandas
+sys
+os
+glob 
+re
+pyreadr
