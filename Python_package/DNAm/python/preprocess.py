@@ -34,7 +34,7 @@ def preperation_outputs(probes, idat_files_folder):
     idat_files = list_idat(idat_files_folder)
     return inf1grn, inf1red, inf2, idat_files
 
-def create_intensities(probes, controls, idat_files, arg_beads=3, data):
+def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection = 0.05):
     ## create empty dataframes to append to
     intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
     intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
@@ -104,7 +104,6 @@ def create_intensities(probes, controls, idat_files, arg_beads=3, data):
     neg_means_ = np.mean([neg_means_grn, neg_means_red])
     neg_sds_ = np.std([neg_sds_grn, neg_sds_red])
 
-    arg_detection = 0.05 
     z = norm.ppf(1 - arg_detection)
 
     threshold_inf1grn = 2 * neg_means_grn + z * np.sqrt(2) * neg_sds_grn
