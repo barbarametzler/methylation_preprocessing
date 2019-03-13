@@ -118,14 +118,14 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
 
     for column in intensities_AA:
         I_A = (intensities_AA[column]).sum(axis=1)
-        intensities_AA[column].loc[inf1grn] = (np.where(data.loc[inf1grn] > neg_means_grn &
-                                                        I_A.loc[inf1grn] > threshold_inf1grn,
+        intensities_AA[column].loc[inf1grn] = (np.where((data.loc[inf1grn] > neg_means_grn &
+                                                        I_A.loc[inf1grn] > threshold_inf1grn),
                                                         intensities_AA[column].loc[inf1grn] - neg_means_grn,
                                                         np.nan))
 
 
-        intensities_AA[column].loc[inf1red] = (np.where(data.loc[inf1red] > neg_means_red &
-                                                        I_B.loc[inf1red] > threshold_inf1red,
+        intensities_AA[column].loc[inf1red] = (np.where((data.loc[inf1red] > neg_means_red &
+                                                        I_B.loc[inf1red] > threshold_inf1red),
                                                         intensities_AA[column].loc[inf1red] - neg_means_red,
                                                         np.nan))
 
@@ -138,7 +138,7 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     for column in intensities_BB:
         I_B = (intensities_B[column]).sum(axis=1)
         intensities_BB[column].loc[inf1grn] = (np.where(data.loc[inf1grn] > neg_means_grn &
-                                                        I_A.loc[inf1grn] > threshold_inf1grn,
+                                                        I_B.loc[inf1grn] > threshold_inf1grn,
                                                         intensities_BB[column].loc[inf1grn] - neg_means_grn,
                                                         np.nan))
 
@@ -157,8 +157,7 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
 
 # Extract normalization probes for Grn and Red, and form the dye bias correction constant
     norm_grn_beads = control['type'].isin(['NORM_C', 'NORM_G'])
-    
-    
 
 
-    
+
+
