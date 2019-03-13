@@ -4,4 +4,6 @@ numpy
 pandas
 sys
 os
+glob 
+re
 pyreadr
