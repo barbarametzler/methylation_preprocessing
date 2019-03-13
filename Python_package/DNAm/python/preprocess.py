@@ -34,7 +34,7 @@ def preperation_outputs(probes, idat_files_folder):
     idat_files = list_idat(idat_files_folder)
     return inf1grn, inf1red, inf2, idat_files
 
-def create_intensities(probes, controls, idat_files, arg_beads=3, data):
+def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection=0.05):
     ## create empty dataframes to append to
     intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
     intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
