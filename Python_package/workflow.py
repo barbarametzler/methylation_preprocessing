@@ -4,8 +4,7 @@ import numpy as np
 import sys
 import os
 import pyreadr
-from read_idat import list_idat
-import preprocess
+from illuminaio import list_idat
 
 ##load data for testing
 # define paths
