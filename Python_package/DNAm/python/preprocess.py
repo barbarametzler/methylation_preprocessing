@@ -19,7 +19,12 @@ def read_manifests(probes_file, controls_file):
     probes = pd.DataFrame((result_p[None])) #columns=['chr', 'pos', 'type', 'address_a', 'address_b'])
 
     result_c = pyreadr.read_r(controls_file)
-    controls = pd.DataFrame((result_c[None])) #columns=['type', 'color', 'description', 'comment'])
+    #controls = pd.DataFrame((result_c[None])) #columns=['type', 'color', 'description', 'comment'])
+    
+    ## temporary solution (pyreader does not recognise the index labels)
+    controls = pd.read_csv(controls_file)
+    controls.set_index(['Unnamed: 0'], inplace=True)
+    controls.index.names = ['sample_id']
     return probes, controls
 
 def preperation_outputs(probes, idat_files_folder):
@@ -44,15 +49,17 @@ def create_intensities(probes, controls, idat_files, arg_beads=3, data):
 
     ## create boolean saying that if 3 or more beads show this, fill it with mean intensity value
 
-    ad_a_grn = (probes['address.a'].loc[probes['type'] == 'I-Grn'])
-    ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn'])
-    ad_a_red = (probes['address.b'].loc[probes['type'] == 'I-Red'])
-    ad_b_red = (probes['address.b'].loc[probes['type'] == 'I-Red'])
-    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'inf2'])
+    ad_a_grn = (probes['address.a'].loc[probes['type'] == 'I-Grn']).index
+    ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn']).index
+    ad_a_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
+    ad_b_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
+    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'inf2']).index
 
     inf1grn = probes[probes['type'] == "I-Grn"].index
     inf1red = probes[probes['type'] == "I-Red"].index
     inf2 = probes[probes['type'] == "II"].index
+
+    con_ind = controls.index
 
     sample_ids = pd.unique(idat_files['sample.id'])
 
@@ -73,24 +80,27 @@ def create_intensities(probes, controls, idat_files, arg_beads=3, data):
         intensities_BB[column].loc[inf1red] = (np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan))
         intensities_BB[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
 
-    for column in controls_grn:
+     for column in controls_grn:
         dataa = data.set_index('sample_id')
-        controls_grn[column].loc[ad_a_inf] = np.where(dataa.loc[ad_a_inf, 'grn_n'] > 0,
-                                                      dataa.loc[ad_a_inf, 'grn_mean'],
+        controls_grn[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'grn_n'] > 0,
+                                                      dataa.loc[con_ind, 'grn_mean'],
                                                       np.nan)
 
         neg_beads_grn = controls[controls['type'] == "NEGATIVE"].index
         neg_means_grn = (controls_grn[column].loc[neg_beads_grn]).mean()
+        neg_sds_grn = (controls_grn[column].loc[neg_beads_grn]).std(axis=0)
 
     for column in controls_red:
-        controls_red[column].loc[ad_a_inf] = np.where(dataa.loc[ad_a_inf, 'red_n'] > 0,
-                                                      dataa.loc[ad_a_inf, 'red_mean'],
+        controls_red[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'red_n'] > 0,
+                                                      dataa.loc[con_ind, 'red_mean'],
                                                       np.nan)
 
         neg_beads_red = controls[controls['type'] == "NEGATIVE"].index
         neg_means_red = (controls_red[column].loc[neg_beads_red]).mean()
+        neg_sds_red = (controls_red[column].loc[neg_beads_red]).std(axis=0)
 
-    #Defining a threshold of detection
+
+    ## Defining a threshold of detection
     neg_sds_grn = controls_grn.apply(lambda x: 1 if x > 0 else np.sd)
     neg_sds_red = controls_red.apply(lambda x: 1 if x > 0 else np.sd)
     neg_means_ = (neg_means_grn, neg_means_red).mean()
