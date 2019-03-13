@@ -14,7 +14,9 @@ data = load_data(csv_file)
 
 #read manifests
 probes_file = 'DNAm/python/illumina_manifests/hm450_probes.rds'
-controls_file = 'DNAm/python/illumina_manifests/hm450_controls.rds'
+#controls_file = 'DNAm/python/illumina_manifests/hm450_controls.rds'
+#quick fix -csv file
+#controls_file = 
 
 probes, controls = read_manifests(probes_file, controls_file)
 
@@ -25,4 +27,4 @@ idat_files_folder = 'idat/'
 preperation_outputs(probes, idat_files_folder)
 
 ##Create intensities
-intensities, controls = create_intensities(probes, controls, idat_files, arg_beads=3, data)
+intensities, controls = create_intensities(data, probes, controls, idat_files, arg_beads=3, )
