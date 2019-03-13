@@ -15,7 +15,9 @@ data = load_data(csv_file)
 
 #read manifests
 probes_file = 'DNAm/python/illumina_manifests/hm450_probes.rds'
-controls_file = 'DNAm/python/illumina_manifests/hm450_controls.rds'
+#controls_file = 'DNAm/python/illumina_manifests/hm450_controls.rds'
+#quick fix -csv file
+#controls_file = 
 
 probes, controls = read_manifests(probes_file, controls_file)
 

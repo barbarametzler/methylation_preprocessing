@@ -101,22 +101,23 @@ def create_intensities(probes, controls, idat_files, arg_beads=3, data):
 
 
     ## Defining a threshold of detection
-    neg_sds_grn = controls_grn.apply(lambda x: 1 if x > 0 else np.sd)
-    neg_sds_red = controls_red.apply(lambda x: 1 if x > 0 else np.sd)
-    neg_means_ = (neg_means_grn, neg_means_red).mean()
-    neg_sds_ = pd.concat(neg_sds_grn, neg_sds_red)
+    neg_means_ = np.mean([neg_means_grn, neg_means_red])
+    neg_sds_ = np.std([neg_sds_grn, neg_sds_red])
 
-    threshold_inf1grn = 2 * neg_means_grn + z * sqrt(2) * neg_sds_grn
-    threshold_inf1red = 2 * neg_means_red + z * sqrt(2) * neg_sds_red
-    threshold_inf2 = sum(neg_means_) + z * sqrt(sum(neg_sds_ ** 2))
+    z = norm.ppf(1 - arg_detection)
+
+    threshold_inf1grn = 2 * neg_means_grn + z * np.sqrt(2) * neg_sds_grn
+    threshold_inf1red = 2 * neg_means_red + z * np.sqrt(2) * neg_sds_red
+    threshold_inf2 = np.sum(neg_means_) + z * np.sqrt(np.sum(neg_sds_ ** 2))
 
     # Censoring of values below the detection limit and background subtraction
     # Background subtraction
 
-    I_A = (intensities_A[column]).sum()
-    I_B = (intensities_B[column]).sum()
+    
+    
 
     for column in intensities_AA:
+        I_A = (intensities_AA[column]).sum(axis=1)
         intensities_AA[column].loc[inf1grn] = (np.where(data.loc[inf1grn] > neg_means_grn &
                                                         I_A.loc[inf1grn] > threshold_inf1grn,
                                                         intensities_AA[column].loc[inf1grn] - neg_means_grn,
@@ -135,6 +136,7 @@ def create_intensities(probes, controls, idat_files, arg_beads=3, data):
 
 
     for column in intensities_BB:
+        I_B = (intensities_B[column]).sum(axis=1)
         intensities_BB[column].loc[inf1grn] = (np.where(data.loc[inf1grn] > neg_means_grn &
                                                         I_A.loc[inf1grn] > threshold_inf1grn,
                                                         intensities_BB[column].loc[inf1grn] - neg_means_grn,
