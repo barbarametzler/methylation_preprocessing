@@ -34,11 +34,8 @@ def preperation_outputs(probes, idat_files_folder):
     idat_files = list_idat(idat_files_folder)
     return inf1grn, inf1red, inf2, idat_files
 
-<<<<<<< HEAD
+
 def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection = 0.05):
-=======
-def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection=0.05):
->>>>>>> barbara
     ## create empty dataframes to append to
     intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
     intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
@@ -112,10 +109,6 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     threshold_inf1grn = 2 * neg_means_grn + z * np.sqrt(2) * neg_sds_grn
     threshold_inf1red = 2 * neg_means_red + z * np.sqrt(2) * neg_sds_red
     threshold_inf2 = np.sum(neg_means_) + z * np.sqrt(np.sum(neg_sds_ ** 2))
-<<<<<<< HEAD
-
-=======
->>>>>>> barbara
 
     # Censoring of values below the detection limit and background subtraction
     # Background subtraction
