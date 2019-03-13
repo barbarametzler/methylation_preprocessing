@@ -151,3 +151,14 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
                                                         I_B.loc[inf2] > threshold_inf2,
                                                         intensities_AA[column].loc[inf2] - neg_means_,
                                                         np.nan))
+
+
+
+
+# Extract normalization probes for Grn and Red, and form the dye bias correction constant
+    norm_grn_beads = control['type'].isin(['NORM_C', 'NORM_G'])
+    
+    
+
+
+    
