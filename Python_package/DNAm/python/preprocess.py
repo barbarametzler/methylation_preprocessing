@@ -8,17 +8,11 @@ import os
 import pyreadr
 from read_idat import list_idat
 
-##load data for testing
-csv_file= '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R05C01_beads.csv'
 
 def load_data(csv_file):
     data = pd.read_csv(csv_file)
     data.columns = ['sample_id', 'grn_n', 'grn_mean', 'grn_sd', 'red_n', 'red_mean', 'red_sd']
     return data
-
-## read manifests
-probes_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/illumina_methylation/manifests/hm450_probes.rds'
-controls_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/illumina_methylation/manifests/hm450_controls.rds'
 
 def read_manifests(probes_file, controls_file):
     result_p = pyreadr.read_r(probes_file)
@@ -27,10 +21,6 @@ def read_manifests(probes_file, controls_file):
     result_c = pyreadr.read_r(controls_file)
     controls = pd.DataFrame((result_c[None])) #columns=['type', 'color', 'description', 'comment'])
     return probes, controls
-
-
-##Preparation of the outputs
-idat_files_folder = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/idat/'
 
 def preperation_outputs(probes, idat_files_folder):
     inf1grn = probes[probes['type'] == "I-Grn"]

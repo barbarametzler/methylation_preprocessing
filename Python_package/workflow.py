@@ -9,19 +9,19 @@ import preprocess
 
 ##load data for testing
 # define paths
-csv_file = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R05C01_beads.csv'
+csv_file= 'DNAm/python/dnam/R05C01_beads.csv'
 data = load_data(csv_file)
 
 
 #read manifests
-probes_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/illumina_methylation/manifests/hm450_probes.rds'
-controls_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/illumina_methylation/manifests/hm450_controls.rds'
+probes_file = 'DNAm/python/illumina_manifests/hm450_probes.rds'
+controls_file = 'DNAm/python/illumina_manifests/hm450_controls.rds'
 
 probes, controls = read_manifests(probes_file, controls_file)
 
 
 ##Preparation of the outputs
-idat_files_folder = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/idat/'
+idat_files_folder = 'idat/'
 
 preperation_outputs(probes, idat_files_folder)
 
