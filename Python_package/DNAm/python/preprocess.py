@@ -47,7 +47,6 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     # Separate Grn/Red intensities into A (unmethylated) and B (methylated) intensities
     # depending on their type
 
-    ## create boolean saying that if 3 or more beads show this, fill it with mean intensity value
 
     ad_a_grn = (probes['address.a'].loc[probes['type'] == 'I-Grn']).index
     ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn']).index
@@ -60,9 +59,9 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     inf2 = probes[probes['type'] == "II"].index
 
     con_ind = controls.index
-
     sample_ids = pd.unique(idat_files['sample.id'])
 
+    ## temporary solution, since data for R05C01 is only available
     intensities_AA = pd.DataFrame(intensities_A['7800246024_R05C01'])
     intensities_BB = pd.DataFrame(intensities_B['7800246024_R05C01'])
 
