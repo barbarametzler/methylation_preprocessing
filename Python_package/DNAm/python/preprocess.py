@@ -118,45 +118,52 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
 
     for column in intensities_AA:
         I_A = (intensities_AA[column]).sum(axis=1)
-        intensities_AA[column].loc[inf1grn] = (np.where((data.loc[inf1grn] > neg_means_grn &
-                                                        I_A.loc[inf1grn] > threshold_inf1grn),
-                                                        intensities_AA[column].loc[inf1grn] - neg_means_grn,
-                                                        np.nan))
+
+        ## slower, alternative way 
+        #intensities_AA[column].loc[inf1grn] = (np.where((intensities_AA.loc[inf1grn].gt(neg_means_grn).values & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)),
+        #                                            (intensities_AA[column].loc[inf1grn] - neg_means_grn),
+        #                                            np.nan))
+        
+        intensities_AA_grn = intensities_AA.loc[inf1grn]
+        intensities_AA_grn[column] = intensities_AA_grn[(intensities_AA_grn.gt(neg_means_grn).values) & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)]
 
 
-        intensities_AA[column].loc[inf1red] = (np.where((data.loc[inf1red] > neg_means_red &
-                                                        I_B.loc[inf1red] > threshold_inf1red),
-                                                        intensities_AA[column].loc[inf1red] - neg_means_red,
-                                                        np.nan))
+        intensities_AA_red = intensities_AA.loc[inf1red]
+        intensities_AA_red[column] = intensities_AA_red[(intensities_AA_red.gt(neg_means_red).values) & (I_A.loc[inf1red].gt(threshold_inf1red).values)]
 
-        intensities_AA[column].loc[inf2] = (np.where(data.loc[inf2] > neg_means_ &
-                                                        I_A.loc[inf2] > threshold_inf2,
-                                                        intensities_AA[column].loc[inf2] - neg_means_,
-                                                        np.nan))
+
+        intensities_AA_inf2 = intensities_AA.loc[inf2]
+        intensities_AA_inf2[column] = intensities_AA_inf2[(intensities_AA_inf2.gt(neg_means_red).values) & (I_A.loc[inf2].gt(threshold_inf2).values)]
 
 
     for column in intensities_BB:
-        I_B = (intensities_B[column]).sum(axis=1)
-        intensities_BB[column].loc[inf1grn] = (np.where(data.loc[inf1grn] > neg_means_grn &
-                                                        I_B.loc[inf1grn] > threshold_inf1grn,
-                                                        intensities_BB[column].loc[inf1grn] - neg_means_grn,
-                                                        np.nan))
+        intensities_BB_grn = intensities_BB.loc[inf1grn]
+        intensities_BB_grn[column] = intensities_BB_grn[(intensities_BB_grn.gt(neg_means_grn).values) & (I_B.loc[inf1grn].gt(threshold_inf1grn).values)]
 
-        intensities_BB[column].loc[inf1red] = (np.where(data.loc[inf1red] > neg_means_red &
-                                                        I_B.loc[inf1red] > threshold_inf1red,
-                                                        intensities_BB[column].loc[inf1red] - neg_means_red,
-                                                        np.nan))
 
-        intensities_BB[column].loc[inf2] = (np.where(data.loc[inf2] > neg_means_ &
-                                                        I_B.loc[inf2] > threshold_inf2,
-                                                        intensities_AA[column].loc[inf2] - neg_means_,
-                                                        np.nan))
+        intensities_BB_red = intensities_BB.loc[inf1red]
+        intensities_BB_red[column] = intensities_BB_red[(intensities_BB_red.gt(neg_means_red).values) & (I_B.loc[inf1red].gt(threshold_inf1red).values)]
 
+
+        intensities_BB_inf2 = intensities_BB.loc[inf2]
+        intensities_BB_inf2[column] = intensities_BB_inf2[(intensities_BB_inf2.gt(neg_means_red).values) & (I_B.loc[inf2].gt(threshold_inf2).values)]
 
 
 
 # Extract normalization probes for Grn and Red, and form the dye bias correction constant
     norm_grn_beads = control['type'].isin(['NORM_C', 'NORM_G'])
+
+    norm_red_beads = control['description'].loc[norm_grn_beads].isin()
+
+    #norm.red.beads <- match(
+    #  chartr("CG", "TA", control.beads$description[norm.grn.beads]),
+    #  control.beads$description)
+
+    grn = controls_grn[column].loc[norm_grn_beads]
+    red = controls_red[column].loc[norm_red_beads]
+    norm_data = pd.concat(grn, red)
+
+    corrections = np.mean((np.mean(norm_data, axis=0)/ norm_data), axis=1)
 
 
 
