@@ -153,11 +153,8 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
 # Extract normalization probes for Grn and Red, and form the dye bias correction constant
     norm_grn_beads = control['type'].isin(['NORM_C', 'NORM_G'])
 
-    norm_red_beads = control['description'].loc[norm_grn_beads].isin()
-
-    #norm.red.beads <- match(
-    #  chartr("CG", "TA", control.beads$description[norm.grn.beads]),
-    #  control.beads$description)
+    #not so sure about this one
+    norm_red_beads = controls[controls['description'].loc[norm_grn_beads].str.replace('CG','TA', inplace=True)]
 
     grn = controls_grn[column].loc[norm_grn_beads]
     red = controls_red[column].loc[norm_red_beads]
@@ -166,5 +163,6 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     corrections = np.mean((np.mean(norm_data, axis=0)/ norm_data), axis=1)
 
 
+# Apply dye bias correction
 
 
