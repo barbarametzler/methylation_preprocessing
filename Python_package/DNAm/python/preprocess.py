@@ -113,13 +113,10 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     # Censoring of values below the detection limit and background subtraction
     # Background subtraction
 
-    
-    
-
     for column in intensities_AA:
         I_A = (intensities_AA[column]).sum(axis=1)
 
-        ## slower, alternative way 
+        ## slower, alternative way of censoring values
         #intensities_AA[column].loc[inf1grn] = (np.where((intensities_AA.loc[inf1grn].gt(neg_means_grn).values & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)),
         #                                            (intensities_AA[column].loc[inf1grn] - neg_means_grn),
         #                                            np.nan))
@@ -149,16 +146,18 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
         intensities_BB_inf2[column] = intensities_BB_inf2[(intensities_BB_inf2.gt(neg_means_red).values) & (I_B.loc[inf2].gt(threshold_inf2).values)]
 
 
+### join intensities_AA_grn/red/inf2 and intensities_BB_grn/red/inf2
 
 # Extract normalization probes for Grn and Red, and form the dye bias correction constant
-    norm_grn_beads = control['type'].isin(['NORM_C', 'NORM_G'])
+    norm_grn_beads = controls[controls['type'].isin(['NORM_C', 'NORM_G'])].index
 
-    #not so sure about this one
-    norm_red_beads = controls[controls['description'].loc[norm_grn_beads].str.replace('CG','TA', inplace=True)]
+    match_ = controls['description'].loc[norm_grn_beads].str.translate(str.maketrans('CG', 'TA'))
+    norm_red_beads = controls['description'].isin(match_).index
 
-    grn = controls_grn[column].loc[norm_grn_beads]
-    red = controls_red[column].loc[norm_red_beads]
-    norm_data = pd.concat(grn, red)
+    for column1, column2 in zip(controls_grn, controls_red):
+        grn = controls_grn[column1].loc[norm_grn_beads]
+        red = controls_red[column2].loc[norm_red_beads]
+        norm_data = pd.concat([grn, red], axis=1)
 
     corrections = np.mean((np.mean(norm_data, axis=0)/ norm_data), axis=1)
 
