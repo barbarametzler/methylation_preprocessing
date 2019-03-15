@@ -35,7 +35,7 @@ def preperation_outputs(probes, idat_files_folder):
     return inf1grn, inf1red, inf2, idat_files
 
 
-def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection = 0.05):
+def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection=0.05):
     ## create empty dataframes to append to
     intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
     intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
@@ -169,4 +169,17 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     return intensities_A, intensities_B
 
 
+## Computing DNA methylation ratios (β values)
+#Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
+
+# Create DNAm ratios 
+def dnam(probes, intensities_A, intensities_B):
+    idx =[probes1.index.str.contains('rs')]
+    intensities = intensities_A.add(intensities_B, fill_value=0)
+    dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
+
+    return dnam
+
+def snps():
+    return snps
 
