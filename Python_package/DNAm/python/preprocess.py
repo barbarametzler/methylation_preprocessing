@@ -159,9 +159,14 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
         red = controls_red[column2].loc[norm_red_beads]
         norm_data = pd.concat([grn, red], axis=1)
 
-    corrections = np.mean((np.mean(norm_data, axis=0)/ norm_data), axis=1)
+        corrections_grn = (np.mean(norm_data[column1], axis=1)/ grn).mean(axis=0)
+        corrections_red = (np.mean(norm_data[column2], axis=1)/ red).mean(axis=0)
 
+    ## Apply dye bias correction
+        intensities_AA.loc[inf2] = intensities_AA.loc[inf2] * corrections_red
+        intensities_BB.loc[inf2] = intensities_BB.loc[inf2] * corrections_grn
 
-# Apply dye bias correction
+    return intensities_A, intensities_B
+
 
 
