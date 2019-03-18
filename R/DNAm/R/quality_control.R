@@ -1,53 +1,33 @@
 #quadprog::solve.QP
 
-remove_unreliable_samples_probes = function(dnam, threshold_NA_sample = 0.1, threshold_NA_cpg = 0.2, bc_outlier_SD = 3, plot=T) {
-  # Define sample outliers based on BC control bead intensities
-  bc1_grn_lower_threshold = mean(dnam$samples$bc1.grn) - bc_outlier_SD * sd(dnam$samples$bc1.grn)
-  bc1_grn_upper_threshold = mean(dnam$samples$bc1.grn) + bc_outlier_SD * sd(dnam$samples$bc1.grn)
-  bc1_grn_outlier = (dnam$samples$bc1.grn < bc1_grn_lower_threshold) |
-                    (dnam$samples$bc1.grn > bc1_grn_upper_threshold)
-
-  bc1_red_lower_threshold = mean(dnam$samples$bc1.red) - bc_outlier_SD * sd(dnam$samples$bc1.red)
-  bc1_red_upper_threshold = mean(dnam$samples$bc1.red) + bc_outlier_SD * sd(dnam$samples$bc1.red)
-  bc1_red_outlier = (dnam$samples$bc1.red < bc1_red_lower_threshold) |
-                    (dnam$samples$bc1.red > bc1_red_upper_threshold)
-
-  bc2_lower_threshold = mean(dnam$samples$bc2) - bc_outlier_SD * sd(dnam$samples$bc2)
-  bc2_upper_threshold = mean(dnam$samples$bc2) + bc_outlier_SD * sd(dnam$samples$bc2)
-  bc2_outlier = (dnam$samples$bc2 < bc2_lower_threshold) |
-                (dnam$samples$bc2 > bc2_upper_threshold)
+remove_unreliable_samples_probes = function(dnam, threshold_NA_sample = 0.1, threshold_NA_cpg = 0.2, bc_threshold = 1, plot=T) {
+  # Define samples with failed bisulfite conversion (Illumina recommends threshold of 1 (Heiss 2019, https://doi.org/10.1186/s13148-019-0615-3)
+  bc1_grn_failed = dnam$samples$bc1.grn < bc_threshold
+  bc1_red_failed = dnam$samples$bc1.red < bc_threshold
+  bc2_failed = dnam$samples$bc2 < bc_threshold
 
   # Define samples with too many missing values
   too_many_NAs_per_sample = dnam$samples$missing > threshold_NA_sample
-  keep_samples = !bc1_grn_outlier & !bc1_red_outlier & !bc2_outlier & !too_many_NAs_per_sample
+  keep_samples = !bc1_grn_failed & !bc1_red_failed & !bc2_failed & !too_many_NAs_per_sample
 
   # Define CpG sites with too many missing values
-  NA_proportion_columns = colMeans(dnam$cpgs[keep_samples,], na.rm=T)
+  NA_proportion_columns = colMeans(is.na(dnam$cpgs[keep_samples,]), na.rm=T)
   keep_cpgs = NA_proportion_columns <= threshold_NA_cpg
 
   # Plot QC plots
   if (plot) {
-    op = par(mfrow=c(2,3))
+    op = par(mfrow=c(2,2))
 
     hist(dnam$samples$missing, xlab="NA per sample", main=paste0("Discard ", sum(too_many_NAs_per_sample), "/", nrow(dnam$samples), " samples"))
     abline(v=threshold_NA_sample)
 
-    barplot(matrix(c(mean(keep_samples), 1-mean(keep_samples), mean(keep_cpgs, na.rm=T), 1-mean(keep_cpgs,na.rm=T)), ncol=2), names.arg=c("n", "CpG"), main="Keeping")
-
     hist(NA_proportion_columns, xlab="NA per CpG", main=paste0("Discard ", sum(!keep_cpgs, na.rm=T), "/", ncol(dnam$cpgs), " CpG sites"))
     abline(v=threshold_NA_cpg)
 
-    hist(dnam$samples$bc1.grn, xlab="bc1 green intensity", main=paste0("Discard ", sum(bc1_grn_outlier), "/", nrow(dnam$samples), " samples"))
-    abline(v=bc1_grn_lower_threshold)
-    abline(v=bc1_grn_upper_threshold)
+    boxplot(c(dnam$samples$bc1.grn, dnam$samples$bc1.red, dnam$samples$bc2) ~ rep(c("BC1 green", "BC1 red", "BC2"), each=nrow(dnam$samples)), ylim=c(0,50), main=paste0(sum(bc1_grn_failed, bc1_red_failed, bc2_failed), "/", nrow(dnam$samples), " samples failed bisulfite conversion"))
+    abline(h=bc_threshold)
 
-    hist(dnam$samples$bc1.red, xlab="bc1 red intensity", main=paste0("Discard ", sum(bc1_red_outlier), "/", nrow(dnam$samples), " samples"))
-    abline(v=bc1_red_lower_threshold)
-    abline(v=bc1_red_upper_threshold)
-
-    hist(dnam$samples$bc2, xlab="bc2 intensity", main=paste0("Discard ", sum(bc2_outlier), "/", nrow(dnam$samples), " samples"))
-    abline(v=bc2_lower_threshold)
-    abline(v=bc2_upper_threshold)
+    plot(density(colMeans(eira$cpgs[keep_samples, keep_cpgs], na.rm=T), from=0, to=1), las=1, lwd=2, col="navy", main="Methylation β-value-distribution", xlab="")
 
     par(op)
   }

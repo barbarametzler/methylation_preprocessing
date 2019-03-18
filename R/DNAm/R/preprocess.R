@@ -1,7 +1,7 @@
-preprocess = function(platform, input.folder, min.beads=3, detection=0.05, return.intensities = FALSE, return.snps.r=FALSE, verbose=TRUE) {
+preprocess = function(platform, input_folder, min_beads=3, detection=0.05, return_intensities = FALSE, return_snps_r=FALSE, verbose=TRUE) {
   stopifnot(platform %in% c("hm450"))
-  stopifnot(dir.exists(input.folder))
-  stopifnot(min.beads > 0)
+  stopifnot(dir.exists(input_folder))
+  stopifnot(min_beads > 0)
   stopifnot(detection > 0 & detection <= 1)
 
   # Read manifest
@@ -13,7 +13,7 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
   inf1red <- which(probes$type == "I-Red")
   inf2 <- which(probes$type == "II")
 
-  idat.files <- list.idat(input.folder)
+  idat.files <- list.idat(input_folder)
   idat.files$decoding <- as.POSIXct(NA)
   idat.files$scan <- as.POSIXct(NA)
 
@@ -47,25 +47,25 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
 
     idx <- as.character(probes$address.a[inf1grn])
     intensities["A",idat.files$sample.id[i],inf1grn] <-
-      ifelse(data$beads[idx,"grn.n"] >= min.beads, data$beads[idx,"grn.mean"], NA)
+      ifelse(data$beads[idx,"grn.n"] >= min_beads, data$beads[idx,"grn.mean"], NA)
 
     idx <- as.character(probes$address.b[inf1grn])
     intensities["B",idat.files$sample.id[i],inf1grn] <-
-      ifelse(data$beads[idx,"grn.n"] >= min.beads, data$beads[idx,"grn.mean"], NA)
+      ifelse(data$beads[idx,"grn.n"] >= min_beads, data$beads[idx,"grn.mean"], NA)
 
     idx <- as.character(probes$address.a[inf1red])
     intensities["A",idat.files$sample.id[i],inf1red] <-
-      ifelse(data$beads[idx,"red.n"] >= min.beads, data$beads[idx,"red.mean"], NA)
+      ifelse(data$beads[idx,"red.n"] >= min_beads, data$beads[idx,"red.mean"], NA)
 
     idx <- as.character(probes$address.b[inf1red])
     intensities["B",idat.files$sample.id[i],inf1red] <-
-      ifelse(data$beads[idx,"red.n"] >= min.beads, data$beads[idx,"red.mean"], NA)
+      ifelse(data$beads[idx,"red.n"] >= min_beads, data$beads[idx,"red.mean"], NA)
 
     idx <- as.character(probes$address.a[inf2])
     intensities["A",idat.files$sample.id[i],inf2] <-
-      ifelse(data$beads[idx,"red.n"] >= min.beads, data$beads[idx,"red.mean"], NA)
+      ifelse(data$beads[idx,"red.n"] >= min_beads, data$beads[idx,"red.mean"], NA)
     intensities["B",idat.files$sample.id[i],inf2] <-
-      ifelse(data$beads[idx,"grn.n"] >= min.beads, data$beads[idx,"grn.mean"], NA)
+      ifelse(data$beads[idx,"grn.n"] >= min_beads, data$beads[idx,"grn.mean"], NA)
 
     idx <- as.character(rownames(control.beads))
     controls["grn",idat.files$sample.id[i],idx] <-
@@ -165,7 +165,7 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
   # theta format
   snps <- atan2(intensities["B",,idx], intensities["A",,idx]) / (pi / 2)
   # r format
-  if (return.snps.r) {
+  if (return_snps_r) {
     snps_r <- sqrt(colSums(intensities[,,idx]**2))
   }
 
@@ -289,11 +289,11 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
     snps = snps
   )
 
-  if (return.snps.r) {
+  if (return_snps_r) {
     processed$snps_r = snps_r
   }
 
-  if (return.intensities) {
+  if (return_intensities) {
     processed$intensities_A = intensities["A",,]
     processed$intensities_B = intensities["B",,]
     processed$controls_red = controls["red",,]
