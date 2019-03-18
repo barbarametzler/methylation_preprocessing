@@ -172,14 +172,34 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
 ## Computing DNA methylation ratios (β values)
 #Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
 
-# Create DNAm ratios 
+# Create DNAm ratios as B (methylated) over total
+
 def dnam(probes, intensities_A, intensities_B):
-    idx =[probes1.index.str.contains('rs')]
+    idx =[probes.index.str.contains('rs')]
     intensities = intensities_A.add(intensities_B, fill_value=0)
     dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
 
     return dnam
 
+### work on this
 def snps():
     return snps
+
+
+# Extract all control probes data, and add summary statistics to samples table
+def matching(controls, idat_files):    
+    #controls_red = 
+    #controls_grn = 
+
+    bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
+    idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
+    
+    match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
+    idx_signal = controls['description'].isin(match_).index
+
+    idat_files['bc1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
+
+    idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
+    idat_files['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
+
 
