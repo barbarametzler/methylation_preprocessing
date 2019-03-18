@@ -1,4 +1,4 @@
-### dependencies of the package
+### required packages 
 
 numpy
 pandas
