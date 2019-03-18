@@ -203,3 +203,31 @@ def matching(controls, idat_files):
     idat_files['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
 
 
+    idat_files['ext_a'] = controls[(controls['color'] == 'Red') & (controls['description'] == "Extension (A)")].index
+    idat_files['ext_c'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Extension (C)")].index
+    idat_files['ext_g'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Extension (G)")].index
+    idat_files['ext_t'] = controls[(controls['color'] == 'Red') & (controls['description'] == "Extension (T)")].index
+    idat_files['hyp_low'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Low")].index
+    idat_files['hyp_med'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Low")].index
+    idat_files['hyp_high'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Medium")].index
+    idat_files['hyp_low'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (High")].index
+    idat_files['np_a'] = controls[(controls['color'] == 'Red') & (controls['description'] == "NP (A)")].index
+    idat_files['np_c'] = controls[(controls['color'] == 'Green') & (controls['description'] == "NP (C)")].index
+    idat_files['np_g'] = controls[(controls['color'] == 'Green') & (controls['description'] == "NP (G)")].index
+    idat_files['np_t'] = controls[(controls['color'] == 'Red') & (controls['description'] == "NP (T)")].index
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
