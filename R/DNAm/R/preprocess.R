@@ -1,4 +1,4 @@
-preprocess = function(platform, input.folder, min.beads=3, detection=0.05, return.intensities = FALSE, return.snps.r=FALSE) {
+preprocess = function(platform, input.folder, min.beads=3, detection=0.05, return.intensities = FALSE, return.snps.r=FALSE, verbose=TRUE) {
   stopifnot(platform %in% c("hm450"))
   stopifnot(dir.exists(input.folder))
   stopifnot(min.beads > 0)
@@ -31,7 +31,7 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
 
   t0=Sys.time()
   for (i in 1:nrow(idat.files)) {
-    print(paste0('Sample no. ', i, ' - time: ', Sys.time()))
+    if (verbose) print(paste0('Sample no. ', i, ' - time: ', Sys.time()))
     # Parse IDAT (function defined in illuminaio.R)
     data <- parse.idat(idat.files$grn[i], idat.files$red[i])
     stopifnot(data$barcode == idat.files$chip[i])
@@ -278,7 +278,7 @@ preprocess = function(platform, input.folder, min.beads=3, detection=0.05, retur
   #        file.path(output, paste(name, "samples.rds", sep="_")))
 
   t1=Sys.time()
-  print(t1-t0)
+  if (verbose) print(t1-t0)
 
   # Return list with sample table, SNPs theta values, CpG DNAm ratios and optionally: SNPs r values, intensities, controls
   rownames(idat.files) = idat.files$sample.id
