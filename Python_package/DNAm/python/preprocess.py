@@ -187,16 +187,15 @@ def snps():
 
 
 # Extract all control probes data, and add summary statistics to samples table
-def matching(controls, idat_files):    
+def matching(controls, idat_files, dnam, return_snps=False, return_intensities=False):    
     #controls_red = 
     #controls_grn = 
 
+    # match 1
     bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
     idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
-    
     match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
     idx_signal = controls['description'].isin(match_).index
-
     idat_files['bc1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
     idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
@@ -216,13 +215,51 @@ def matching(controls, idat_files):
     idat_files['np_g'] = controls[(controls['color'] == 'Green') & (controls['description'] == "NP (G)")].index
     idat_files['np_t'] = controls[(controls['color'] == 'Red') & (controls['description'] == "NP (T)")].index
 
+    # match 2
+    bg = ["GT Mismatch 1 (MM)", "GT Mismatch 2 (MM)", "GT Mismatch 3 (MM)"]
+    idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
+    match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
+    idx_signal = controls['description'].isin(match_).index
+    idat_files['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
+    idx = controls[controls['type'] == 'SPECIFICITY II'].index
+    idat_files['spec2'] = (np.nanmean(controls_red.loc[idx])/np.nanmean(controls_grn.loc[idx]))
 
+    # match 3 
+    idx_bg = controls[controls['description'] == ('Biotin (Bkg)')].index
+    idx_signal = controls[controls['description'] == ('Biotin (High)')].index
+    idat_files['st_grn'] = controls_grn.loc[idx_signal] / controls_grn.loc[idx_signal]
 
+    # match 4
+    idx_bg = controls[controls['description'] == ('DNP (Bkg)')].index
+    idx_signal = controls[controls['description'] == ('DNP (High)')].index
+    idat_files['st_grn'] = controls_red.loc[idx_signal] / controls_red.loc[idx_signal]
 
+    # match 5
+    idx = controls[controls['type'] == ('TARGET REMOVAL')].index
+    idat_files['tr'] = controls_grn.loc[idx].apply(np.nanmax(), axis=1)
 
+    idat_files['missing'] = dnam.isnull().mean(axis = 1)
 
+    idat_files['median_chrX'] = dnam.loc[probes['chr'] == 'X'].apply(np.nanmedian, axis=1)
+    idat_files['missing_chrY'] = np.nanmean(dnam.loc[probes['chr'] == 'Y'].isnull())
 
+    idat_files['grn'] = None
+    idat_files['red'] = None
+
+    # Return sample table, SNPs theta values, CpG DNAm ratios and optionally: #SNPs r values, intensities, controls
+    idat_files.set_index(['sample_id'])
+
+    cpgs = dnam
+    samples = idat_files
+
+    ## add SNPs r values??
+
+    if return_intensities == True:
+        return samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn
+
+    else:
+        return samples, cpgs, snps
 
 
 
