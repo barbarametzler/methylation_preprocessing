@@ -1,4 +1,4 @@
-Package: DNAm
+Package: CH3
 Type: Package
 Title: Illumina Infinium DNA Methylation BeadChip Analysis
 Version: 0.1.0
@@ -10,3 +10,5 @@ License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 Imports: tidyr, quadprog
+Suggests: omics
+RoxygenNote: 6.1.1

@@ -1,12 +1,39 @@
+#' Preprocesses Illumina Infinium DNA methylation bead chips
+#'
+#' Parses .idat files and performs probe censoring, background subtraction and dye-bias correction. SNPs and summary statistics including information from control beads are also provided.
+#'
+#' @param platform \code{hm450} for HumanMethylation450 BeadChip or \code{epic} for MethylationEPIC Kit
+#' @param input_folder path to folder containing .idat files (2 per sample)
+#' @param min_beads probes with less beads will be censored (default 3)
+#' @param detection p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
+#' @param return_intensities returns four (large) matrices containing preprocessed intensities: intensities_A, intensities_B and controls_red, controls_grn
+#' @param return_snps_r returns matrix containing SNP r-coordinate in polar coordinate system
+#' @param verbose prints timestamp per sample and overall time taken
+#'
+#' @return Returns list with at least three elements:
+#' \enumerate{
+#'   \item \code{samples}-dataframe containing sample metadata and summary statistics
+#'   \item \code{cpgs}-matrix containing CpG beta-values (= methylation proportions)
+#'   \item \code{snps}-matrix containing theta-values of SNPs in polar coordinate system
+#'   \item (\code{snps_r}-matrix containing r-values of SNPs in polar coordinate system (optional))
+#'   \item (\code{intensities_A}-matrix containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
+#'   \item (\code{intensities_B}-matrix containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
+#'   \item (\code{controls_red}-matrix containing control-bead-intensities on red channel (optional))
+#'   \item (\code{controls_grn}-matrix containing control-bead-intensities on green channel (optional))
+#' }
+#'
+#' @seealso \link{remove_unreliable_samples_probes}
+#'
+#' @export
 preprocess = function(platform, input_folder, min_beads=3, detection=0.05, return_intensities = FALSE, return_snps_r=FALSE, verbose=TRUE) {
-  stopifnot(platform %in% c("hm450"))
+  stopifnot(platform %in% c("hm450", "epic"))
   stopifnot(dir.exists(input_folder))
   stopifnot(min_beads > 0)
   stopifnot(detection > 0 & detection <= 1)
 
   # Read manifest
-  probes=readRDS(paste0('illumina_manifests/', sprintf("%s_probes.rds", platform)))
-  control.beads=readRDS(paste0('illumina_manifests/', sprintf("%s_controls.rds", platform)))
+  probes=readRDS(paste0('R/illumina_manifests/', sprintf("%s_probes.rds", platform)))
+  control.beads=readRDS(paste0('R/illumina_manifests/', sprintf("%s_controls.rds", platform)))
 
   # Separate probes by type
   inf1grn <- which(probes$type == "I-Grn")
