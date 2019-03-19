@@ -15,16 +15,20 @@ def load_data(csv_file):
     return data
 
 def read_manifests(probes_file, controls_file):
-    result_p = pyreadr.read_r(probes_file)
-    probes = pd.DataFrame((result_p[None])) #columns=['chr', 'pos', 'type', 'address_a', 'address_b'])
+    #result_p = pyreadr.read_r(probes_file)
+    #probes = pd.DataFrame((result_p[None])) #columns=['chr', 'pos', 'type', 'address_a', 'address_b'])
 
-    result_c = pyreadr.read_r(controls_file)
+    #result_c = pyreadr.read_r(controls_file)
     #controls = pd.DataFrame((result_c[None])) #columns=['type', 'color', 'description', 'comment'])
     
     ## temporary solution (pyreader does not recognise the index labels)
     controls = pd.read_csv(controls_file)
     controls.set_index(['Unnamed: 0'], inplace=True)
     controls.index.names = ['sample_id']
+
+    probes = pd.read_csv(probes_file)
+    #probes.set_index(['Unnamed: 0'], inplace=True)
+    #probes.index.names = ['sample_id']
     return probes, controls
 
 def preperation_outputs(probes, idat_files_folder):
@@ -36,6 +40,10 @@ def preperation_outputs(probes, idat_files_folder):
 
 
 def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection=0.05):
+
+    assert detection > 0 & detection <= 1
+    assert arg_beads > 0
+
     ## create empty dataframes to append to
     intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
     intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
@@ -47,7 +55,6 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     ##Separation of unmethylated and methylated intensities
     # Separate Grn/Red intensities into A (unmethylated) and B (methylated) intensities
     # depending on their type
-
 
     ad_a_grn = (probes['address.a'].loc[probes['type'] == 'I-Grn']).index
     ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn']).index
@@ -62,25 +69,24 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     con_ind = controls.index
     sample_ids = pd.unique(idat_files['sample.id'])
 
-    ## temporary solution, since data for R05C01 is only available
-    intensities_AA = pd.DataFrame(intensities_A['7800246024_R05C01'])
-    intensities_BB = pd.DataFrame(intensities_B['7800246024_R05C01'])
 
     #loop over sample id index and fill out rows based on if value is in data
-
-    for column in intensities_AA:
+    
+    for column in intensities_A:
         #if (data['grn_n'].isin(ad_a_grn).any()) >= arg_beads:
-        intensities_AA[column].loc[inf1grn] = (np.where(data.loc[ad_a_grn, 'grn_n'] >= arg_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan))
-        intensities_AA[column].loc[inf1red] = (np.where(data.loc[ad_a_red, 'red_n'] >= arg_beads, data.loc[ad_a_red, 'red_mean'], np.nan))
-        intensities_AA[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'grn_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
+        print (np.where(data.loc[ad_a_grn]))
+        
+        intensities_A[column].loc[inf1grn] = (np.where(data.loc[ad_a_grn, 'grn_n'] >= arg_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan))
+        intensities_A[column].loc[inf1red] = (np.where(data.loc[ad_a_red, 'red_n'] >= arg_beads, data.loc[ad_a_red, 'red_mean'], np.nan))
+        #intensities_A[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'grn_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
 
 
-    for column in intensities_BB:
-        intensities_BB[column].loc[inf1grn] = (np.where(data.loc[ad_b_grn, 'grn_n'] >= arg_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan))
-        intensities_BB[column].loc[inf1red] = (np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan))
-        intensities_BB[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
+    for column in intensities_B:
+        intensities_B[column].loc[inf1grn] = (np.where(data.loc[ad_b_grn, 'grn_n'] >= arg_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan))
+        intensities_B[column].loc[inf1red] = (np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan))
+        #intensities_BB[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
 
-     for column in controls_grn:
+    for column in controls_grn:
         dataa = data.set_index('sample_id')
         controls_grn[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'grn_n'] > 0,
                                                       dataa.loc[con_ind, 'grn_mean'],
@@ -113,38 +119,38 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
     # Censoring of values below the detection limit and background subtraction
     # Background subtraction
 
-    for column in intensities_AA:
-        I_A = (intensities_AA[column]).sum(axis=1)
+    for column in intensities_A:
+        I_A = (intensities_A).sum(axis=1) #sum(axis=1)
 
         ## slower, alternative way of censoring values
         #intensities_AA[column].loc[inf1grn] = (np.where((intensities_AA.loc[inf1grn].gt(neg_means_grn).values & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)),
         #                                            (intensities_AA[column].loc[inf1grn] - neg_means_grn),
         #                                            np.nan))
         
-        intensities_AA_grn = intensities_AA.loc[inf1grn]
-        intensities_AA_grn[column] = intensities_AA_grn[(intensities_AA_grn.gt(neg_means_grn).values) & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)]
+        intensities_A_grn = intensities_A[column].loc[inf1grn]
+        intensities_A_grn[column] = intensities_A_grn[(intensities_A_grn.gt(neg_means_grn).values) & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)]
 
 
-        intensities_AA_red = intensities_AA.loc[inf1red]
-        intensities_AA_red[column] = intensities_AA_red[(intensities_AA_red.gt(neg_means_red).values) & (I_A.loc[inf1red].gt(threshold_inf1red).values)]
+        intensities_A_red = intensities_A[column].loc[inf1red]
+        intensities_A_red[column] = intensities_A_red[(intensities_A_red.gt(neg_means_red).values) & (I_A.loc[inf1red].gt(threshold_inf1red).values)]
 
 
-        intensities_AA_inf2 = intensities_AA.loc[inf2]
-        intensities_AA_inf2[column] = intensities_AA_inf2[(intensities_AA_inf2.gt(neg_means_red).values) & (I_A.loc[inf2].gt(threshold_inf2).values)]
+        intensities_A_inf2 = intensities_A[column].loc[inf2]
+        intensities_A_inf2[column] = intensities_A_inf2[(intensities_A_inf2.gt(neg_means_red).values) & (I_A.loc[inf2].gt(threshold_inf2).values)]
 
 
-    for column in intensities_BB:
-        intensities_BB_grn = intensities_BB.loc[inf1grn]
-        intensities_BB_grn[column] = intensities_BB_grn[(intensities_BB_grn.gt(neg_means_grn).values) & (I_B.loc[inf1grn].gt(threshold_inf1grn).values)]
+    for column in intensities_B:
+        I_B = (intensities_B).sum(axis=1)
+        intensities_B_grn = intensities_B[column].loc[inf1grn]
+        intensities_B_grn[column] = intensities_B_grn[(intensities_B_grn.gt(neg_means_grn).values) & (I_B.loc[inf1grn].gt(threshold_inf1grn).values)]
 
 
-        intensities_BB_red = intensities_BB.loc[inf1red]
-        intensities_BB_red[column] = intensities_BB_red[(intensities_BB_red.gt(neg_means_red).values) & (I_B.loc[inf1red].gt(threshold_inf1red).values)]
+        intensities_B_red = intensities_B[column].loc[inf1red]
+        intensities_B_red[column] = intensities_B_red[(intensities_B_red.gt(neg_means_red).values) & (I_B.loc[inf1red].gt(threshold_inf1red).values)]
 
 
-        intensities_BB_inf2 = intensities_BB.loc[inf2]
-        intensities_BB_inf2[column] = intensities_BB_inf2[(intensities_BB_inf2.gt(neg_means_red).values) & (I_B.loc[inf2].gt(threshold_inf2).values)]
-
+        intensities_B_inf2 = intensities_B[column].loc[inf2]
+        intensities_B_inf2[column] = intensities_B_inf2[(intensities_B_inf2.gt(neg_means_red).values) & (I_B.loc[inf2].gt(threshold_inf2).values)]
 
 ### join intensities_AA_grn/red/inf2 and intensities_BB_grn/red/inf2
 
