@@ -185,15 +185,21 @@ def dnam(probes, intensities_A, intensities_B):
     probes.index.names = ['sample_id']
     idx = probes[probes.index.str.contains('rs')].index
     intensities = intensities_A.add(intensities_B, fill_value=0)
-    
+
     dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
-    
     return dnam
 
 ### work on this
-def snps():
-    return snps
+def snps(probes, idat_files, idx, intensities_A, intensities_B):
+    intensities_A.set_index(probes.index, inplace=True)
+    intensities_B.set_index(probes.index, inplace=True)
 
+    #snps = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=pd.unique(idat_files['sample.id']))
+    
+    idx = probes[probes.index.str.contains('rs')].index
+    snps = np.arctan2(intensities_B.loc[idx], intensities_A.loc[idx]) / (np.pi/2)
+    
+    return snps
 
 # Extract all control probes data, and add summary statistics to samples table
 def matching(controls, idat_files, dnam, return_snps=False, return_intensities=False):    
