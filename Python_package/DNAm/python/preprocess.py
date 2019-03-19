@@ -181,10 +181,13 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
 # Create DNAm ratios as B (methylated) over total
 
 def dnam(probes, intensities_A, intensities_B):
-    idx =[probes.index.str.contains('rs')]
+    probes.set_index(['Unnamed: 0'], inplace=True)
+    probes.index.names = ['sample_id']
+    idx = probes[probes.index.str.contains('rs')].index
     intensities = intensities_A.add(intensities_B, fill_value=0)
+    
     dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
-
+    
     return dnam
 
 ### work on this
