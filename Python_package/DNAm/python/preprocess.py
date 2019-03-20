@@ -181,88 +181,122 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
 # Create DNAm ratios as B (methylated) over total
 
 def dnam(probes, intensities_A, intensities_B):
-    idx =[probes.index.str.contains('rs')]
+    probes.set_index(['Unnamed: 0'], inplace=True)
+    probes.index.names = ['sample_id']
+    idx = probes[probes.index.str.contains('rs')].index
     intensities = intensities_A.add(intensities_B, fill_value=0)
-    dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
 
+    dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
     return dnam
 
 ### work on this
-def snps():
+def snps(probes, idat_files, idx, intensities_A, intensities_B):
+    intensities_A.set_index(probes.index, inplace=True)
+    intensities_B.set_index(probes.index, inplace=True)
+
+    #snps = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=pd.unique(idat_files['sample.id']))
+    
+    idx = probes[probes.index.str.contains('rs')].index
+    snps = np.arctan2(intensities_B.loc[idx], intensities_A.loc[idx]) / (np.pi/2)
+    
     return snps
 
-
 # Extract all control probes data, and add summary statistics to samples table
-def matching(controls, idat_files, dnam, return_snps=False, return_intensities=False):    
-    #controls_red = 
-    #controls_grn = 
+def matching(controls, controls_red, controls_grn, idat_files, dnam, return_snps=False, return_intensities=False):    
+    summary = pd.DataFrame(np.nan, columns=pd.unique(idat_files['sample.id']), 
+        index=['bc1_red', 'bc2', 'ext_a', 'ext_c', 'ext_g', 'ext_t',
+                'hyp_low', 'hyp_med', 'hyp_high', 'np_a', 'np_c',
+                'np_g', 'np_t', 'spec1_red', 'spec2', 'st_grn', 'st_red',
+                'tr', 'missing', 'median_chrX', 'missing_chrY'])
+
 
     # match 1
     bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
-    idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
+    idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
+
     match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
     idx_signal = controls['description'].isin(match_).index
-    idat_files['bc1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
+    summary.loc['bc1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
     idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
-    idat_files['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
+    summary.loc['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
 
+    #idat.files$ext.a <- controls["red",,control.beads$description == "Extension (A)"]
+    idd = controls[controls['description'] == 'Extension (A)'].index
+    summary.loc['ext_a'] = controls_red.loc[idd].values
+    
+    idd = controls[controls['description'] == "Extension (C)"].index
+    summary.loc['ext_a'] = controls_grn.loc[idd].values 
 
-    idat_files['ext_a'] = controls[(controls['color'] == 'Red') & (controls['description'] == "Extension (A)")].index
-    idat_files['ext_c'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Extension (C)")].index
-    idat_files['ext_g'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Extension (G)")].index
-    idat_files['ext_t'] = controls[(controls['color'] == 'Red') & (controls['description'] == "Extension (T)")].index
-    idat_files['hyp_low'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Low")].index
-    idat_files['hyp_med'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Low")].index
-    idat_files['hyp_high'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Medium")].index
-    idat_files['hyp_low'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (High")].index
-    idat_files['np_a'] = controls[(controls['color'] == 'Red') & (controls['description'] == "NP (A)")].index
-    idat_files['np_c'] = controls[(controls['color'] == 'Green') & (controls['description'] == "NP (C)")].index
-    idat_files['np_g'] = controls[(controls['color'] == 'Green') & (controls['description'] == "NP (G)")].index
-    idat_files['np_t'] = controls[(controls['color'] == 'Red') & (controls['description'] == "NP (T)")].index
+    idd = controls[controls['description'] == 'Extension (G)'].index
+    summary.loc['ext_t'] = controls_grn.loc[idd].values
+
+    idd = controls[controls['description'] == 'Extension (T)'].index
+    summary.loc['ext_t'] = controls_red.loc[idd].values
+    
+    idd = controls[controls['description'] == 'Hyb (Low)'].index
+    summary.loc['hyp_low'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'Hyb (Medium)'].index
+    summary.loc['hyp_med'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'Hyb (High)'].index
+    summary.loc['hyp_high'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (A)'].index
+    summary.loc['np_a'] = controls_red.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (C)'].index
+    summary.loc['np_c'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (G)'].index
+    summary.loc['np_g'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (T)'].index
+    summary.loc['np_t'] = controls_red.loc[idd].values 
 
     # match 2
     bg = ["GT Mismatch 1 (MM)", "GT Mismatch 2 (MM)", "GT Mismatch 3 (MM)"]
     idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
     match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
     idx_signal = controls['description'].isin(match_).index
-    idat_files['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
+
+ 
+    summary.loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
     idx = controls[controls['type'] == 'SPECIFICITY II'].index
-    idat_files['spec2'] = (np.nanmean(controls_red.loc[idx])/np.nanmean(controls_grn.loc[idx]))
+    summary.loc['spec2'] = (np.nanmean(controls_red.loc[idx])/np.nanmean(controls_grn.loc[idx]))
 
     # match 3 
     idx_bg = controls[controls['description'] == ('Biotin (Bkg)')].index
     idx_signal = controls[controls['description'] == ('Biotin (High)')].index
-    idat_files['st_grn'] = controls_grn.loc[idx_signal] / controls_grn.loc[idx_signal]
+    summary.loc['st_grn'] = controls_grn.loc[idx_signal].values / controls_grn.loc[idx_signal].values
 
     # match 4
     idx_bg = controls[controls['description'] == ('DNP (Bkg)')].index
     idx_signal = controls[controls['description'] == ('DNP (High)')].index
-    idat_files['st_grn'] = controls_red.loc[idx_signal] / controls_red.loc[idx_signal]
+    summary.loc['st_red'] = controls_red.loc[idx_signal].values / controls_red.loc[idx_signal].values
 
     # match 5
     idx = controls[controls['type'] == ('TARGET REMOVAL')].index
-    idat_files['tr'] = controls_grn.loc[idx].apply(np.nanmax(), axis=1)
+    summary.loc['tr'] = np.nanmax(controls_grn.loc[idx], axis=0)
+    summary.loc['missing'] = dnam.isnull().mean(axis=0)
 
-    idat_files['missing'] = dnam.isnull().mean(axis = 1)
+    # match 6
+    idx = probes[probes['chr'] == 'X'].index
+    dnam.set_index(probes.index, inplace=True)
+    summary.loc['median_chrX'] = np.nanmedian(dnam.loc[idx], axis=0)
 
-    idat_files['median_chrX'] = dnam.loc[probes['chr'] == 'X'].apply(np.nanmedian, axis=1)
-    idat_files['missing_chrY'] = np.nanmean(dnam.loc[probes['chr'] == 'Y'].isnull())
-
-    idat_files['grn'] = None
-    idat_files['red'] = None
-
-    # Return sample table, SNPs theta values, CpG DNAm ratios and optionally: #SNPs r values, intensities, controls
-    idat_files.set_index(['sample_id'])
-
-    cpgs = dnam
-    samples = idat_files
+    idy = probes[probes['chr'] == 'Y'].index
+    summary.loc['missing_chrY'] = dnam.loc[idy].isnull().mean(axis=0)
 
     ## add SNPs r values??
 
     if return_intensities == True:
         return samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn
+
+    elif return_snps == True:
+        return snps
 
     else:
         return samples, cpgs, snps
