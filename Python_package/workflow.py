@@ -4,11 +4,11 @@ import numpy as np
 import sys
 import os
 import pyreadr
-from illuminaio import list_idat
+from DNAm.python.illuminaio import list_idat
+from DNAm.python.preprocess import load_data, read_manifests
 
 ##load data for testing
-# define paths
-data_file= 'DNAm/python/dnam/R05C01_beads.csv'
+data_file = 'Python_package/DNAm/python/dnam/R05C01_beads.csv'
 data = load_data(data_file)
 # shape (622399, 7)
 data = data[1:10000]
@@ -25,3 +25,5 @@ controls_file = 'DNAm/python/testing/control_beads.csv'
 probes, controls = read_manifests(probes_file, controls_file)
 
 ##Preprocessing
+samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocessing(data, probes, controls,
+    idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=True)

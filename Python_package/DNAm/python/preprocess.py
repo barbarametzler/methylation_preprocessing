@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # For license information, see LICENSE.TXT
-
-import pandas as pd
-import numpy as np
 import sys
 import os
 import pyreadr
-from read_idat import list_idat
+import pandas as pd
+import numpy as np
+from scipy.stats import norm
+from DNAm.python.illuminaio import list_idat
 
 
 def load_data(csv_file):
@@ -31,19 +31,21 @@ def read_manifests(probes_file, controls_file):
     #probes.index.names = ['sample_id']
     return probes, controls
 
-def preperation_outputs(probes, idat_files_folder):
+
+def preprocessing(data, probes, controls, idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=False):
+
+    ## check argument values
+    assert arg_detection > 0 
+    assert arg_detection <= 1
+    assert arg_beads > 0
+
+    ## preparation of outputs
     inf1grn = probes[probes['type'] == "I-Grn"]
     inf1red = probes[probes['type'] == "I-Red"]
     inf2 = probes[probes['type'] == "II"]
     idat_files = list_idat(idat_files_folder)
-    return inf1grn, inf1red, inf2, idat_files
 
-
-def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_detection=0.05):
-
-    assert detection > 0 & detection <= 1
-    assert arg_beads > 0
-
+    ## create intensities
     ## create empty dataframes to append to
     intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
     intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
@@ -152,9 +154,8 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
         intensities_B_inf2 = intensities_B[column].loc[inf2]
         intensities_B_inf2[column] = intensities_B_inf2[(intensities_B_inf2.gt(neg_means_red).values) & (I_B.loc[inf2].gt(threshold_inf2).values)]
 
-### join intensities_AA_grn/red/inf2 and intensities_BB_grn/red/inf2
 
-# Extract normalization probes for Grn and Red, and form the dye bias correction constant
+    # Extract normalization probes for Grn and Red, and form the dye bias correction constant
     norm_grn_beads = controls[controls['type'].isin(['NORM_C', 'NORM_G'])].index
 
     match_ = controls['description'].loc[norm_grn_beads].str.translate(str.maketrans('CG', 'TA'))
@@ -169,28 +170,25 @@ def create_intensities(data, probes, controls, idat_files, arg_beads=3, arg_dete
         corrections_red = (np.mean(norm_data[column2], axis=1)/ red).mean(axis=0)
 
     ## Apply dye bias correction
-        intensities_AA.loc[inf2] = intensities_AA.loc[inf2] * corrections_red
-        intensities_BB.loc[inf2] = intensities_BB.loc[inf2] * corrections_grn
-
-    return intensities_A, intensities_B
+        #intensities_AA.loc[inf2] = intensities_AA.loc[inf2] * corrections_red
+        #intensities_BB.loc[inf2] = intensities_BB.loc[inf2] * corrections_grn
 
 
-## Computing DNA methylation ratios (β values)
-#Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
+    ## Computing DNA methylation ratios (β values)
+    #Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
 
-# Create DNAm ratios as B (methylated) over total
+    # Create DNAm ratios as B (methylated) over total
 
-def dnam(probes, intensities_A, intensities_B):
     probes.set_index(['Unnamed: 0'], inplace=True)
     probes.index.names = ['sample_id']
     idx = probes[probes.index.str.contains('rs')].index
     intensities = intensities_A.add(intensities_B, fill_value=0)
 
     dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
-    return dnam
 
-### work on this
-def snps(probes, idat_files, idx, intensities_A, intensities_B):
+
+    ## SNPS
+
     intensities_A.set_index(probes.index, inplace=True)
     intensities_B.set_index(probes.index, inplace=True)
 
@@ -199,10 +197,11 @@ def snps(probes, idat_files, idx, intensities_A, intensities_B):
     idx = probes[probes.index.str.contains('rs')].index
     snps = np.arctan2(intensities_B.loc[idx], intensities_A.loc[idx]) / (np.pi/2)
     
-    return snps
 
-# Extract all control probes data, and add summary statistics to samples table
-def matching(controls, controls_red, controls_grn, idat_files, dnam, return_snps=False, return_intensities=False):    
+
+    ### matching 
+    # Extract all control probes data, and add summary statistics to samples table
+
     summary = pd.DataFrame(np.nan, columns=pd.unique(idat_files['sample.id']), 
         index=['bc1_red', 'bc2', 'ext_a', 'ext_c', 'ext_g', 'ext_t',
                 'hyp_low', 'hyp_med', 'hyp_high', 'np_a', 'np_c',
@@ -290,6 +289,9 @@ def matching(controls, controls_red, controls_grn, idat_files, dnam, return_snps
     idy = probes[probes['chr'] == 'Y'].index
     summary.loc['missing_chrY'] = dnam.loc[idy].isnull().mean(axis=0)
 
+    samples = summary
+    cpgs = dnam
+
     ## add SNPs r values??
 
     if return_intensities == True:
@@ -300,10 +302,6 @@ def matching(controls, controls_red, controls_grn, idat_files, dnam, return_snps
 
     else:
         return samples, cpgs, snps
-
-
-
-
 
 
 
