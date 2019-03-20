@@ -1,0 +1,836 @@
+"","type","color","description","comment"
+"27630314","STAINING","Red","DNP (High)",NA
+"43603326","STAINING","Purple","DNP (Bkg)",NA
+"41666334","STAINING","Green","Biotin (High)",NA
+"34648333","STAINING","Blue","Biotin (Bkg)",NA
+"63642461","EXTENSION","Red","Extension (A)",NA
+"47640365","EXTENSION","Purple","Extension (T)",NA
+"74666473","EXTENSION","Green","Extension (C)",NA
+"31698466","EXTENSION","Blue","Extension (G)",NA
+"28684356","HYBRIDIZATION","Green","Hyb (High)",NA
+"26772442","HYBRIDIZATION","Blue","Hyb (Medium)",NA
+"21771417","HYBRIDIZATION","Black","Hyb (Low)",NA
+"13643320","TARGET REMOVAL","Green","Target Removal 1",NA
+"42790394","TARGET REMOVAL","Blue","Target Removal 2",NA
+"22711390","BISULFITE CONVERSION I","Green","BS Conversion I-C1",NA
+"22795447","BISULFITE CONVERSION I","LimeGreen","BS Conversion I-C2",NA
+"56682500","BISULFITE CONVERSION I","Lime","BS Conversion I-C3",NA
+"46651360","BISULFITE CONVERSION I","Blue","BS Conversion I-U1",NA
+"24637490","BISULFITE CONVERSION I","SkyBlue","BS Conversion I-U2",NA
+"33665449","BISULFITE CONVERSION I","Cyan","BS Conversion I-U3",NA
+"54705438","BISULFITE CONVERSION I","Purple","BS Conversion I-C4",NA
+"49720470","BISULFITE CONVERSION I","Red","BS Conversion I-C5",NA
+"26725400","BISULFITE CONVERSION I","Tomato","BS Conversion I-C6",NA
+"57693375","BISULFITE CONVERSION I","Orange","BS Conversion I-U4",NA
+"15700381","BISULFITE CONVERSION I","Gold","BS Conversion I-U5",NA
+"33635504","BISULFITE CONVERSION I","Yellow","BS Conversion I-U6",NA
+"43720395","BISULFITE CONVERSION II","Purple","BS Conversion II-1",NA
+"70664314","BISULFITE CONVERSION II","Red","BS Conversion II-2",NA
+"71718498","BISULFITE CONVERSION II","Tomato","BS Conversion II-3",NA
+"30724412","BISULFITE CONVERSION II","Orange","BS Conversion II-4",NA
+"23777311","SPECIFICITY I","Green","GT Mismatch 1 (PM)",NA
+"51804467","SPECIFICITY I","LimeGreen","GT Mismatch 2 (PM)",NA
+"10673427","SPECIFICITY I","Lime","GT Mismatch 3 (PM)",NA
+"67672371","SPECIFICITY I","Blue","GT Mismatch 1 (MM)",NA
+"30684480","SPECIFICITY I","SkyBlue","GT Mismatch 2 (MM)",NA
+"58661465","SPECIFICITY I","Cyan","GT Mismatch 3 (MM)",NA
+"46779338","SPECIFICITY I","Purple","GT Mismatch 4 (PM)",NA
+"59783305","SPECIFICITY I","Red","GT Mismatch 5 (PM)",NA
+"53740460","SPECIFICITY I","Tomato","GT Mismatch 6 (PM)",NA
+"51745378","SPECIFICITY I","Orange","GT Mismatch 4 (MM)",NA
+"65797428","SPECIFICITY I","Gold","GT Mismatch 5 (MM)",NA
+"12808347","SPECIFICITY I","Yellow","GT Mismatch 6 (MM)",NA
+"29662396","SPECIFICITY II","Purple","Specificity 1",NA
+"17661470","SPECIFICITY II","Red","Specificity 2",NA
+"34730329","SPECIFICITY II","Tomato","Specificity 3",NA
+"24701411","NON-POLYMORPHIC","Red","NP (A)",NA
+"18773482","NON-POLYMORPHIC","Purple","NP (T)",NA
+"23663352","NON-POLYMORPHIC","Green","NP (C)",NA
+"70645401","NON-POLYMORPHIC","Blue","NP (G)",NA
+"13792480","NEGATIVE","Red","Negative 1","AVG"
+"69649505","NEGATIVE","Gray","Negative 2",NA
+"34772371","NEGATIVE","Silver","Negative 3",NA
+"28715352","NEGATIVE","Brown","Negative 4",NA
+"74737439","NEGATIVE","Maroon","Negative 5",NA
+"33730459","NEGATIVE","Plum","Negative 6",NA
+"54647418","NEGATIVE","Coral","Negative 7",NA
+"71684459","NEGATIVE","Sienna","Negative 8",NA
+"40758350","NEGATIVE","Tan","Negative 9",NA
+"35678453","NEGATIVE","Orange","Negative 10",NA
+"33794466","NEGATIVE","Gold","Negative 11",NA
+"64607409","NEGATIVE","Khaki","Negative 12",NA
+"37639436","NEGATIVE","Olive","Negative 13",NA
+"44804473","NEGATIVE","Yellow","Negative 14",NA
+"45735479","NEGATIVE","Lime","Negative 15",NA
+"74688409","NEGATIVE","Teal","Negative 16",NA
+"37748499","NEGATIVE","Aqua","Negative 17",NA
+"15760434","NEGATIVE","Cyan","Negative 18",NA
+"39647340","NEGATIVE","Lavender","Negative 19",NA
+"46770480","NEGATIVE","Navy","Negative 20",NA
+"73794328","NEGATIVE","Blue","Negative 21",NA
+"13762418","NEGATIVE","BlueViolet","Negative 22",NA
+"57645303","NEGATIVE","Indigo","Negative 23",NA
+"44767440","NEGATIVE","Violet","Negative 24",NA
+"74602472","NEGATIVE","Purple","Negative 25",NA
+"51736450","NEGATIVE","Magenta","Negative 26",NA
+"61694431","NEGATIVE","Fuchsia","Negative 27",NA
+"22623305","NEGATIVE","Orchid","Negative 28",NA
+"34681355","NEGATIVE","Crimson","Negative 29",NA
+"38610459","NEGATIVE","Pink","Negative 30",NA
+"71637302","NEGATIVE","Red","Negative 31",NA
+"11634395","NEGATIVE","Gray","Negative 32",NA
+"52673469","NEGATIVE","Silver","Negative 33",NA
+"24725313","NEGATIVE","Brown","Negative 34",NA
+"62687391","NEGATIVE","Maroon","Negative 35",NA
+"59623346","NEGATIVE","Plum","Negative 36",NA
+"36628412","NEGATIVE","Coral","Negative 37",NA
+"72706346","NEGATIVE","Sienna","Negative 38",NA
+"52773311","NEGATIVE","Tan","Negative 39",NA
+"34658309","NEGATIVE","Orange","Negative 40",NA
+"36675490","NEGATIVE","Gold","Negative 41",NA
+"27699343","NEGATIVE","Khaki","Negative 42",NA
+"61729339","NEGATIVE","Olive","Negative 43",NA
+"71624317","NEGATIVE","Yellow","Negative 44",NA
+"15797359","NEGATIVE","Lime","Negative 45",NA
+"17697426","NEGATIVE","Teal","Negative 46",NA
+"53747447","NEGATIVE","Aqua","Negative 47",NA
+"41671439","NEGATIVE","Cyan","Negative 48",NA
+"36647382","NEGATIVE","Lavender","Negative 49",NA
+"19667322","NEGATIVE","Navy","Negative 50",NA
+"73646500","NEGATIVE","Blue","Negative 51",NA
+"48796393","NEGATIVE","BlueViolet","Negative 52",NA
+"14693463","NEGATIVE","Indigo","Negative 53",NA
+"41618467","NEGATIVE","Violet","Negative 54",NA
+"19735359","NEGATIVE","Purple","Negative 55",NA
+"64613447","NEGATIVE","Magenta","Negative 56",NA
+"44698389","NEGATIVE","Fuchsia","Negative 57",NA
+"17728375","NEGATIVE","Orchid","Negative 58",NA
+"74726377","NEGATIVE","Crimson","Negative 59",NA
+"38694476","NEGATIVE","Pink","Negative 60",NA
+"18717404","NEGATIVE","Red","Negative 61",NA
+"13695465","NEGATIVE","Gray","Negative 62",NA
+"13730428","NEGATIVE","Silver","Negative 63",NA
+"42731444","NEGATIVE","Brown","Negative 64",NA
+"59616409","NEGATIVE","Maroon","Negative 65",NA
+"22706307","NEGATIVE","Plum","Negative 66",NA
+"31766306","NEGATIVE","Coral","Negative 67",NA
+"39609442","NEGATIVE","Sienna","Negative 68",NA
+"33790484","NEGATIVE","Tan","Negative 69",NA
+"10806301","NEGATIVE","Orange","Negative 70",NA
+"49756350","NEGATIVE","Gold","Negative 71",NA
+"29745446","NEGATIVE","Khaki","Negative 72",NA
+"68774378","NEGATIVE","Olive","Negative 73",NA
+"19746379","NEGATIVE","Yellow","Negative 74",NA
+"58698497","NEGATIVE","Lime","Negative 75",NA
+"39733339","NEGATIVE","Teal","Negative 76",NA
+"27722502","NEGATIVE","Aqua","Negative 77",NA
+"57718401","NEGATIVE","Cyan","Negative 78",NA
+"42751432","NEGATIVE","Lavender","Negative 79",NA
+"63616307","NEGATIVE","Navy","Negative 80",NA
+"58607432","NEGATIVE","Blue","Negative 81",NA
+"30633490","NEGATIVE","BlueViolet","Negative 82",NA
+"66765375","NEGATIVE","Indigo","Negative 83",NA
+"44809397","NEGATIVE","Violet","Negative 84",NA
+"30748463","NEGATIVE","Purple","Negative 85",NA
+"67709387","NEGATIVE","Magenta","Negative 86",NA
+"21703446","NEGATIVE","Fuchsia","Negative 87",NA
+"63793358","NEGATIVE","Orchid","Negative 88",NA
+"40671337","NEGATIVE","Crimson","Negative 89",NA
+"49628475","NEGATIVE","Pink","Negative 90",NA
+"64702437","NEGATIVE","Red","Negative 91",NA
+"59809450","NEGATIVE","Gray","Negative 92",NA
+"42651436","NEGATIVE","Silver","Negative 93",NA
+"15612396","NEGATIVE","Brown","Negative 94",NA
+"72751495","NEGATIVE","Maroon","Negative 95",NA
+"46652385","NEGATIVE","Plum","Negative 96",NA
+"47749327","NEGATIVE","Coral","Negative 97",NA
+"65692343","NEGATIVE","Sienna","Negative 98",NA
+"18690397","NEGATIVE","Tan","Negative 99",NA
+"48671446","NEGATIVE","Orange","Negative 100",NA
+"23719447","NEGATIVE","Gold","Negative 101",NA
+"63718317","NEGATIVE","Khaki","Negative 102",NA
+"48614418","NEGATIVE","Olive","Negative 103",NA
+"53732484","NEGATIVE","Yellow","Negative 104",NA
+"51654304","NEGATIVE","Lime","Negative 105",NA
+"67796487","NEGATIVE","Teal","Negative 106",NA
+"14667385","NEGATIVE","Aqua","Negative 107",NA
+"66777429","NEGATIVE","Cyan","Negative 108",NA
+"17763347","NEGATIVE","Lavender","Negative 109",NA
+"37773393","NEGATIVE","Navy","Negative 110",NA
+"56669346","NEGATIVE","Blue","Negative 111",NA
+"22667496","NEGATIVE","BlueViolet","Negative 112",NA
+"56717403","NEGATIVE","Indigo","Negative 113",NA
+"51649417","NEGATIVE","Violet","Negative 114",NA
+"27808455","NEGATIVE","Purple","Negative 115",NA
+"51807349","NEGATIVE","Magenta","Negative 116",NA
+"48623411","NEGATIVE","Fuchsia","Negative 117",NA
+"20768333","NEGATIVE","Orchid","Negative 118",NA
+"32769401","NEGATIVE","Crimson","Negative 119",NA
+"39605397","NEGATIVE","Pink","Negative 120",NA
+"38646418","NEGATIVE","Red","Negative 121",NA
+"44684348","NEGATIVE","Gray","Negative 122",NA
+"18731300","NEGATIVE","Silver","Negative 123",NA
+"41746382","NEGATIVE","Brown","Negative 124",NA
+"62715445","NEGATIVE","Maroon","Negative 125",NA
+"59733458","NEGATIVE","Plum","Negative 126",NA
+"46804470","NEGATIVE","Coral","Negative 127",NA
+"33719470","NEGATIVE","Sienna","Negative 128",NA
+"57741357","NEGATIVE","Tan","Negative 129",NA
+"51630461","NEGATIVE","Orange","Negative 130",NA
+"50698313","NEGATIVE","Gold","Negative 131",NA
+"40757376","NEGATIVE","Khaki","Negative 132",NA
+"48691496","NEGATIVE","Olive","Negative 133",NA
+"48631323","NEGATIVE","Yellow","Negative 134",NA
+"58743479","NEGATIVE","Lime","Negative 135",NA
+"63602509","NEGATIVE","Teal","Negative 136",NA
+"15675471","NEGATIVE","Aqua","Negative 137",NA
+"35733328","NEGATIVE","Cyan","Negative 138",NA
+"28616440","NEGATIVE","Lavender","Negative 139",NA
+"32782393","NEGATIVE","Navy","Negative 140",NA
+"16669449","NEGATIVE","Blue","Negative 141",NA
+"48790370","NEGATIVE","BlueViolet","Negative 142",NA
+"71702433","NEGATIVE","Indigo","Negative 143",NA
+"13614338","NEGATIVE","Violet","Negative 144",NA
+"66624407","NEGATIVE","Purple","Negative 145",NA
+"44624509","NEGATIVE","Magenta","Negative 146",NA
+"40783477","NEGATIVE","Fuchsia","Negative 147",NA
+"57671333","NEGATIVE","Orchid","Negative 148",NA
+"55788503","NEGATIVE","Crimson","Negative 149",NA
+"10766300","NEGATIVE","Pink","Negative 150",NA
+"21787367","NEGATIVE","Red","Negative 151",NA
+"17606370","NEGATIVE","Gray","Negative 152",NA
+"22789350","NEGATIVE","Silver","Negative 153",NA
+"55687425","NEGATIVE","Brown","Negative 154",NA
+"26701424","NEGATIVE","Maroon","Negative 155",NA
+"57727413","NEGATIVE","Plum","Negative 156",NA
+"39657358","NEGATIVE","Coral","Negative 157",NA
+"32708507","NEGATIVE","Sienna","Negative 158",NA
+"21634460","NEGATIVE","Tan","Negative 159",NA
+"17719340","NEGATIVE","Orange","Negative 160",NA
+"38749314","NEGATIVE","Gold","Negative 161",NA
+"27642486","NEGATIVE","Khaki","Negative 162",NA
+"58709354","NEGATIVE","Olive","Negative 163",NA
+"70803473","NEGATIVE","Yellow","Negative 164",NA
+"30809470","NEGATIVE","Lime","Negative 165",NA
+"66647505","NEGATIVE","Teal","Negative 166",NA
+"66738419","NEGATIVE","Aqua","Negative 167",NA
+"37635404","NEGATIVE","Cyan","Negative 168",NA
+"42690458","NEGATIVE","Lavender","Negative 169",NA
+"20791303","NEGATIVE","Navy","Negative 170",NA
+"56616504","NEGATIVE","Blue","Negative 171",NA
+"15773503","NEGATIVE","BlueViolet","Negative 172",NA
+"35645419","NEGATIVE","Indigo","Negative 173",NA
+"13788497","NEGATIVE","Violet","Negative 174",NA
+"36739329","NEGATIVE","Purple","Negative 175",NA
+"47806304","NEGATIVE","Magenta","Negative 176",NA
+"19716351","NEGATIVE","Fuchsia","Negative 177",NA
+"36723508","NEGATIVE","Orchid","Negative 178",NA
+"14636449","NEGATIVE","Crimson","Negative 179",NA
+"18610491","NEGATIVE","Pink","Negative 180",NA
+"65642346","NEGATIVE","Red","Negative 181",NA
+"21780347","NEGATIVE","Gray","Negative 182",NA
+"38786493","NEGATIVE","Silver","Negative 183",NA
+"52770489","NEGATIVE","Brown","Negative 184",NA
+"63722503","NEGATIVE","Maroon","Negative 185",NA
+"23716350","NEGATIVE","Plum","Negative 186",NA
+"34730322","NEGATIVE","Coral","Negative 187",NA
+"59678332","NEGATIVE","Sienna","Negative 188",NA
+"17711307","NEGATIVE","Tan","Negative 189",NA
+"58610399","NEGATIVE","Orange","Negative 190",NA
+"27797433","NEGATIVE","Gold","Negative 191",NA
+"56765474","NEGATIVE","Khaki","Negative 192",NA
+"33631454","NEGATIVE","Olive","Negative 193",NA
+"53798451","NEGATIVE","Yellow","Negative 194",NA
+"55696369","NEGATIVE","Lime","Negative 195",NA
+"37714454","NEGATIVE","Teal","Negative 196",NA
+"40718477","NEGATIVE","Aqua","Negative 197",NA
+"70800305","NEGATIVE","Cyan","Negative 198",NA
+"59795323","NEGATIVE","Lavender","Negative 199",NA
+"16634315","NEGATIVE","Navy","Negative 200",NA
+"63701462","NEGATIVE","Blue","Negative 201",NA
+"46770381","NEGATIVE","BlueViolet","Negative 202",NA
+"43648347","NEGATIVE","Indigo","Negative 203",NA
+"27694462","NEGATIVE","Violet","Negative 204",NA
+"64677468","NEGATIVE","Purple","Negative 205",NA
+"71722434","NEGATIVE","Magenta","Negative 206",NA
+"22609385","NEGATIVE","Fuchsia","Negative 207",NA
+"21778313","NEGATIVE","Orchid","Negative 208",NA
+"23740406","NEGATIVE","Crimson","Negative 209",NA
+"54660350","NEGATIVE","Pink","Negative 210",NA
+"54604316","NEGATIVE","Red","Negative 211",NA
+"54602452","NEGATIVE","Gray","Negative 212",NA
+"47638351","NEGATIVE","Silver","Negative 213",NA
+"39627308","NEGATIVE","Brown","Negative 214",NA
+"25616364","NEGATIVE","Maroon","Negative 215",NA
+"48803364","NEGATIVE","Plum","Negative 216",NA
+"51609389","NEGATIVE","Coral","Negative 217",NA
+"16619433","NEGATIVE","Sienna","Negative 218",NA
+"64670483","NEGATIVE","Tan","Negative 219",NA
+"43623510","NEGATIVE","Orange","Negative 220",NA
+"19655377","NEGATIVE","Gold","Negative 221",NA
+"54610311","NEGATIVE","Khaki","Negative 222",NA
+"14694306","NEGATIVE","Olive","Negative 223",NA
+"26768510","NEGATIVE","Yellow","Negative 224",NA
+"11799488","NEGATIVE","Lime","Negative 225",NA
+"63609386","NEGATIVE","Teal","Negative 226",NA
+"22636496","NEGATIVE","Aqua","Negative 227",NA
+"19642457","NEGATIVE","Cyan","Negative 228",NA
+"15736392","NEGATIVE","Lavender","Negative 229",NA
+"72703449","NEGATIVE","Navy","Negative 230",NA
+"59645487","NEGATIVE","Blue","Negative 231",NA
+"18727400","NEGATIVE","BlueViolet","Negative 232",NA
+"57676381","NEGATIVE","Indigo","Negative 233",NA
+"21619366","NEGATIVE","Violet","Negative 234",NA
+"40772413","NEGATIVE","Purple","Negative 235",NA
+"33729325","NEGATIVE","Magenta","Negative 236",NA
+"32761481","NEGATIVE","Fuchsia","Negative 237",NA
+"67687427","NEGATIVE","Orchid","Negative 238",NA
+"22683471","NEGATIVE","Crimson","Negative 239",NA
+"63742465","NEGATIVE","Pink","Negative 240",NA
+"30767497","NEGATIVE","Red","Negative 241",NA
+"74748483","NEGATIVE","Gray","Negative 242",NA
+"65692342","NEGATIVE","Silver","Negative 243",NA
+"55716389","NEGATIVE","Brown","Negative 244",NA
+"73681335","NEGATIVE","Maroon","Negative 245",NA
+"21698344","NEGATIVE","Plum","Negative 246",NA
+"42777359","NEGATIVE","Coral","Negative 247",NA
+"55659383","NEGATIVE","Sienna","Negative 248",NA
+"62711365","NEGATIVE","Tan","Negative 249",NA
+"28650324","NEGATIVE","Orange","Negative 250",NA
+"59785457","NEGATIVE","Gold","Negative 251",NA
+"20650506","NEGATIVE","Khaki","Negative 252",NA
+"19687436","NEGATIVE","Olive","Negative 253",NA
+"43704397","NEGATIVE","Yellow","Negative 254",NA
+"54655320","NEGATIVE","Lime","Negative 255",NA
+"13642439","NEGATIVE","Teal","Negative 256",NA
+"13610413","NEGATIVE","Aqua","Negative 257",NA
+"70616500","NEGATIVE","Cyan","Negative 258",NA
+"48759321","NEGATIVE","Lavender","Negative 259",NA
+"20774308","NEGATIVE","Navy","Negative 260",NA
+"45735494","NEGATIVE","Blue","Negative 261",NA
+"22624440","NEGATIVE","BlueViolet","Negative 262",NA
+"48681497","NEGATIVE","Indigo","Negative 263",NA
+"56705442","NEGATIVE","Violet","Negative 264",NA
+"10627500","NEGATIVE","Purple","Negative 265",NA
+"28799402","NEGATIVE","Magenta","Negative 266",NA
+"19656361","NEGATIVE","Fuchsia","Negative 267",NA
+"64727389","NEGATIVE","Orchid","Negative 268",NA
+"46784419","NEGATIVE","Crimson","Negative 269",NA
+"58649309","NEGATIVE","Pink","Negative 270",NA
+"14677363","NEGATIVE","Red","Negative 271",NA
+"24741416","NEGATIVE","Gray","Negative 272",NA
+"40674383","NEGATIVE","Silver","Negative 273",NA
+"63641352","NEGATIVE","Brown","Negative 274",NA
+"29746457","NEGATIVE","Maroon","Negative 275",NA
+"47774480","NEGATIVE","Plum","Negative 276",NA
+"34624334","NEGATIVE","Coral","Negative 277",NA
+"46809455","NEGATIVE","Sienna","Negative 278",NA
+"57716426","NEGATIVE","Tan","Negative 279",NA
+"61794438","NEGATIVE","Orange","Negative 280",NA
+"21682456","NEGATIVE","Gold","Negative 281",NA
+"50682301","NEGATIVE","Khaki","Negative 282",NA
+"54684414","NEGATIVE","Olive","Negative 283",NA
+"20661475","NEGATIVE","Yellow","Negative 284",NA
+"41802497","NEGATIVE","Lime","Negative 285",NA
+"28631434","NEGATIVE","Teal","Negative 286",NA
+"23698469","NEGATIVE","Aqua","Negative 287",NA
+"68654502","NEGATIVE","Cyan","Negative 288",NA
+"47785348","NEGATIVE","Lavender","Negative 289",NA
+"55763349","NEGATIVE","Navy","Negative 290",NA
+"57708423","NEGATIVE","Blue","Negative 291",NA
+"58728453","NEGATIVE","BlueViolet","Negative 292",NA
+"64729320","NEGATIVE","Indigo","Negative 293",NA
+"12741433","NEGATIVE","Violet","Negative 294",NA
+"12789492","NEGATIVE","Purple","Negative 295",NA
+"66808385","NEGATIVE","Magenta","Negative 296",NA
+"69728489","NEGATIVE","Fuchsia","Negative 297",NA
+"12635324","NEGATIVE","Orchid","Negative 298",NA
+"23681509","NEGATIVE","Crimson","Negative 299",NA
+"54620498","NEGATIVE","Pink","Negative 300",NA
+"63782372","NEGATIVE","Red","Negative 301",NA
+"49690488","NEGATIVE","Gray","Negative 302",NA
+"66645413","NEGATIVE","Silver","Negative 303",NA
+"42797349","NEGATIVE","Brown","Negative 304",NA
+"70648471","NEGATIVE","Maroon","Negative 305",NA
+"72768454","NEGATIVE","Plum","Negative 306",NA
+"45648397","NEGATIVE","Coral","Negative 307",NA
+"38707323","NEGATIVE","Sienna","Negative 308",NA
+"52685510","NEGATIVE","Tan","Negative 309",NA
+"46647425","NEGATIVE","Orange","Negative 310",NA
+"39736424","NEGATIVE","Gold","Negative 311",NA
+"37706335","NEGATIVE","Khaki","Negative 312",NA
+"44795438","NEGATIVE","Olive","Negative 313",NA
+"55644371","NEGATIVE","Yellow","Negative 314",NA
+"40619329","NEGATIVE","Lime","Negative 315",NA
+"37601420","NEGATIVE","Teal","Negative 316",NA
+"32711344","NEGATIVE","Aqua","Negative 317",NA
+"10732387","NEGATIVE","Cyan","Negative 318",NA
+"65679420","NEGATIVE","Lavender","Negative 319",NA
+"74684431","NEGATIVE","Navy","Negative 320",NA
+"71602471","NEGATIVE","Blue","Negative 321",NA
+"17780492","NEGATIVE","BlueViolet","Negative 322",NA
+"42792342","NEGATIVE","Indigo","Negative 323",NA
+"19666445","NEGATIVE","Violet","Negative 324",NA
+"36759384","NEGATIVE","Purple","Negative 325",NA
+"15781320","NEGATIVE","Magenta","Negative 326",NA
+"69775303","NEGATIVE","Fuchsia","Negative 327",NA
+"22626413","NEGATIVE","Orchid","Negative 328",NA
+"63798462","NEGATIVE","Crimson","Negative 329",NA
+"18684312","NEGATIVE","Pink","Negative 330",NA
+"46657422","NEGATIVE","Red","Negative 331",NA
+"21704406","NEGATIVE","Gray","Negative 332",NA
+"19769414","NEGATIVE","Silver","Negative 333",NA
+"36658331","NEGATIVE","Brown","Negative 334",NA
+"31665352","NEGATIVE","Maroon","Negative 335",NA
+"68775364","NEGATIVE","Plum","Negative 336",NA
+"11781405","NEGATIVE","Coral","Negative 337",NA
+"37727355","NEGATIVE","Sienna","Negative 338",NA
+"23624465","NEGATIVE","Tan","Negative 339",NA
+"28620342","NEGATIVE","Orange","Negative 340",NA
+"28731304","NEGATIVE","Gold","Negative 341",NA
+"71685343","NEGATIVE","Khaki","Negative 342",NA
+"13639467","NEGATIVE","Olive","Negative 343",NA
+"34661497","NEGATIVE","Yellow","Negative 344",NA
+"55699322","NEGATIVE","Lime","Negative 345",NA
+"70720399","NEGATIVE","Teal","Negative 346",NA
+"44702369","NEGATIVE","Aqua","Negative 347",NA
+"24729405","NEGATIVE","Cyan","Negative 348",NA
+"71743454","NEGATIVE","Lavender","Negative 349",NA
+"59700309","NEGATIVE","Navy","Negative 350",NA
+"34602505","NEGATIVE","Blue","Negative 351",NA
+"30754380","NEGATIVE","BlueViolet","Negative 352",NA
+"41689490","NEGATIVE","Indigo","Negative 353",NA
+"53743425","NEGATIVE","Violet","Negative 354",NA
+"11773410","NEGATIVE","Purple","Negative 355",NA
+"28800399","NEGATIVE","Magenta","Negative 356",NA
+"11807451","NEGATIVE","Fuchsia","Negative 357",NA
+"69786328","NEGATIVE","Orchid","Negative 358",NA
+"54697374","NEGATIVE","Crimson","Negative 359",NA
+"44715410","NEGATIVE","Pink","Negative 360",NA
+"46765460","NEGATIVE","Red","Negative 361",NA
+"72759412","NEGATIVE","Gray","Negative 362",NA
+"37716390","NEGATIVE","Silver","Negative 363",NA
+"36688342","NEGATIVE","Brown","Negative 364",NA
+"44623355","NEGATIVE","Maroon","Negative 365",NA
+"29726340","NEGATIVE","Plum","Negative 366",NA
+"25742329","NEGATIVE","Coral","Negative 367",NA
+"33714465","NEGATIVE","Sienna","Negative 368",NA
+"17739383","NEGATIVE","Tan","Negative 369",NA
+"57649451","NEGATIVE","Orange","Negative 370",NA
+"51764357","NEGATIVE","Gold","Negative 371",NA
+"69781500","NEGATIVE","Khaki","Negative 372",NA
+"64711325","NEGATIVE","Olive","Negative 373",NA
+"53687365","NEGATIVE","Yellow","Negative 374",NA
+"29655354","NEGATIVE","Lime","Negative 375",NA
+"34646469","NEGATIVE","Teal","Negative 376",NA
+"71705328","NEGATIVE","Aqua","Negative 377",NA
+"43700387","NEGATIVE","Cyan","Negative 378",NA
+"23713493","NEGATIVE","Lavender","Negative 379",NA
+"26668378","NEGATIVE","Navy","Negative 380",NA
+"33621423","NEGATIVE","Blue","Negative 381",NA
+"37767334","NEGATIVE","BlueViolet","Negative 382",NA
+"37654486","NEGATIVE","Indigo","Negative 383",NA
+"64694405","NEGATIVE","Violet","Negative 384",NA
+"31709433","NEGATIVE","Purple","Negative 385",NA
+"16717301","NEGATIVE","Magenta","Negative 386",NA
+"45678305","NEGATIVE","Fuchsia","Negative 387",NA
+"56810364","NEGATIVE","Orchid","Negative 388",NA
+"33631362","NEGATIVE","Crimson","Negative 389",NA
+"54726487","NEGATIVE","Pink","Negative 390",NA
+"13728505","NEGATIVE","Red","Negative 391",NA
+"36781404","NEGATIVE","Gray","Negative 392",NA
+"42770436","NEGATIVE","Silver","Negative 393",NA
+"68758332","NEGATIVE","Brown","Negative 394",NA
+"53677329","NEGATIVE","Maroon","Negative 395",NA
+"40629493","NEGATIVE","Plum","Negative 396",NA
+"54623464","NEGATIVE","Coral","Negative 397",NA
+"32733455","NEGATIVE","Sienna","Negative 398",NA
+"40765481","NEGATIVE","Tan","Negative 399",NA
+"67759403","NEGATIVE","Orange","Negative 400",NA
+"42634319","NEGATIVE","Gold","Negative 401",NA
+"74787491","NEGATIVE","Khaki","Negative 402",NA
+"73726427","NEGATIVE","Olive","Negative 403",NA
+"26678432","NEGATIVE","Yellow","Negative 404",NA
+"39628336","NEGATIVE","Lime","Negative 405",NA
+"27748358","NEGATIVE","Teal","Negative 406",NA
+"49792491","NEGATIVE","Aqua","Negative 407",NA
+"24685437","NEGATIVE","Cyan","Negative 408",NA
+"22694431","NEGATIVE","Lavender","Negative 409",NA
+"28717328","NEGATIVE","Navy","Negative 410",NA
+"39799352","NEGATIVE","Blue","Negative 411",NA
+"39617465","NEGATIVE","BlueViolet","Negative 412",NA
+"34739488","NEGATIVE","Indigo","Negative 413",NA
+"70623422","NEGATIVE","Violet","Negative 414",NA
+"41655506","NEGATIVE","Purple","Negative 415",NA
+"29790482","NEGATIVE","Magenta","Negative 416",NA
+"33717438","NEGATIVE","Fuchsia","Negative 417",NA
+"43667476","NEGATIVE","Orchid","Negative 418",NA
+"58795402","NEGATIVE","Crimson","Negative 419",NA
+"62691388","NEGATIVE","Pink","Negative 420",NA
+"18608337","NEGATIVE","Red","Negative 421",NA
+"24750500","NEGATIVE","Gray","Negative 422",NA
+"19659360","NEGATIVE","Silver","Negative 423",NA
+"38712342","NEGATIVE","Brown","Negative 424",NA
+"16764335","NEGATIVE","Maroon","Negative 425",NA
+"55765450","NEGATIVE","Plum","Negative 426",NA
+"18763320","NEGATIVE","Coral","Negative 427",NA
+"65645458","NEGATIVE","Sienna","Negative 428",NA
+"63642430","NEGATIVE","Tan","Negative 429",NA
+"38762391","NEGATIVE","Orange","Negative 430",NA
+"60779460","NEGATIVE","Gold","Negative 431",NA
+"23760472","NEGATIVE","Khaki","Negative 432",NA
+"47739456","NEGATIVE","Olive","Negative 433",NA
+"60603394","NEGATIVE","Yellow","Negative 434",NA
+"48728325","NEGATIVE","Lime","Negative 435",NA
+"59664305","NEGATIVE","Teal","Negative 436",NA
+"69706451","NEGATIVE","Aqua","Negative 437",NA
+"71663505","NEGATIVE","Cyan","Negative 438",NA
+"71628482","NEGATIVE","Lavender","Negative 439",NA
+"49600340","NEGATIVE","Navy","Negative 440",NA
+"65789315","NEGATIVE","Blue","Negative 441",NA
+"16662505","NEGATIVE","BlueViolet","Negative 442",NA
+"16650480","NEGATIVE","Indigo","Negative 443",NA
+"22674508","NEGATIVE","Violet","Negative 444",NA
+"60708460","NEGATIVE","Purple","Negative 445",NA
+"36642338","NEGATIVE","Magenta","Negative 446",NA
+"18663425","NEGATIVE","Fuchsia","Negative 447",NA
+"72602362","NEGATIVE","Orchid","Negative 448",NA
+"40807480","NEGATIVE","Crimson","Negative 449",NA
+"44746458","NEGATIVE","Pink","Negative 450",NA
+"49669412","NEGATIVE","Red","Negative 451",NA
+"70683410","NEGATIVE","Gray","Negative 452",NA
+"42762374","NEGATIVE","Silver","Negative 453",NA
+"35719437","NEGATIVE","Brown","Negative 454",NA
+"39656464","NEGATIVE","Maroon","Negative 455",NA
+"56698475","NEGATIVE","Plum","Negative 456",NA
+"60644415","NEGATIVE","Coral","Negative 457",NA
+"13650327","NEGATIVE","Sienna","Negative 458",NA
+"30675376","NEGATIVE","Tan","Negative 459",NA
+"71734366","NEGATIVE","Orange","Negative 460",NA
+"22688305","NEGATIVE","Gold","Negative 461",NA
+"21705378","NEGATIVE","Khaki","Negative 462",NA
+"65676384","NEGATIVE","Olive","Negative 463",NA
+"48639474","NEGATIVE","Yellow","Negative 464",NA
+"29617416","NEGATIVE","Lime","Negative 465",NA
+"47764352","NEGATIVE","Teal","Negative 466",NA
+"50792435","NEGATIVE","Aqua","Negative 467",NA
+"39742442","NEGATIVE","Cyan","Negative 468",NA
+"24684310","NEGATIVE","Lavender","Negative 469",NA
+"70610367","NEGATIVE","Navy","Negative 470",NA
+"57726345","NEGATIVE","Blue","Negative 471",NA
+"10721502","NEGATIVE","BlueViolet","Negative 472",NA
+"52742375","NEGATIVE","Indigo","Negative 473",NA
+"60726465","NEGATIVE","Violet","Negative 474",NA
+"27668419","NEGATIVE","Purple","Negative 475",NA
+"73697323","NEGATIVE","Magenta","Negative 476",NA
+"15719334","NEGATIVE","Fuchsia","Negative 477",NA
+"21643393","NEGATIVE","Orchid","Negative 478",NA
+"37720318","NEGATIVE","Crimson","Negative 479",NA
+"69752425","NEGATIVE","Pink","Negative 480",NA
+"48693431","NEGATIVE","Red","Negative 481",NA
+"64601411","NEGATIVE","Gray","Negative 482",NA
+"24705436","NEGATIVE","Silver","Negative 483",NA
+"15740334","NEGATIVE","Brown","Negative 484",NA
+"24728321","NEGATIVE","Maroon","Negative 485",NA
+"49680446","NEGATIVE","Plum","Negative 486",NA
+"27691388","NEGATIVE","Coral","Negative 487",NA
+"29657357","NEGATIVE","Sienna","Negative 488",NA
+"19612454","NEGATIVE","Tan","Negative 489",NA
+"41705442","NEGATIVE","Orange","Negative 490",NA
+"31645490","NEGATIVE","Gold","Negative 491",NA
+"55673311","NEGATIVE","Khaki","Negative 492",NA
+"31635492","NEGATIVE","Olive","Negative 493",NA
+"64683305","NEGATIVE","Yellow","Negative 494",NA
+"11748306","NEGATIVE","Lime","Negative 495",NA
+"48730356","NEGATIVE","Teal","Negative 496",NA
+"11694363","NEGATIVE","Aqua","Negative 497",NA
+"54665394","NEGATIVE","Cyan","Negative 498",NA
+"28772416","NEGATIVE","Lavender","Negative 499",NA
+"40747444","NEGATIVE","Navy","Negative 500",NA
+"50809407","NEGATIVE","Blue","Negative 501",NA
+"39679476","NEGATIVE","BlueViolet","Negative 502",NA
+"74738436","NEGATIVE","Indigo","Negative 503",NA
+"23734321","NEGATIVE","Violet","Negative 504",NA
+"15783320","NEGATIVE","Purple","Negative 505",NA
+"66703354","NEGATIVE","Magenta","Negative 506",NA
+"56793432","NEGATIVE","Fuchsia","Negative 507",NA
+"24744393","NEGATIVE","Orchid","Negative 508",NA
+"14762352","NEGATIVE","Crimson","Negative 509",NA
+"15794469","NEGATIVE","Pink","Negative 510",NA
+"35761501","NEGATIVE","Red","Negative 511",NA
+"52677505","NEGATIVE","Gray","Negative 512",NA
+"73601495","NEGATIVE","Silver","Negative 513",NA
+"67640436","NEGATIVE","Brown","Negative 514",NA
+"51617379","NEGATIVE","Maroon","Negative 515",NA
+"48683430","NEGATIVE","Plum","Negative 516",NA
+"35714458","NEGATIVE","Coral","Negative 517",NA
+"69652373","NEGATIVE","Sienna","Negative 518",NA
+"43724337","NEGATIVE","Tan","Negative 519",NA
+"49658386","NEGATIVE","Orange","Negative 520",NA
+"70766461","NEGATIVE","Gold","Negative 521",NA
+"20661394","NEGATIVE","Khaki","Negative 522",NA
+"55669483","NEGATIVE","Olive","Negative 523",NA
+"34630325","NEGATIVE","Yellow","Negative 524",NA
+"13710478","NEGATIVE","Lime","Negative 525",NA
+"46635484","NEGATIVE","Teal","Negative 526",NA
+"34779461","NEGATIVE","Aqua","Negative 527",NA
+"30762347","NEGATIVE","Cyan","Negative 528",NA
+"36808443","NEGATIVE","Lavender","Negative 529",NA
+"45708406","NEGATIVE","Navy","Negative 530",NA
+"55670455","NEGATIVE","Blue","Negative 531",NA
+"30689326","NEGATIVE","BlueViolet","Negative 532",NA
+"42643451","NEGATIVE","Indigo","Negative 533",NA
+"33730454","NEGATIVE","Violet","Negative 534",NA
+"69659385","NEGATIVE","Purple","Negative 535",NA
+"59731452","NEGATIVE","Magenta","Negative 536",NA
+"60632306","NEGATIVE","Fuchsia","Negative 537",NA
+"66793462","NEGATIVE","Orchid","Negative 538",NA
+"56737301","NEGATIVE","Crimson","Negative 539",NA
+"25621346","NEGATIVE","Pink","Negative 540",NA
+"62653340","NEGATIVE","Red","Negative 541",NA
+"56781365","NEGATIVE","Gray","Negative 542",NA
+"71762482","NEGATIVE","Silver","Negative 543",NA
+"73667338","NEGATIVE","Brown","Negative 544",NA
+"15769506","NEGATIVE","Maroon","Negative 545",NA
+"19775306","NEGATIVE","Plum","Negative 546",NA
+"19625434","NEGATIVE","Coral","Negative 547",NA
+"71775347","NEGATIVE","Sienna","Negative 548",NA
+"44618314","NEGATIVE","Tan","Negative 549",NA
+"21635460","NEGATIVE","Orange","Negative 550",NA
+"59684453","NEGATIVE","Gold","Negative 551",NA
+"73789449","NEGATIVE","Khaki","Negative 552",NA
+"14719400","NEGATIVE","Olive","Negative 553",NA
+"26658411","NEGATIVE","Yellow","Negative 554",NA
+"33765459","NEGATIVE","Lime","Negative 555",NA
+"26769463","NEGATIVE","Teal","Negative 556",NA
+"42768497","NEGATIVE","Aqua","Negative 557",NA
+"10744385","NEGATIVE","Cyan","Negative 558",NA
+"26648509","NEGATIVE","Lavender","Negative 559",NA
+"17796358","NEGATIVE","Navy","Negative 560",NA
+"56626320","NEGATIVE","Blue","Negative 561",NA
+"36803355","NEGATIVE","BlueViolet","Negative 562",NA
+"68601372","NEGATIVE","Indigo","Negative 563",NA
+"23631316","NEGATIVE","Violet","Negative 564",NA
+"50636432","NEGATIVE","Purple","Negative 565",NA
+"20666345","NEGATIVE","Magenta","Negative 566",NA
+"26669386","NEGATIVE","Fuchsia","Negative 567",NA
+"74720399","NEGATIVE","Orchid","Negative 568",NA
+"33657423","NEGATIVE","Crimson","Negative 569",NA
+"62672306","NEGATIVE","Pink","Negative 570",NA
+"56602420","NEGATIVE","Red","Negative 571",NA
+"72656385","NEGATIVE","Gray","Negative 572",NA
+"19658444","NEGATIVE","Silver","Negative 573",NA
+"61721300","NEGATIVE","Brown","Negative 574",NA
+"26665427","NEGATIVE","Maroon","Negative 575",NA
+"17799458","NEGATIVE","Plum","Negative 576",NA
+"49700377","NEGATIVE","Coral","Negative 577",NA
+"60632320","NEGATIVE","Sienna","Negative 578",NA
+"60755343","NEGATIVE","Tan","Negative 579",NA
+"24809342","NEGATIVE","Orange","Negative 580",NA
+"22705438","NEGATIVE","Gold","Negative 581",NA
+"33651323","NEGATIVE","Khaki","Negative 582",NA
+"10731326","NEGATIVE","Olive","Negative 583",NA
+"50699483","NEGATIVE","Yellow","Negative 584",NA
+"26770499","NEGATIVE","Lime","Negative 585",NA
+"15727485","NEGATIVE","Teal","Negative 586",NA
+"36733310","NEGATIVE","Aqua","Negative 587",NA
+"52665450","NEGATIVE","Cyan","Negative 588",NA
+"70717333","NEGATIVE","Lavender","Negative 589",NA
+"62632474","NEGATIVE","Navy","Negative 590",NA
+"52672329","NEGATIVE","Blue","Negative 591",NA
+"44760439","NEGATIVE","BlueViolet","Negative 592",NA
+"16673481","NEGATIVE","Indigo","Negative 593",NA
+"56788431","NEGATIVE","Violet","Negative 594",NA
+"15797317","NEGATIVE","Purple","Negative 595",NA
+"23740309","NEGATIVE","Magenta","Negative 596",NA
+"17641445","NEGATIVE","Fuchsia","Negative 597",NA
+"10760363","NEGATIVE","Orchid","Negative 598",NA
+"21620397","NEGATIVE","Crimson","Negative 599",NA
+"23786490","NEGATIVE","Pink","Negative 600",NA
+"41636384","RESTORATION","Green","Restore",NA
+"43652393","NORM_A","Red","Norm_A1",NA
+"18733503","NORM_G","Blue","Norm_G1",NA
+"70603486","NORM_A","Red","Norm_A2",NA
+"63775337","NORM_G","Blue","Norm_G2",NA
+"70622474","NORM_A","Red","Norm_A3",NA
+"58676498","NORM_G","Blue","Norm_G3",NA
+"17630478","NORM_A","Red","Norm_A4",NA
+"35689446","NORM_G","Blue","Norm_G4",NA
+"15639322","NORM_A","Red","Norm_A5",NA
+"61760309","NORM_G","Blue","Norm_G5",NA
+"66624473","NORM_A","Red","Norm_A6",NA
+"59734347","NORM_G","Blue","Norm_G6",NA
+"18654457","NORM_A","Red","Norm_A7",NA
+"67713480","NORM_G","Blue","Norm_G7",NA
+"49636425","NORM_A","Red","Norm_A8",NA
+"36806404","NORM_G","Blue","Norm_G8",NA
+"31786303","NORM_A","Red","Norm_A9",NA
+"16690480","NORM_G","Blue","Norm_G9",NA
+"70700334","NORM_A","Red","Norm_A10",NA
+"32689421","NORM_G","Blue","Norm_G10",NA
+"42624324","NORM_A","Red","Norm_A11",NA
+"39662476","NORM_G","Blue","Norm_G11",NA
+"62796402","NORM_A","Red","Norm_A12",NA
+"48709470","NORM_G","Blue","Norm_G12",NA
+"67699483","NORM_A","Red","Norm_A13",NA
+"67721390","NORM_G","Blue","Norm_G13",NA
+"61620502","NORM_A","Red","Norm_A14",NA
+"63724326","NORM_G","Blue","Norm_G14",NA
+"16723352","NORM_A","Red","Norm_A15",NA
+"54708463","NORM_G","Blue","Norm_G15",NA
+"68641317","NORM_A","Red","Norm_A16",NA
+"15733328","NORM_G","Blue","Norm_G16",NA
+"48622429","NORM_A","Red","Norm_A17",NA
+"51668449","NORM_G","Blue","Norm_G17",NA
+"44620377","NORM_A","Red","Norm_A18",NA
+"63640430","NORM_G","Blue","Norm_G18",NA
+"33613483","NORM_A","Red","Norm_A19",NA
+"25661400","NORM_G","Blue","Norm_G19",NA
+"63602392","NORM_A","Red","Norm_A20",NA
+"24744355","NORM_G","Blue","Norm_G20",NA
+"31793441","NORM_A","Red","Norm_A21",NA
+"52807455","NORM_G","Blue","Norm_G21",NA
+"15747446","NORM_A","Red","Norm_A22",NA
+"10804473","NORM_G","Blue","Norm_G22",NA
+"72748406","NORM_A","Red","Norm_A23",NA
+"59624459","NORM_G","Blue","Norm_G23",NA
+"62710448","NORM_A","Red","Norm_A24",NA
+"15642403","NORM_G","Blue","Norm_G24",NA
+"11718309","NORM_A","Red","Norm_A25",NA
+"69667417","NORM_G","Blue","Norm_G25",NA
+"61626504","NORM_A","Red","Norm_A26",NA
+"18658347","NORM_G","Blue","Norm_G26",NA
+"49729303","NORM_A","Red","Norm_A27",NA
+"63742354","NORM_G","Blue","Norm_G27",NA
+"74662463","NORM_A","Red","Norm_A28",NA
+"59764324","NORM_G","Blue","Norm_G28",NA
+"68634356","NORM_A","Red","Norm_A29",NA
+"48757493","NORM_G","Blue","Norm_G29",NA
+"24636465","NORM_A","Red","Norm_A30",NA
+"38796356","NORM_G","Blue","Norm_G30",NA
+"36657375","NORM_A","Red","Norm_A31",NA
+"28724405","NORM_G","Blue","Norm_G31",NA
+"68744490","NORM_A","Red","Norm_A32",NA
+"69624309","NORM_G","Blue","Norm_G32",NA
+"26787359","NORM_C","Green","Norm_C1",NA
+"60810444","NORM_T","Purple","Norm_T1",NA
+"27756327","NORM_C","Green","Norm_C2",NA
+"11641439","NORM_T","Purple","Norm_T2",NA
+"56778357","NORM_C","Green","Norm_C3",NA
+"71678368","NORM_T","Purple","Norm_T3",NA
+"40720405","NORM_C","Green","Norm_C4",NA
+"31707322","NORM_T","Purple","Norm_T4",NA
+"51606350","NORM_C","Green","Norm_C5",NA
+"43724438","NORM_T","Purple","Norm_T5",NA
+"39615318","NORM_C","Green","Norm_C6",NA
+"54713306","NORM_T","Purple","Norm_T6",NA
+"67751351","NORM_C","Green","Norm_C7",NA
+"37766401","NORM_T","Purple","Norm_T7",NA
+"43751315","NORM_C","Green","Norm_C8",NA
+"11742370","NORM_T","Purple","Norm_T8",NA
+"25717484","NORM_C","Green","Norm_C9",NA
+"25790300","NORM_T","Purple","Norm_T9",NA
+"16739368","NORM_C","Green","Norm_C10",NA
+"40666333","NORM_T","Purple","Norm_T10",NA
+"34710461","NORM_C","Green","Norm_C11",NA
+"11758414","NORM_T","Purple","Norm_T11",NA
+"57799313","NORM_C","Green","Norm_C12",NA
+"36621472","NORM_T","Purple","Norm_T12",NA
+"35717396","NORM_C","Green","Norm_C13",NA
+"30750303","NORM_T","Purple","Norm_T13",NA
+"55732329","NORM_C","Green","Norm_C14",NA
+"42722426","NORM_T","Purple","Norm_T14",NA
+"38663386","NORM_C","Green","Norm_C15",NA
+"26704364","NORM_T","Purple","Norm_T15",NA
+"44650346","NORM_C","Green","Norm_C16",NA
+"15681446","NORM_T","Purple","Norm_T16",NA
+"73794434","NORM_C","Green","Norm_C17",NA
+"31736353","NORM_T","Purple","Norm_T17",NA
+"38708375","NORM_C","Green","Norm_C18",NA
+"29774306","NORM_T","Purple","Norm_T18",NA
+"63615474","NORM_C","Green","Norm_C19",NA
+"33644415","NORM_T","Purple","Norm_T19",NA
+"34642451","NORM_C","Green","Norm_C20",NA
+"69660330","NORM_T","Purple","Norm_T20",NA
+"18791508","NORM_C","Green","Norm_C21",NA
+"36629493","NORM_T","Purple","Norm_T21",NA
+"59756399","NORM_C","Green","Norm_C22",NA
+"55772319","NORM_T","Purple","Norm_T22",NA
+"35810456","NORM_C","Green","Norm_C23",NA
+"33806355","NORM_T","Purple","Norm_T23",NA
+"17719492","NORM_C","Green","Norm_C24",NA
+"31775443","NORM_T","Purple","Norm_T24",NA
+"55747501","NORM_C","Green","Norm_C25",NA
+"46610354","NORM_T","Purple","Norm_T25",NA
+"57649399","NORM_C","Green","Norm_C26",NA
+"55662399","NORM_T","Purple","Norm_T26",NA
+"17801437","NORM_C","Green","Norm_C27",NA
+"19695407","NORM_T","Purple","Norm_T27",NA
+"51761481","NORM_C","Green","Norm_C28",NA
+"63623369","NORM_T","Purple","Norm_T28",NA
+"43647400","NORM_C","Green","Norm_C29",NA
+"59792509","NORM_T","Purple","Norm_T29",NA
+"21666326","NORM_C","Green","Norm_C30",NA
+"45648306","NORM_T","Purple","Norm_T30",NA
+"15751492","NORM_C","Green","Norm_C31",NA
+"12713402","NORM_T","Purple","Norm_T31",NA
+"49714326","NORM_C","Green","Norm_C32",NA
+"57713321","NORM_T","Purple","Norm_T32",NA
+"67775306","NORM_C","Green","Norm_C33",NA
+"67735372","NORM_T","Purple","Norm_T33",NA
+"11651448","NORM_C","Green","Norm_C34",NA
+"44631336","NORM_T","Purple","Norm_T34",NA
+"12606314","NORM_C","Green","Norm_C35",NA
+"73635489","NORM_T","Purple","Norm_T35",NA
+"63709386","NORM_C","Green","Norm_C36",NA
+"52747473","NORM_T","Purple","Norm_T36",NA
+"49675379","NORM_C","Green","Norm_C37",NA
+"68705481","NORM_T","Purple","Norm_T37",NA
+"22667482","NORM_C","Green","Norm_C38",NA
+"55799383","NORM_T","Purple","Norm_T38",NA
+"56738460","NORM_C","Green","Norm_C39",NA
+"49721486","NORM_T","Purple","Norm_T39",NA
+"56656442","NORM_C","Green","Norm_C40",NA
+"15681421","NORM_T","Purple","Norm_T40",NA
+"22786434","NORM_C","Green","Norm_C41",NA
+"23770483","NORM_T","Purple","Norm_T41",NA
+"47796462","NORM_C","Green","Norm_C42",NA
+"15754447","NORM_T","Purple","Norm_T42",NA
+"29769366","NORM_C","Green","Norm_C43",NA
+"44612371","NORM_T","Purple","Norm_T43",NA
+"48634496","NORM_C","Green","Norm_C44",NA
+"16759387","NORM_T","Purple","Norm_T44",NA
+"73784382","NORM_C","Green","Norm_C45",NA
+"68726417","NORM_T","Purple","Norm_T45",NA
+"14669466","NORM_C","Green","Norm_C46",NA
+"10714330","NORM_T","Purple","Norm_T46",NA
+"24711322","NORM_C","Green","Norm_C47",NA
+"20651487","NORM_T","Purple","Norm_T47",NA
+"38781340","NORM_C","Green","Norm_C48",NA
+"52668393","NORM_T","Purple","Norm_T48",NA
+"52761413","NORM_C","Green","Norm_C49",NA
+"28790326","NORM_T","Purple","Norm_T49",NA
+"33780372","NORM_C","Green","Norm_C50",NA
+"36711421","NORM_T","Purple","Norm_T50",NA
+"71670310","NORM_C","Green","Norm_C51",NA
+"29618498","NORM_T","Purple","Norm_T51",NA
+"23684492","NORM_C","Green","Norm_C52",NA
+"68657384","NORM_T","Purple","Norm_T52",NA
+"34720366","NORM_C","Green","Norm_C53",NA
+"58768373","NORM_T","Purple","Norm_T53",NA
+"11739368","NORM_C","Green","Norm_C54",NA
+"11749491","NORM_T","Purple","Norm_T54",NA
+"62708477","NORM_C","Green","Norm_C55",NA
+"55684415","NORM_T","Purple","Norm_T55",NA
+"64609487","NORM_C","Green","Norm_C56",NA
+"34667361","NORM_T","Purple","Norm_T56",NA
+"56806464","NORM_C","Green","Norm_C57",NA
+"31747339","NORM_T","Purple","Norm_T57",NA
+"41745372","NORM_C","Green","Norm_C58",NA
+"14656336","NORM_T","Purple","Norm_T58",NA
+"65610474","NORM_C","Green","Norm_C59",NA
+"65622344","NORM_T","Purple","Norm_T59",NA
+"57640346","NORM_C","Green","Norm_C60",NA
+"47715450","NORM_T","Purple","Norm_T60",NA
+"28673402","NORM_C","Green","Norm_C61",NA
+"13742412","NORM_T","Purple","Norm_T61",NA
