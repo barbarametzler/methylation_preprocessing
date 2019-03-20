@@ -5,13 +5,13 @@ import sys
 import os
 import pyreadr
 from DNAm.python.illuminaio import list_idat
-from DNAm.python.preprocess import load_data, read_manifests
+from DNAm.python.preprocess import load_data, read_manifests, preprocess
 
 ##load data for testing
-data_file = 'Python_package/DNAm/python/dnam/R05C01_beads.csv'
+data_file = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R05C01_beads.csv'
 data = load_data(data_file)
 # shape (622399, 7)
-data = data[1:10000]
+#data = data[1:200000]
 
 
 #read manifests
@@ -19,11 +19,15 @@ data = data[1:10000]
 #controls_file = 'DNAm/python/illumina_manifests/hm450_controls.rds'
 
 #quick fix -csv file
-probes_file = 'DNAm/python/testing/probes.csv'
-controls_file = 'DNAm/python/testing/control_beads.csv'
+probes_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/probes_1.csv'
+controls_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/TDS/control_beads.csv'
+idat_files_folder = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/idat/'
+
 
 probes, controls = read_manifests(probes_file, controls_file)
 
 ##Preprocessing
-samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocessing(data, probes, controls,
+samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocess(data, probes, controls,
     idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=True)
+
+print (samples)

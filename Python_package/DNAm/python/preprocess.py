@@ -10,7 +10,7 @@ from DNAm.python.illuminaio import list_idat
 
 
 def load_data(csv_file):
-    data = pd.read_csv(csv_file)
+    data = pd.read_csv(csv_file, low_memory=False)
     data.columns = ['sample_id', 'grn_n', 'grn_mean', 'grn_sd', 'red_n', 'red_mean', 'red_sd']
     return data
 
@@ -22,17 +22,17 @@ def read_manifests(probes_file, controls_file):
     #controls = pd.DataFrame((result_c[None])) #columns=['type', 'color', 'description', 'comment'])
     
     ## temporary solution (pyreader does not recognise the index labels)
-    controls = pd.read_csv(controls_file)
+    controls = pd.read_csv(controls_file, low_memory=True)
     controls.set_index(['Unnamed: 0'], inplace=True)
     controls.index.names = ['sample_id']
 
-    probes = pd.read_csv(probes_file)
+    probes = pd.read_csv(probes_file, low_memory=True)
     #probes.set_index(['Unnamed: 0'], inplace=True)
     #probes.index.names = ['sample_id']
     return probes, controls
 
 
-def preprocessing(data, probes, controls, idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=False):
+def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=False):
 
     ## check argument values
     assert arg_detection > 0 
