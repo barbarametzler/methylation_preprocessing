@@ -202,33 +202,58 @@ def snps(probes, idat_files, idx, intensities_A, intensities_B):
     return snps
 
 # Extract all control probes data, and add summary statistics to samples table
-def matching(controls, idat_files, dnam, return_snps=False, return_intensities=False):    
-    #controls_red = 
-    #controls_grn = 
+def matching(controls, controls_red, controls_grn, idat_files, dnam, return_snps=False, return_intensities=False):    
+    summary = pd.DataFrame(np.nan, columns=pd.unique(idat_files['sample.id']), 
+        index=['bc1_red', 'bc2', 'ext_a', 'ext_c', 'ext_g', 'ext_t',
+                'hyp_low', 'hyp_med', 'hyp_high', 'np_a', 'np_c',
+                'np_g', 'np_t', 'spec1_red', 'spec2', 'st_grn', 'st_red',
+                'tr', 'missing', 'median_chrX', 'missing_chrY'])
+
 
     # match 1
     bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
-    idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
+    idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
+
     match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
     idx_signal = controls['description'].isin(match_).index
-    idat_files['bc1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
+    summary.loc['bc1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
     idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
-    idat_files['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
+    summary.loc['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
 
+    #idat.files$ext.a <- controls["red",,control.beads$description == "Extension (A)"]
+    idd = controls[controls['description'] == 'Extension (A)'].index
+    summary.loc['ext_a'] = controls_red.loc[idd].values
+    
+    idd = controls[controls['description'] == "Extension (C)"].index
+    summary.loc['ext_a'] = controls_grn.loc[idd].values 
 
-    idat_files['ext_a'] = controls[(controls['color'] == 'Red') & (controls['description'] == "Extension (A)")].index
-    idat_files['ext_c'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Extension (C)")].index
-    idat_files['ext_g'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Extension (G)")].index
-    idat_files['ext_t'] = controls[(controls['color'] == 'Red') & (controls['description'] == "Extension (T)")].index
-    idat_files['hyp_low'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Low")].index
-    idat_files['hyp_med'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Low")].index
-    idat_files['hyp_high'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (Medium")].index
-    idat_files['hyp_low'] = controls[(controls['color'] == 'Green') & (controls['description'] == "Hyb (High")].index
-    idat_files['np_a'] = controls[(controls['color'] == 'Red') & (controls['description'] == "NP (A)")].index
-    idat_files['np_c'] = controls[(controls['color'] == 'Green') & (controls['description'] == "NP (C)")].index
-    idat_files['np_g'] = controls[(controls['color'] == 'Green') & (controls['description'] == "NP (G)")].index
-    idat_files['np_t'] = controls[(controls['color'] == 'Red') & (controls['description'] == "NP (T)")].index
+    idd = controls[controls['description'] == 'Extension (G)'].index
+    summary.loc['ext_t'] = controls_grn.loc[idd].values
+
+    idd = controls[controls['description'] == 'Extension (T)'].index
+    summary.loc['ext_t'] = controls_red.loc[idd].values
+    
+    idd = controls[controls['description'] == 'Hyb (Low)'].index
+    summary.loc['hyp_low'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'Hyb (Medium)'].index
+    summary.loc['hyp_med'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'Hyb (High)'].index
+    summary.loc['hyp_high'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (A)'].index
+    summary.loc['np_a'] = controls_red.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (C)'].index
+    summary.loc['np_c'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (G)'].index
+    summary.loc['np_g'] = controls_grn.loc[idd].values 
+
+    idd = controls[controls['description'] == 'NP (T)'].index
+    summary.loc['np_t'] = controls_red.loc[idd].values 
 
     # match 2
     bg = ["GT Mismatch 1 (MM)", "GT Mismatch 2 (MM)", "GT Mismatch 3 (MM)"]
