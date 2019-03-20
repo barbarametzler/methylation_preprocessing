@@ -324,7 +324,7 @@ def identify_replicates(snps,threshold,samples):
 #-----------------------------------------------------------------------------------------#
 
 
-def estimate_leukocytes(coefs):
+def estimate_leukocytes(coefs,cpgs):
   
     cpgs=cpgs.T
     
@@ -344,24 +344,37 @@ def estimate_leukocytes(coefs):
     
     b = np.repeat(0,len(coefs.columns))
     
-    for i in range(len(wbc_prediction.shape[0])):
+    D_1=coefs.loc[idx,:].values
+    
+    for i in range(wbc_predictions.shape[0]):
         idx=betas[betas.iloc[:,i].notna()].index
-        D=np.cross(coefs.loc[idx,:],coefs.loc[idx,:])
-        d=np.cross(coefs.loc[idx,:],betas.loc[idx,i])
-        wbc_predictions[i,:]=quadprog_solve_qp(P,q,G,h,A,b)
+        betas=betas.loc[idx]
+        beta=betas.iloc[:,i]
+        D=np.matmul(coefs.loc[idx,:].T.values,coefs.loc[idx,:].values)
+        d=np.matmul(coefs.loc[idx,:].T.values,betas.values)
+        wbc_predictions[i,:]=quadprog_solve_qp(D,d,A,b)
     
     cpgs.to_csv('coef_clean.csv')
 
+#$ sudo pip install quadprog
 
-def quadprog_solve_qp(P, q, G=None, h=None, A=None, b=None):
+def quadprog_solve_qp(P, q, G, A):
     qp_G = .5 * (P + P.T)   # make sure P is symmetric
     qp_a = -q
     if A is not None:
-        qp_C = -numpy.vstack([A, G]).T
-        qp_b = -numpy.hstack([b, h])
+        qp_C = -np.vstack([A, G]).T
+        #qp_b = -np.hstack([b, h])
         meq = A.shape[0]
     else:  # no equality constraint
         qp_C = -G.T
         qp_b = -h
         meq = 0
-    return quadprog.solve_qp(qp_G, qp_a, qp_C, qp_b, meq)[0]
+    return quadprog.solve_qp(qp_G, qp_C, meq)[0]
+
+# experiment with sign of d(-d/d)
+# b=x
+# D=P
+# d=-q
+# A=G
+# b_0=h
+    
