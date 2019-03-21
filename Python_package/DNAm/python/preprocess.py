@@ -62,7 +62,7 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn']).index
     ad_a_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
     ad_b_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
-    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'inf2']).index
+    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'II']).index
 
     inf1grn = probes[probes['type'] == "I-Grn"].index
     inf1red = probes[probes['type'] == "I-Red"].index
@@ -77,15 +77,15 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     for column in intensities_A:
         print (np.where(data.loc[ad_a_grn]))
         
-        intensities_A[column].loc[inf1grn] = (np.where(data.loc[ad_a_grn, 'grn_n'] >= arg_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan))
-        intensities_A[column].loc[inf1red] = (np.where(data.loc[ad_a_red, 'red_n'] >= arg_beads, data.loc[ad_a_red, 'red_mean'], np.nan))
-        #intensities_A[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'grn_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
+        intensities_A[column].loc[inf1grn] = np.where(data.loc[ad_a_grn, 'grn_n'] >= arg_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan)
+        intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= arg_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
+        intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
 
     for column in intensities_B:
-        intensities_B[column].loc[inf1grn] = (np.where(data.loc[ad_b_grn, 'grn_n'] >= arg_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan))
-        intensities_B[column].loc[inf1red] = (np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan))
-        #intensities_B[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
+        intensities_B[column].loc[inf1grn] = np.where(data.loc[ad_b_grn, 'grn_n'] >= arg_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan)
+        intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
+        intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
     for column in controls_grn:
         dataa = data.set_index('sample_id')
@@ -169,8 +169,8 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
         corrections_red = (np.mean(norm_data[column2], axis=1)/ red).mean(axis=0)
 
     ## Apply dye bias correction
-        #intensities_AA.loc[inf2] = intensities_AA.loc[inf2] * corrections_red
-        #intensities_BB.loc[inf2] = intensities_BB.loc[inf2] * corrections_grn
+        intensities_A.loc[inf2] = intensities_A.loc[inf2] * corrections_red
+        intensities_B.loc[inf2] = intensities_B.loc[inf2] * corrections_grn
 
 
     ## Computing DNA methylation ratios (β values)
