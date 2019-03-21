@@ -33,20 +33,51 @@ def read_manifests(probes_file, controls_file):
 
 
 def preprocess(data, probes, controls, idat_files_folder, min_beads=3, detection=0.05, return_intensities=False, return_snps_r=False):
-""" Preprocesses Illumina Infinium DNA methylation bead chips
+""" 
+Preprocesses Illumina Infinium DNA methylation bead chips
 
-Parses .idat files and performs probe censoring, background subtraction and dye-bias correction. SNPs and summary statistics including information from control beads are also provided.
+Parses .idat files and performs probe censoring, background subtraction and dye-bias correction. 
+SNPs and summary statistics including information from control beads are also provided.
 
-Args:
+Parameters
+-----------
     data (): 
     probes():
     idat_files_folder (path): path to folder containing .idat files (2 per sample)
-    min_beads (int): probes with less beads will be censored (default 3)
-    detection (float): p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
+    min_beads (int, optional): probes with less beads will be censored (default 3)
+    detection (float, optional): p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
+    return_intensities (bool): returns four (large) matrices containing preprocessed intensities: intensities_A, intensities_B and controls_red, controls_grn
+    return_snps_r (bool): returns matrix containing SNP r-coordinate in polar coordinate system
+    verbose (bool): prints timestamp per sample and overall time taken
+
+Returns
+--------
+    Returns list with at least three elements
+    
+    dataframe: containing sample metadata and summary statistics
+    matrix: containing CpG beta-values (= methylation proportions)
+    matrix: containing theta-values of SNPs in polar coordinate system
+    matrix: containing r-values of SNPs in polar coordinate system (optional))
+    matrix: containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
+    matrix: containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
+    matrix: containing control-bead-intensities on red channel (optional))
+    matrix: containing control-bead-intensities on green channel (optional))
+
+
+    {
+        'idat_files_folder': idat_files_folder
+        'min_beads': min_beads
+        'detection': detection
+        'return_intensities': return_intensities
+        'return_snps_r': return_snps_r
+        'verbose': verbose
+
+    }
+
+Raises:
+
 
 """
-
-
 
     ## check argument values
     assert detection > 0 
