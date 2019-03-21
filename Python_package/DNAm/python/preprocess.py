@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # For license information, see LICENSE.TXT
+
+
 import sys
 import os
 import pyreadr
@@ -46,9 +48,9 @@ Parameters
     idat_files_folder (path): path to folder containing .idat files (2 per sample)
     min_beads (int, optional): probes with less beads will be censored (default 3)
     detection (float, optional): p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
-    return_intensities (bool): returns four (large) matrices containing preprocessed intensities: intensities_A, intensities_B and controls_red, controls_grn
-    return_snps_r (bool): returns matrix containing SNP r-coordinate in polar coordinate system
-    verbose (bool): prints timestamp per sample and overall time taken
+    return_intensities (bool, optional): returns four (large) matrices containing preprocessed intensities: intensities_A, intensities_B and controls_red, controls_grn
+    return_snps_r (bool, optional): returns matrix containing SNP r-coordinate in polar coordinate system
+    verbose (bool, optional): prints timestamp per sample and overall time taken
 
 Returns
 --------
