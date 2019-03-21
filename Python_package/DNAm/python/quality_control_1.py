@@ -36,6 +36,7 @@ import matplotlib.pyplot as plt
 import pyreadr
 from math import sqrt
 import timeit
+import quadprog
 
 #-----------------------------------------------------------------------------------------#
 # Data Loading
@@ -59,6 +60,7 @@ snps = pd.read_csv("/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData2/snps
 
 samples = pyreadr.read_r('/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/eira_samples.Rds')
 samples = samples[None]
+samples.set_index('sample.id',inplace=True)
 
 # Load individual characteristics data
 
@@ -81,6 +83,22 @@ covars = covars[None]
 # returns samples
 # import numpy as np
 # import pandas as pd
+            
+            
+
+            
+samples_prop_na=samples['missing']
+thresh = 0.1
+plt.hist(samples_prop_na)
+plt.title('Distribution of missing variables per row')
+plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+plot.show()
+
+
+
+
+
+
 
 
 def remove_unreliable_samples(samples,threshold,cpgs):
