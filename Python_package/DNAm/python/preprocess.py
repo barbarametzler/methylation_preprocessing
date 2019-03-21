@@ -126,9 +126,7 @@ Returns
 
     #loop over sample id index and fill out rows based on if value is in data
     
-    for column in intensities_A:
-        print (np.where(data.loc[ad_a_grn]))
-        
+    for column in intensities_A:        
         intensities_A[column].loc[inf1grn] = np.where(data.loc[ad_a_grn, 'grn_n'] >= min_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan)
         intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= min_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
         intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
