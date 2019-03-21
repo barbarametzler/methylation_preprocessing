@@ -86,19 +86,6 @@ covars = covars[None]
             
             
 
-            
-samples_prop_na=samples['missing']
-thresh = 0.1
-plt.hist(samples_prop_na)
-plt.title('Distribution of missing variables per row')
-plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-plot.show()
-
-
-
-
-
-
 
 
 def remove_unreliable_samples(samples,threshold,cpgs):
@@ -243,7 +230,49 @@ plt.legend(loc='upper left')
 # input: snps
 # output: scatterplot which should depict 3 horizontal lines 
 
+
+
+            
+samples_prop_na=samples['missing']
+thresh = 0.1
+plt.hist(samples_prop_na)
+plt.title('Distribution of missing variables per row')
+plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+plt.show()
+
+samples_col_missing = samples.isnull().mean(axis=0)
+thresh = 0.1
+plt.hist(samples_col_missing,bins=100, edgecolor="none")
+plt.title('Distribution of missing variables per column')
+plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+plt.show()
+
+common_1=cpgs.index.intersection(samples.index)
+cpgs=cpgs.loc[common_1]
+cpgs_1=cpgs.iloc[0,:]
+sns.distplot(cpgs_1, hist=True, kde=True, 
+             bins=int(180/5), color = 'darkblue', 
+             hist_kws={'edgecolor':'black'},
+             kde_kws={'linewidth': 4})
+plt.show()
+
 def snps_distribution(snps):
+    
+    samples_prop_na=samples['missing']
+    thresh = 0.1
+    plt.hist(samples_prop_na)
+    plt.title('Distribution of missing variables per row')
+    plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+    plt.show()
+    
+    samples_col_missing = samples.isnull().mean(axis=0)
+    thresh = 0.1
+    plt.hist(samples_col_missing,bins=100, edgecolor="none")
+    plt.title('Distribution of missing variables per column')
+    plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+    plt.show()
+    
+    
     
     for i in range(0,snps.shape[0]):
         a=snps.iloc[i]
@@ -258,6 +287,12 @@ def snps_distribution(snps):
         snp_vals.columns=['val','snps_name']
         plt.scatter(snp_vals['snps_name'],snp_vals['val'])
         plt.show()
+        
+        
+        
+        
+        
+        
         
 #-----------------------------------------------------------------------------------------#    
 
