@@ -341,12 +341,21 @@ Returns
     cpgs = dnam
 
     ## add SNPs r values??
+'''
+  # r format
+  if (return_snps_r) {
+    snps_r <- sqrt(colSums(intensities[,,idx]**2))
+  }
+'''
 
     if return_intensities == True:
         return samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn
 
-    elif return_snps == True:
-        return snps
+    elif return_snps_r == True:
+
+        snps_r = np.sqrt(np.sum(intensities[idx]**2))
+        
+        return snps_r
 
     else:
         return samples, cpgs, snps
