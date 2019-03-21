@@ -11,7 +11,7 @@ from DNAm.python.preprocess import load_data, read_manifests, preprocess
 data_file = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R05C01_beads.csv'
 data = load_data(data_file)
 # shape (622399, 7)
-#data = data[1:200000]
+data = data[1:50000]
 
 
 #read manifests

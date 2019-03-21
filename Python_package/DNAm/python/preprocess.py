@@ -32,7 +32,7 @@ def read_manifests(probes_file, controls_file):
     return probes, controls
 
 
-def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=False):
+def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=False, return_snps_r=False):
 
     ## check argument values
     assert arg_detection > 0 
@@ -75,7 +75,6 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     #loop over sample id index and fill out rows based on if value is in data
     
     for column in intensities_A:
-        #if (data['grn_n'].isin(ad_a_grn).any()) >= arg_beads:
         print (np.where(data.loc[ad_a_grn]))
         
         intensities_A[column].loc[inf1grn] = (np.where(data.loc[ad_a_grn, 'grn_n'] >= arg_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan))
@@ -86,7 +85,7 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     for column in intensities_B:
         intensities_B[column].loc[inf1grn] = (np.where(data.loc[ad_b_grn, 'grn_n'] >= arg_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan))
         intensities_B[column].loc[inf1red] = (np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan))
-        #intensities_BB[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
+        #intensities_B[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
 
     for column in controls_grn:
         dataa = data.set_index('sample_id')
