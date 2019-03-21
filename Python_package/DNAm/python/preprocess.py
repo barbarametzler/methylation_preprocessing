@@ -3,7 +3,6 @@
 import sys
 import os
 import pyreadr
-import argparse
 import pandas as pd
 import numpy as np
 from scipy.stats import norm
