@@ -54,15 +54,22 @@ Returns
 --------
     Returns list with at least three elements
     
-    dataframe: containing sample metadata and summary statistics
-    matrix: containing CpG beta-values (= methylation proportions)
-    matrix: containing theta-values of SNPs in polar coordinate system
-    matrix: containing r-values of SNPs in polar coordinate system (optional))
-    matrix: containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
-    matrix: containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
-    matrix: containing control-bead-intensities on red channel (optional))
-    matrix: containing control-bead-intensities on green channel (optional))
-
+    dataframe 
+        containing sample metadata and summary statistics
+    matrix
+        containing CpG beta-values (= methylation proportions)
+    matrix
+        containing theta-values of SNPs in polar coordinate system
+    matrix  
+        containing r-values of SNPs in polar coordinate system (optional))
+    matrix 
+        containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
+    matrix
+        containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
+    matrix
+        containing control-bead-intensities on red channel (optional))
+    matrix
+        containing control-bead-intensities on green channel (optional))
 
     {
         'idat_files_folder': idat_files_folder
@@ -74,10 +81,8 @@ Returns
 
     }
 
-Raises:
-
-
 """
+
 
     ## check argument values
     assert detection > 0 
