@@ -32,12 +32,26 @@ def read_manifests(probes_file, controls_file):
     return probes, controls
 
 
-def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=False, return_snps_r=False):
+def preprocess(data, probes, controls, idat_files_folder, min_beads=3, detection=0.05, return_intensities=False, return_snps_r=False):
+""" Preprocesses Illumina Infinium DNA methylation bead chips
+
+Parses .idat files and performs probe censoring, background subtraction and dye-bias correction. SNPs and summary statistics including information from control beads are also provided.
+
+Args:
+    data (): 
+    probes():
+    idat_files_folder (path): path to folder containing .idat files (2 per sample)
+    min_beads (int): probes with less beads will be censored (default 3)
+    detection (float): p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
+
+"""
+
+
 
     ## check argument values
-    assert arg_detection > 0 
-    assert arg_detection <= 1
-    assert arg_beads > 0
+    assert detection > 0 
+    assert detection <= 1
+    assert min_beads > 0
 
     ## preparation of outputs
     inf1grn = probes[probes['type'] == "I-Grn"]
@@ -77,15 +91,15 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     for column in intensities_A:
         print (np.where(data.loc[ad_a_grn]))
         
-        intensities_A[column].loc[inf1grn] = np.where(data.loc[ad_a_grn, 'grn_n'] >= arg_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan)
-        intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= arg_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
-        intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
+        intensities_A[column].loc[inf1grn] = np.where(data.loc[ad_a_grn, 'grn_n'] >= min_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan)
+        intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= min_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
+        intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
 
     for column in intensities_B:
-        intensities_B[column].loc[inf1grn] = np.where(data.loc[ad_b_grn, 'grn_n'] >= arg_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan)
-        intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
-        intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
+        intensities_B[column].loc[inf1grn] = np.where(data.loc[ad_b_grn, 'grn_n'] >= min_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan)
+        intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= min_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
+        intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
     for column in controls_grn:
         dataa = data.set_index('sample_id')
@@ -111,7 +125,7 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     neg_means_ = np.mean([neg_means_grn, neg_means_red])
     neg_sds_ = np.std([neg_sds_grn, neg_sds_red])
 
-    z = norm.ppf(1 - arg_detection)
+    z = norm.ppf(1 - detection)
 
     threshold_inf1grn = 2 * neg_means_grn + z * np.sqrt(2) * neg_sds_grn
     threshold_inf1red = 2 * neg_means_red + z * np.sqrt(2) * neg_sds_red
@@ -219,7 +233,6 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
     summary.loc['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
 
-    #idat.files$ext.a <- controls["red",,control.beads$description == "Extension (A)"]
     idd = controls[controls['description'] == 'Extension (A)'].index
     summary.loc['ext_a'] = controls_red.loc[idd].values
     
