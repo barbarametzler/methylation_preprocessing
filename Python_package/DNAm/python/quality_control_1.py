@@ -97,6 +97,7 @@ def remove_unreliable_samples(samples,threshold,cpgs):
     # Apply the outlier detection based on the values of  bc1.grn,bc1.red,bc2
     tech_vars=samples[['bc1.grn','bc1.red','bc2']]
     #samples.set_index('sample.id',inplace=True)
+    tech_vars=tech_vars[tech_vars>1]
     
     
     mean=[]
@@ -232,47 +233,7 @@ plt.legend(loc='upper left')
 
 
 
-            
-samples_prop_na=samples['missing']
-thresh = 0.1
-plt.hist(samples_prop_na)
-plt.title('Distribution of missing variables per row')
-plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-plt.show()
-
-samples_col_missing = samples.isnull().mean(axis=0)
-thresh = 0.1
-plt.hist(samples_col_missing,bins=100, edgecolor="none")
-plt.title('Distribution of missing variables per column')
-plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-plt.show()
-
-common_1=cpgs.index.intersection(samples.index)
-cpgs=cpgs.loc[common_1]
-cpgs_1=cpgs.iloc[0,:]
-sns.distplot(cpgs_1, hist=True, kde=True, 
-             bins=int(180/5), color = 'darkblue', 
-             hist_kws={'edgecolor':'black'},
-             kde_kws={'linewidth': 4})
-plt.show()
-
 def snps_distribution(snps):
-    
-    samples_prop_na=samples['missing']
-    thresh = 0.1
-    plt.hist(samples_prop_na)
-    plt.title('Distribution of missing variables per row')
-    plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-    plt.show()
-    
-    samples_col_missing = samples.isnull().mean(axis=0)
-    thresh = 0.1
-    plt.hist(samples_col_missing,bins=100, edgecolor="none")
-    plt.title('Distribution of missing variables per column')
-    plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-    plt.show()
-    
-    
     
     for i in range(0,snps.shape[0]):
         a=snps.iloc[i]
@@ -300,7 +261,7 @@ def snps_distribution(snps):
 # inputs: snps & a sample number
 # output: boxplot
         
-def snps_distribution_box(snps,i):
+def snps_distribution_box(snps,i,samples,cpgs):
     
         a=snps.iloc[3]
         b=a.index
@@ -320,7 +281,34 @@ def snps_distribution_box(snps,i):
         boxplot = y.boxplot(column=['val'])
         boxplot = x.boxplot(column=['val'])
         boxplot = z.boxplot(column=['val']) 
+       
+        
+        
+        samples_prop_na=samples['missing']
+        thresh = 0.1
+        plt.hist(samples_prop_na)
+        plt.title('Distribution of missing variables per row')
+        plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
         plt.show()
+        
+        samples_col_missing = samples.isnull().mean(axis=0)
+        thresh = 0.1
+        plt.hist(samples_col_missing,bins=100, edgecolor="none")
+        plt.title('Distribution of missing variables per column')
+        plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+        plt.show()
+        
+        common_1=cpgs.index.intersection(samples.index)
+        cpgs=cpgs.loc[common_1]
+        cpgs_1=cpgs.iloc[i,:]
+        sns.distplot(cpgs_1, hist=True, kde=True, 
+        bins=int(180/5), color = 'darkblue', 
+        hist_kws={'edgecolor':'black'},
+        kde_kws={'linewidth': 4}).set_title("Methylation β-value-distribution")
+        plt.show()
+        
+        
+        
 
 #-----------------------------------------------------------------------------------------#    
 
