@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 # For license information, see LICENSE.TXT
+
+
 import sys
 import os
 import pyreadr
@@ -32,12 +34,62 @@ def read_manifests(probes_file, controls_file):
     return probes, controls
 
 
-def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detection=0.05, return_intensities=False):
+def preprocess(data, probes, controls, idat_files_folder, min_beads=3, detection=0.05, return_intensities=False, return_snps_r=False):
+""" 
+Preprocesses Illumina Infinium DNA methylation bead chips
+
+Parses .idat files and performs probe censoring, background subtraction and dye-bias correction. 
+SNPs and summary statistics including information from control beads are also provided.
+
+Parameters
+-----------
+    data (): 
+    probes():
+    idat_files_folder (path): path to folder containing .idat files (2 per sample)
+    min_beads (int, optional): probes with less beads will be censored (default 3)
+    detection (float, optional): p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
+    return_intensities (bool, optional): returns four (large) matrices containing preprocessed intensities: intensities_A, intensities_B and controls_red, controls_grn
+    return_snps_r (bool, optional): returns matrix containing SNP r-coordinate in polar coordinate system
+    verbose (bool, optional): prints timestamp per sample and overall time taken
+
+Returns
+--------
+    Returns list with at least three elements
+    
+    dataframe 
+        containing sample metadata and summary statistics
+    matrix
+        containing CpG beta-values (= methylation proportions)
+    matrix
+        containing theta-values of SNPs in polar coordinate system
+    matrix  
+        containing r-values of SNPs in polar coordinate system (optional))
+    matrix 
+        containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
+    matrix
+        containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
+    matrix
+        containing control-bead-intensities on red channel (optional))
+    matrix
+        containing control-bead-intensities on green channel (optional))
+
+    {
+        'idat_files_folder': idat_files_folder
+        'min_beads': min_beads
+        'detection': detection
+        'return_intensities': return_intensities
+        'return_snps_r': return_snps_r
+        'verbose': verbose
+
+    }
+
+"""
+
 
     ## check argument values
-    assert arg_detection > 0 
-    assert arg_detection <= 1
-    assert arg_beads > 0
+    assert detection > 0 
+    assert detection <= 1
+    assert min_beads > 0
 
     ## preparation of outputs
     inf1grn = probes[probes['type'] == "I-Grn"]
@@ -62,7 +114,7 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn']).index
     ad_a_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
     ad_b_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
-    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'inf2']).index
+    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'II']).index
 
     inf1grn = probes[probes['type'] == "I-Grn"].index
     inf1red = probes[probes['type'] == "I-Red"].index
@@ -74,19 +126,16 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
 
     #loop over sample id index and fill out rows based on if value is in data
     
-    for column in intensities_A:
-        #if (data['grn_n'].isin(ad_a_grn).any()) >= arg_beads:
-        print (np.where(data.loc[ad_a_grn]))
-        
-        intensities_A[column].loc[inf1grn] = (np.where(data.loc[ad_a_grn, 'grn_n'] >= arg_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan))
-        intensities_A[column].loc[inf1red] = (np.where(data.loc[ad_a_red, 'red_n'] >= arg_beads, data.loc[ad_a_red, 'red_mean'], np.nan))
-        #intensities_A[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'grn_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
+    for column in intensities_A:        
+        intensities_A[column].loc[inf1grn] = np.where(data.loc[ad_a_grn, 'grn_n'] >= min_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan)
+        intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= min_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
+        intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
 
     for column in intensities_B:
-        intensities_B[column].loc[inf1grn] = (np.where(data.loc[ad_b_grn, 'grn_n'] >= arg_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan))
-        intensities_B[column].loc[inf1red] = (np.where(data.loc[ad_b_red, 'red_n'] >= arg_beads, data.loc[ad_b_red, 'red_mean'], np.nan))
-        #intensities_BB[column].loc[inf2] = (np.where(data.loc[ad_a_inf, 'red_n'] >= arg_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan))
+        intensities_B[column].loc[inf1grn] = np.where(data.loc[ad_b_grn, 'grn_n'] >= min_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan)
+        intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= min_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
+        intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
     for column in controls_grn:
         dataa = data.set_index('sample_id')
@@ -112,7 +161,7 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     neg_means_ = np.mean([neg_means_grn, neg_means_red])
     neg_sds_ = np.std([neg_sds_grn, neg_sds_red])
 
-    z = norm.ppf(1 - arg_detection)
+    z = norm.ppf(1 - detection)
 
     threshold_inf1grn = 2 * neg_means_grn + z * np.sqrt(2) * neg_sds_grn
     threshold_inf1red = 2 * neg_means_red + z * np.sqrt(2) * neg_sds_red
@@ -170,8 +219,8 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
         corrections_red = (np.mean(norm_data[column2], axis=1)/ red).mean(axis=0)
 
     ## Apply dye bias correction
-        #intensities_AA.loc[inf2] = intensities_AA.loc[inf2] * corrections_red
-        #intensities_BB.loc[inf2] = intensities_BB.loc[inf2] * corrections_grn
+        intensities_A.loc[inf2] = intensities_A.loc[inf2] * corrections_red
+        intensities_B.loc[inf2] = intensities_B.loc[inf2] * corrections_grn
 
 
     ## Computing DNA methylation ratios (β values)
@@ -220,7 +269,6 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
     summary.loc['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
 
-    #idat.files$ext.a <- controls["red",,control.beads$description == "Extension (A)"]
     idd = controls[controls['description'] == 'Extension (A)'].index
     summary.loc['ext_a'] = controls_red.loc[idd].values
     
@@ -293,12 +341,21 @@ def preprocess(data, probes, controls, idat_files_folder, arg_beads=3, arg_detec
     cpgs = dnam
 
     ## add SNPs r values??
+'''
+  # r format
+  if (return_snps_r) {
+    snps_r <- sqrt(colSums(intensities[,,idx]**2))
+  }
+'''
 
     if return_intensities == True:
         return samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn
 
-    elif return_snps == True:
-        return snps
+    elif return_snps_r == True:
+
+        snps_r = np.sqrt(np.sum(intensities[idx]**2))
+        
+        return snps_r
 
     else:
         return samples, cpgs, snps
