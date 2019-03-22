@@ -44,8 +44,12 @@ import quadprog
 control_beads = pyreadr.read_r('/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/hm450_controls.Rds')
 control_beads = control_beads[None]
 
+
 # In functions its dnam
 cpgs = pd.read_csv("/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData2/cpgs.csv",index_col='Unnamed: 0')
+#1min 25s ± 3.06 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
+
+
 
 #had to be downloaded from R
 coefs = pd.read_csv("/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/coefs.csv",index_col='Unnamed: 0')
@@ -260,28 +264,13 @@ def snps_distribution(snps):
 # visualise the distribution of one of the snps as a boxplot
 # inputs: snps & a sample number
 # output: boxplot
-        
+
+      
 def snps_distribution_box(snps,i,samples,cpgs):
     
-        a=snps.iloc[3]
-        b=a.index
-        snp_vals=a.values
-
-
-        snp_vals=pd.DataFrame(snp_vals)
-        snp_vals['snps_name']=b
-
-        snp_vals.drop(snp_vals.index[0],inplace=True)
-        snp_vals.columns=['val','snps_name']
-        
-        x=snp_vals.loc[snp_vals['val']>0.8]
-        y=snp_vals.loc[(snp_vals['val']<0.8) & (snp_vals['val']>0.2)]
-        z=snp_vals.loc[snp_vals['val']<0.2]
-        
-        boxplot = y.boxplot(column=['val'])
-        boxplot = x.boxplot(column=['val'])
-        boxplot = z.boxplot(column=['val']) 
-       
+        df = samples[['bc1.grn','bc1.red','bc2']]
+        sns.boxplot(x="variable", y="value", data=pd.melt(df)).set_title("Boxplot")
+        plt.show()
         
         
         samples_prop_na=samples['missing']
@@ -385,7 +374,7 @@ def estimate_leukocytes(coefs,cpgs):
     
     b = np.repeat(0,len(coefs.columns))
     
-    D_1=coefs.loc[idx,:].values
+    #D_1=coefs.loc[idx,:].values
     
     for i in range(wbc_predictions.shape[0]):
         idx=betas[betas.iloc[:,i].notna()].index
@@ -393,9 +382,9 @@ def estimate_leukocytes(coefs,cpgs):
         beta=betas.iloc[:,i]
         D=np.matmul(coefs.loc[idx,:].T.values,coefs.loc[idx,:].values)
         d=np.matmul(coefs.loc[idx,:].T.values,betas.values)
-        wbc_predictions[i,:]=quadprog_solve_qp(D,d,A,b)
+        wbc_predictions[i,:]=quadprog_solve_qp(D,-d,A,b)
     
-    cpgs.to_csv('coef_clean.csv')
+    #cpgs.to_csv('coef_clean.csv')
 
 #$ sudo pip install quadprog
 
