@@ -371,7 +371,6 @@ def compare_sex(covars,samples):
     
     samples['true_sex']=covars['gender']
 
-    samples.loc[(samples['median.chrX'] < threshold_chrX) & (samples['missing.chrY'] < threshold_chrY), 'sex'] = 'M'
     samples.loc[(samples['true_sex']=='f'),'True_sex']='F'
     samples.loc[(samples['true_sex']=='m'),'True_sex']='M'
     samples.drop(columns='true_sex',inplace=True)
@@ -382,9 +381,14 @@ def compare_sex(covars,samples):
     fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
     fg.map(plt.scatter, 'median.chrX', 'missing.chrY').add_legend()
     plt.legend(loc='upper left')
+    
+    mismatch_sex=samples.loc[samples['final_sex']=='U'].index
+    print('The mismatched samples are: ',mismatch_sex)
+    
 
-
-
+    sum_sex=samples['sex'].loc[(samples['sex'])==(samples['True_sex'])].count()
+    perc_sex=(sum_sex/samples['sex'].count())*100
+    print('The percentage of correctly infered sex samples is: ',perc_sex)
 #-----------------------------------------------------------------------------------------#
 
 def estimate_leukocytes(coefs,cpgs):
