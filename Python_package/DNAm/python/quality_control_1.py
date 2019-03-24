@@ -70,7 +70,17 @@ samples.set_index('sample.id',inplace=True)
 
 covars = pyreadr.read_r('/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/Covariates.Rds')
 covars = covars[None]
+covars.set_index('gsm',inplace=True)
 
+samples_sheet = pyreadr.read_r('/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/Sample_sheet.Rds')
+samples_sheet = samples_sheet[None]
+
+common= samples_sheet.index.intersection(covars.index)
+
+covars=covars.loc[common]
+
+covars['sample_id']=samples_sheet['sample.id']
+covars.set_index('sample_id',inplace=True)
 
 #-----------------------------------------------------------------------------------------#
 # 1) remove unreliable functions 'remove_unreliable_samples'
@@ -101,7 +111,7 @@ def remove_unreliable_samples(samples,threshold,cpgs):
     # Apply the outlier detection based on the values of  bc1.grn,bc1.red,bc2
     tech_vars=samples[['bc1.grn','bc1.red','bc2']]
     #samples.set_index('sample.id',inplace=True)
-    tech_vars=tech_vars[tech_vars>1]
+    #tech_vars=tech_vars[tech_vars>1]
     
     
     mean=[]
@@ -129,11 +139,13 @@ def remove_unreliable_samples(samples,threshold,cpgs):
         
         # Print the indices common to the output of the missing data and the ouput of the tech_vars
         common = samples.index.intersection(tech_vars.index)
-
         samples=samples.loc[common]
+        
     
     return samples
 
+
+covars=covars.loc[covars.index.intersection(samples.index)]
 
 #-----------------------------------------------------------------------------------------#    
 
@@ -353,6 +365,27 @@ def identify_replicates(snps,threshold,samples):
 
 #-----------------------------------------------------------------------------------------#
 
+def compare_sex(covars,samples):
+    
+    
+    
+    samples['true_sex']=covars['gender']
+
+    samples.loc[(samples['median.chrX'] < threshold_chrX) & (samples['missing.chrY'] < threshold_chrY), 'sex'] = 'M'
+    samples.loc[(samples['true_sex']=='f'),'True_sex']='F'
+    samples.loc[(samples['true_sex']=='m'),'True_sex']='M'
+    samples.drop(columns='true_sex',inplace=True)
+    samples.loc[(samples['sex']== samples['True_sex']),'final_sex']=samples['sex']
+    samples.loc[(samples['sex']!= samples['True_sex']),'final_sex']='U'
+
+    genders=['F','M','U']
+    fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
+    fg.map(plt.scatter, 'median.chrX', 'missing.chrY').add_legend()
+    plt.legend(loc='upper left')
+
+
+
+#-----------------------------------------------------------------------------------------#
 
 def estimate_leukocytes(coefs,cpgs):
   
