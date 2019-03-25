@@ -11,85 +11,102 @@ from scipy.stats import norm
 from DNAm.python.illuminaio import list_idat
 
 
-def load_data(csv_file):
-    data = pd.read_csv(csv_file, low_memory=False)
-    data.columns = ['sample_id', 'grn_n', 'grn_mean', 'grn_sd', 'red_n', 'red_mean', 'red_sd']
-    return data
+def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detection=0.05, return_intensities=False, return_snps_r=False):
+    """
+    Preprocesses Illumina Infinium DNA methylation bead chips
 
-def read_manifests(probes_file, controls_file):
-    #result_p = pyreadr.read_r(probes_file)
-    #probes = pd.DataFrame((result_p[None])) #columns=['chr', 'pos', 'type', 'address_a', 'address_b'])
+    Parses .idat files and performs probe censoring, background subtraction and dye-bias correction. 
+    SNPs and summary statistics including information from control beads are also provided.
 
-    #result_c = pyreadr.read_r(controls_file)
-    #controls = pd.DataFrame((result_c[None])) #columns=['type', 'color', 'description', 'comment'])
-    
-    ## temporary solution (pyreader does not recognise the index labels)
-    controls = pd.read_csv(controls_file, low_memory=True)
-    controls.set_index(['Unnamed: 0'], inplace=True)
-    controls.index.names = ['sample_id']
+    Parameters
+    -----------
+        data (): 
+        probes():
+        idat_files_folder (path): path to folder containing .idat files (2 per sample)
+        min_beads (int, optional): probes with less beads will be censored (default 3)
+        detection (float, optional): p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
+        return_intensities (bool, optional): returns four (large) matrices containing preprocessed intensities: intensities_A, intensities_B and controls_red, controls_grn
+        return_snps_r (bool, optional): returns matrix containing SNP r-coordinate in polar coordinate system
+        verbose (bool, optional): prints timestamp per sample and overall time taken
 
-    probes = pd.read_csv(probes_file, low_memory=True)
-    #probes.set_index(['Unnamed: 0'], inplace=True)
-    #probes.index.names = ['sample_id']
-    return probes, controls
+    Returns
+    --------
+        Returns list with at least three elements
+        
+        dataframe 
+            containing sample metadata and summary statistics
+        matrix
+            containing CpG beta-values (= methylation proportions)
+        matrix
+            containing theta-values of SNPs in polar coordinate system
+        matrix  
+            containing r-values of SNPs in polar coordinate system (optional))
+        matrix 
+            containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
+        matrix
+            containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
+        matrix
+            containing control-bead-intensities on red channel (optional))
+        matrix
+            containing control-bead-intensities on green channel (optional))
 
+        {
+            'idat_files_folder': idat_files_folder
+            'min_beads': min_beads
+            'detection': detection
+            'return_intensities': return_intensities
+            'return_snps_r': return_snps_r
+            'verbose': verbose
 
-def preprocess(data, probes, controls, idat_files_folder, min_beads=3, detection=0.05, return_intensities=False, return_snps_r=False):
-""" 
-Preprocesses Illumina Infinium DNA methylation bead chips
-
-Parses .idat files and performs probe censoring, background subtraction and dye-bias correction. 
-SNPs and summary statistics including information from control beads are also provided.
-
-Parameters
------------
-    data (): 
-    probes():
-    idat_files_folder (path): path to folder containing .idat files (2 per sample)
-    min_beads (int, optional): probes with less beads will be censored (default 3)
-    detection (float, optional): p-value for probe-detection, probes that aren't significantly different from negative control beads are censored (default 0.05)
-    return_intensities (bool, optional): returns four (large) matrices containing preprocessed intensities: intensities_A, intensities_B and controls_red, controls_grn
-    return_snps_r (bool, optional): returns matrix containing SNP r-coordinate in polar coordinate system
-    verbose (bool, optional): prints timestamp per sample and overall time taken
-
-Returns
---------
-    Returns list with at least three elements
-    
-    dataframe 
-        containing sample metadata and summary statistics
-    matrix
-        containing CpG beta-values (= methylation proportions)
-    matrix
-        containing theta-values of SNPs in polar coordinate system
-    matrix  
-        containing r-values of SNPs in polar coordinate system (optional))
-    matrix 
-        containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
-    matrix
-        containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
-    matrix
-        containing control-bead-intensities on red channel (optional))
-    matrix
-        containing control-bead-intensities on green channel (optional))
-
-    {
-        'idat_files_folder': idat_files_folder
-        'min_beads': min_beads
-        'detection': detection
-        'return_intensities': return_intensities
-        'return_snps_r': return_snps_r
-        'verbose': verbose
-
-    }
-
-"""
-
+        }
+    """
 
     ## check argument values
     assert detection > 0 
     assert detection <= 1
     assert min_beads > 0
+
+
+    def load_data(csv_file):
+        data = pd.read_csv(csv_file)
+        data.columns = ['sample_id', 'grn_n', 'grn_mean', 'grn_sd', 'red_n', 'red_mean', 'red_sd']
+        return data
+
+    def read_manifests(probes_file, controls_file):
+        #result_p = pyreadr.read_r(probes_file)
+        #probes = pd.DataFrame((result_p[None])) #columns=['chr', 'pos', 'type', 'address_a', 'address_b'])
+
+        #result_c = pyreadr.read_r(controls_file)
+        #controls = pd.DataFrame((result_c[None])) #columns=['type', 'color', 'description', 'comment'])
+        
+        ## temporary solution (pyreader does not recognise the index labels)
+        controls = pd.read_csv(controls_file, low_memory=True)
+        controls.set_index(['Unnamed: 0'], inplace=True)
+        controls.index.names = ['sample_id']
+
+        probes = pd.read_csv(probes_file, low_memory=True)
+        #probes.set_index(['Unnamed: 0'], inplace=True)
+        #probes.index.names = ['sample_id']
+        return probes, controls
+
+
+    ### quick solution - needs to be removed in final package
+
+    beads5 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R05C01_beads.csv'
+    beads4 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R04C01_beads.csv'
+    beads3 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R03C01_beads.csv'
+    beads2 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R02C01_beads.csv'
+    beads1 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R01C01_beads.csv'
+
+    data1 = load_data(beads1)
+    data2 = load_data(beads2)
+    data3 = load_data(beads3)
+    data4 = load_data(beads4)
+    data5 = load_data(beads5)
+
+    data_list = [data5, data1, data2, data3, data4]
+
+    probes, controls = read_manifests(probes_file, controls_file)
 
     ## preparation of outputs
     inf1grn = probes[probes['type'] == "I-Grn"]
@@ -125,19 +142,19 @@ Returns
 
 
     #loop over sample id index and fill out rows based on if value is in data
-    
-    for column in intensities_A:        
+
+    for column, data in zip(intensities_A, data_list):        
         intensities_A[column].loc[inf1grn] = np.where(data.loc[ad_a_grn, 'grn_n'] >= min_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan)
         intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= min_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
         intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
 
-    for column in intensities_B:
+    for column, data in zip(intensities_B, data_list):
         intensities_B[column].loc[inf1grn] = np.where(data.loc[ad_b_grn, 'grn_n'] >= min_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan)
         intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= min_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
         intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
-    for column in controls_grn:
+    for column, data in zip(controls_grn, data_list):
         dataa = data.set_index('sample_id')
         controls_grn[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'grn_n'] > 0,
                                                       dataa.loc[con_ind, 'grn_mean'],
@@ -147,7 +164,9 @@ Returns
         neg_means_grn = (controls_grn[column].loc[neg_beads_grn]).mean()
         neg_sds_grn = (controls_grn[column].loc[neg_beads_grn]).std(axis=0)
 
-    for column in controls_red:
+
+    for column, data in zip(controls_red, data_list):
+        dataa = data.set_index('sample_id')
         controls_red[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'red_n'] > 0,
                                                       dataa.loc[con_ind, 'red_mean'],
                                                       np.nan)
@@ -223,6 +242,8 @@ Returns
         intensities_B.loc[inf2] = intensities_B.loc[inf2] * corrections_grn
 
 
+
+
     ## Computing DNA methylation ratios (β values)
     #Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
 
@@ -252,101 +273,114 @@ Returns
     # Extract all control probes data, and add summary statistics to samples table
 
     summary = pd.DataFrame(np.nan, columns=pd.unique(idat_files['sample.id']), 
-        index=['bc1_red', 'bc2', 'ext_a', 'ext_c', 'ext_g', 'ext_t',
+        index=['bc1_grn', 'bc1_red', 'bc2', 'ext_a', 'ext_c', 'ext_g', 'ext_t',
                 'hyp_low', 'hyp_med', 'hyp_high', 'np_a', 'np_c',
-                'np_g', 'np_t', 'spec1_red', 'spec2', 'st_grn', 'st_red',
+                'np_g', 'np_t', 'spec1_grn', 'spec1_red', 'spec2', 'st_grn', 'st_red',
                 'tr', 'missing', 'median_chrX', 'missing_chrY'])
 
+    for column in summary:
 
-    # match 1
-    bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
-    idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
+        # match 1
+        bg = ['BS Conversion I-U1', 'BS Conversion I-U2','BS Conversion I-U3']
+        idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
 
-    match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
-    idx_signal = controls['description'].isin(match_).index
-    summary.loc['bc1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
+        match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
+        idx_signal = controls['description'].isin(match_).index
+        summary[column].loc['bc1_grn'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.nanmean(controls_red[column].loc[idx_bg]))
 
-    idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
-    summary.loc['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
+        bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
+        idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
 
-    idd = controls[controls['description'] == 'Extension (A)'].index
-    summary.loc['ext_a'] = controls_red.loc[idd].values
-    
-    idd = controls[controls['description'] == "Extension (C)"].index
-    summary.loc['ext_a'] = controls_grn.loc[idd].values 
+        match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
+        idx_signal = controls['description'].isin(match_).index
+        summary[column].loc['bc1_red'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.nanmean(controls_red[column].loc[idx_bg]))
 
-    idd = controls[controls['description'] == 'Extension (G)'].index
-    summary.loc['ext_t'] = controls_grn.loc[idd].values
+        idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
+        summary[column].loc['bc2'] = np.nanmean(controls_red[column].loc[idx]/np.nanmean(controls_grn[column].loc[idx]))
 
-    idd = controls[controls['description'] == 'Extension (T)'].index
-    summary.loc['ext_t'] = controls_red.loc[idd].values
-    
-    idd = controls[controls['description'] == 'Hyb (Low)'].index
-    summary.loc['hyp_low'] = controls_grn.loc[idd].values 
+        idd = controls[controls['description'] == 'Extension (A)'].index
+        summary[column].loc['ext_a'] = controls_red[column].loc[idd].values
+        
+        idd = controls[controls['description'] == "Extension (C)"].index
+        summary[column].loc['ext_c'] = controls_grn[column].loc[idd].values 
 
-    idd = controls[controls['description'] == 'Hyb (Medium)'].index
-    summary.loc['hyp_med'] = controls_grn.loc[idd].values 
+        idd = controls[controls['description'] == 'Extension (G)'].index
+        summary[column].loc['ext_g'] = controls_grn[column].loc[idd].values
 
-    idd = controls[controls['description'] == 'Hyb (High)'].index
-    summary.loc['hyp_high'] = controls_grn.loc[idd].values 
+        idd = controls[controls['description'] == 'Extension (T)'].index
+        summary[column].loc['ext_t'] = controls_red[column].loc[idd].values
+        
+        idd = controls[controls['description'] == 'Hyb (Low)'].index
+        summary[column].loc['hyp_low'] = controls_grn[column].loc[idd].values 
 
-    idd = controls[controls['description'] == 'NP (A)'].index
-    summary.loc['np_a'] = controls_red.loc[idd].values 
+        idd = controls[controls['description'] == 'Hyb (Medium)'].index
+        summary[column].loc['hyp_med'] = controls_grn[column].loc[idd].values 
 
-    idd = controls[controls['description'] == 'NP (C)'].index
-    summary.loc['np_c'] = controls_grn.loc[idd].values 
+        idd = controls[controls['description'] == 'Hyb (High)'].index
+        summary[column].loc['hyp_high'] = controls_grn[column].loc[idd].values 
 
-    idd = controls[controls['description'] == 'NP (G)'].index
-    summary.loc['np_g'] = controls_grn.loc[idd].values 
+        idd = controls[controls['description'] == 'NP (A)'].index
+        summary[column].loc['np_a'] = controls_red[column].loc[idd].values 
 
-    idd = controls[controls['description'] == 'NP (T)'].index
-    summary.loc['np_t'] = controls_red.loc[idd].values 
+        idd = controls[controls['description'] == 'NP (C)'].index
+        summary[column].loc['np_c'] = controls_grn[column].loc[idd].values 
 
-    # match 2
-    bg = ["GT Mismatch 1 (MM)", "GT Mismatch 2 (MM)", "GT Mismatch 3 (MM)"]
-    idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
-    match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
-    idx_signal = controls['description'].isin(match_).index
+        idd = controls[controls['description'] == 'NP (G)'].index
+        summary[column].loc['np_g'] = controls_grn[column].loc[idd].values 
 
- 
-    summary.loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
+        idd = controls[controls['description'] == 'NP (T)'].index
+        summary[column].loc['np_t'] = controls_red[column].loc[idd].values 
 
-    idx = controls[controls['type'] == 'SPECIFICITY II'].index
-    summary.loc['spec2'] = (np.nanmean(controls_red.loc[idx])/np.nanmean(controls_grn.loc[idx]))
+        # match 2
 
-    # match 3 
-    idx_bg = controls[controls['description'] == ('Biotin (Bkg)')].index
-    idx_signal = controls[controls['description'] == ('Biotin (High)')].index
-    summary.loc['st_grn'] = controls_grn.loc[idx_signal].values / controls_grn.loc[idx_signal].values
+        controls[controls['description'] == 'GT Mismatch 1 (MM)'] = 'gt_mismatch_1_mm'
+        controls[controls['description'] == 'GT Mismatch 2 (MM)'] = 'gt_mismatch_2_mm'
+        controls[controls['description'] == 'GT Mismatch 3 (MM)'] = 'gt_mismatch_3_mm'
+        bg = ['gt_mismatch_1_mm', 'gt_mismatch_2_mm', 'gt_mismatch_3_mm']
+        idx_bg = controls[controls['description'].str.contains('|'.join(bg))].index
+        match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
+        idx_signal = controls['description'].isin(match_).index
 
-    # match 4
-    idx_bg = controls[controls['description'] == ('DNP (Bkg)')].index
-    idx_signal = controls[controls['description'] == ('DNP (High)')].index
-    summary.loc['st_red'] = controls_red.loc[idx_signal].values / controls_red.loc[idx_signal].values
+        summary[column].loc['spec1_grn'] = (np.nanmean(controls_grn.loc[idx_signal])/np.nanmean(controls_grn[column].loc[idx_bg]))
 
-    # match 5
-    idx = controls[controls['type'] == ('TARGET REMOVAL')].index
-    summary.loc['tr'] = np.nanmax(controls_grn.loc[idx], axis=0)
-    summary.loc['missing'] = dnam.isnull().mean(axis=0)
+        controls[controls['description'] == 'GT Mismatch 4 (MM)'] = 'gt_mismatch_4_mm'
+        controls[controls['description'] == 'GT Mismatch 5 (MM)'] = 'gt_mismatch_5_mm'
+        controls[controls['description'] == 'GT Mismatch 6 (MM)'] = 'gt_mismatch_6_mm'
+        bg = ['gt_mismatch_4_mm', 'gt_mismatch_5_mm', 'gt_mismatch_6_mm']
+        idx_bg = controls[controls['description'].str.contains('|'.join(bg))].index
+        match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
+        idx_signal = controls['description'].isin(match_).index
+        summary[column].loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
-    # match 6
-    idx = probes[probes['chr'] == 'X'].index
-    dnam.set_index(probes.index, inplace=True)
-    summary.loc['median_chrX'] = np.nanmedian(dnam.loc[idx], axis=0)
+        idx = controls[controls['type'] == 'SPECIFICITY II'].index
+        summary[column].loc['spec2'] = (np.nanmean(controls_red.loc[idx])/np.nanmean(controls_grn.loc[idx]))
 
-    idy = probes[probes['chr'] == 'Y'].index
-    summary.loc['missing_chrY'] = dnam.loc[idy].isnull().mean(axis=0)
+        # match 3 
+        idx_bg = controls[controls['description'] == ('Biotin (Bkg)')].index
+        idx_signal = controls[controls['description'] == ('Biotin (High)')].index
+        summary[column].loc['st_grn'] = controls_grn[column].loc[idx_signal].values / controls_grn[column].loc[idx_bg].values
+
+        # match 4
+        idx_bg = controls[controls['description'] == ('DNP (Bkg)')].index
+        idx_signal = controls[controls['description'] == ('DNP (High)')].index
+        summary[column].loc['st_red'] = controls_red[column].loc[idx_signal].values / controls_red[column].loc[idx_bg].values
+
+        # match 5
+        idx = controls[controls['type'] == ('TARGET REMOVAL')].index
+        summary[column].loc['tr'] = np.nanmax(controls_grn[column].loc[idx], axis=0)
+        summary[column].loc['missing'] = dnam[column].isnull().mean(axis=0)
+
+        # match 6
+        idx = probes[probes['chr'] == 'X'].index
+        dnam.set_index(probes.index, inplace=True)
+        summary[column].loc['median_chrX'] = np.nanmedian(dnam[column].loc[idx], axis=0)
+
+        idy = probes[probes['chr'] == 'Y'].index
+        summary[column].loc['missing_chrY'] = dnam[column].loc[idy].isnull().mean(axis=0)
 
     samples = summary
     cpgs = dnam
 
-    ## add SNPs r values??
-'''
-  # r format
-  if (return_snps_r) {
-    snps_r <- sqrt(colSums(intensities[,,idx]**2))
-  }
-'''
 
     if return_intensities == True:
         return samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn
