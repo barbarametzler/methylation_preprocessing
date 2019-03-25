@@ -281,22 +281,26 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     for column in summary:
 
         # match 1
+
         bg = ['BS Conversion I-U1', 'BS Conversion I-U2','BS Conversion I-U3']
         idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
-
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
         idx_signal = controls['description'].isin(match_).index
-        summary[column].loc['bc1_grn'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.nanmean(controls_red[column].loc[idx_bg]))
+
+        #print (np.nanmean(controls_grn.loc[idx_signal]))  ### this is not the same as in R
+        #print (np.mean(controls_grn.loc[idx_bg]))
+        summary[column].loc['bc1_grn'] = (np.nanmean(controls_grn[column].loc[idx_signal])/np.mean(controls_grn[column].loc[idx_bg]))
+
 
         bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
         idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
 
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
         idx_signal = controls['description'].isin(match_).index
-        summary[column].loc['bc1_red'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.nanmean(controls_red[column].loc[idx_bg]))
+        summary[column].loc['bc1_red'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.mean(controls_red[column].loc[idx_bg]))
 
         idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
-        summary[column].loc['bc2'] = np.nanmean(controls_red[column].loc[idx]/np.nanmean(controls_grn[column].loc[idx]))
+        summary[column].loc['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
 
         idd = controls[controls['description'] == 'Extension (A)'].index
         summary[column].loc['ext_a'] = controls_red[column].loc[idd].values
@@ -341,7 +345,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
         idx_signal = controls['description'].isin(match_).index
 
-        summary[column].loc['spec1_grn'] = (np.nanmean(controls_grn.loc[idx_signal])/np.nanmean(controls_grn[column].loc[idx_bg]))
+        summary[column].loc['spec1_grn'] = (np.nanmean(controls_grn[column].loc[idx_signal])/np.mean(controls_grn[column].loc[idx_bg]))
 
         controls[controls['description'] == 'GT Mismatch 4 (MM)'] = 'gt_mismatch_4_mm'
         controls[controls['description'] == 'GT Mismatch 5 (MM)'] = 'gt_mismatch_5_mm'
@@ -350,10 +354,10 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         idx_bg = controls[controls['description'].str.contains('|'.join(bg))].index
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
         idx_signal = controls['description'].isin(match_).index
-        summary[column].loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
+        summary[column].loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.mean(controls_red[column].loc[idx_bg]))
 
         idx = controls[controls['type'] == 'SPECIFICITY II'].index
-        summary[column].loc['spec2'] = (np.nanmean(controls_red.loc[idx])/np.nanmean(controls_grn.loc[idx]))
+        summary[column].loc['spec2'] = (np.nanmean(controls_red[column].loc[idx])/np.mean(controls_grn[column].loc[idx]))
 
         # match 3 
         idx_bg = controls[controls['description'] == ('Biotin (Bkg)')].index
@@ -368,7 +372,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         # match 5
         idx = controls[controls['type'] == ('TARGET REMOVAL')].index
         summary[column].loc['tr'] = np.nanmax(controls_grn[column].loc[idx], axis=0)
-        summary[column].loc['missing'] = dnam[column].isnull().mean(axis=0)
+        summary[column].loc['missing'] = (dnam[column].isna().sum()) / len(dnam)
 
         # match 6
         idx = probes[probes['chr'] == 'X'].index
@@ -376,7 +380,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         summary[column].loc['median_chrX'] = np.nanmedian(dnam[column].loc[idx], axis=0)
 
         idy = probes[probes['chr'] == 'Y'].index
-        summary[column].loc['missing_chrY'] = dnam[column].loc[idy].isnull().mean(axis=0)
+        summary[column].loc['missing_chrY'] = np.nanmean(dnam[column].loc[idy].isna())
 
     samples = summary
     cpgs = dnam
