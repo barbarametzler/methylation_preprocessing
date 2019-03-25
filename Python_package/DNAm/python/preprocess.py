@@ -104,7 +104,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     data4 = load_data(beads4)
     data5 = load_data(beads5)
 
-    data_list = [data1, data2, data3, data4, data5]
+    data_list = [data5, data1, data2, data3, data4]
 
     probes, controls = read_manifests(probes_file, controls_file)
 
@@ -275,7 +275,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     summary = pd.DataFrame(np.nan, columns=pd.unique(idat_files['sample.id']), 
         index=['bc1_grn', 'bc1_red', 'bc2', 'ext_a', 'ext_c', 'ext_g', 'ext_t',
                 'hyp_low', 'hyp_med', 'hyp_high', 'np_a', 'np_c',
-                'np_g', 'np_t', 'spec1_red', 'spec2', 'st_grn', 'st_red',
+                'np_g', 'np_t', 'spec1_grn', 'spec1_red', 'spec2', 'st_grn', 'st_red',
                 'tr', 'missing', 'median_chrX', 'missing_chrY'])
 
     for column in summary:
@@ -302,10 +302,10 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         summary[column].loc['ext_a'] = controls_red[column].loc[idd].values
         
         idd = controls[controls['description'] == "Extension (C)"].index
-        summary[column].loc['ext_a'] = controls_grn[column].loc[idd].values 
+        summary[column].loc['ext_c'] = controls_grn[column].loc[idd].values 
 
         idd = controls[controls['description'] == 'Extension (G)'].index
-        summary[column].loc['ext_t'] = controls_grn[column].loc[idd].values
+        summary[column].loc['ext_g'] = controls_grn[column].loc[idd].values
 
         idd = controls[controls['description'] == 'Extension (T)'].index
         summary[column].loc['ext_t'] = controls_red[column].loc[idd].values
@@ -337,15 +337,27 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
         idx_signal = controls['description'].isin(match_).index
 
-     
-        summary[column].loc['spec1_red'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.nanmean(controls_red[column].loc[idx_bg]))
+        print ('------------------------------------')
+        print ((controls_grn.loc[idx_signal]), controls_grn.loc[idx_bg])
+        print ('------------------------------------')
+
+        summary[column].loc['spec1_grn'] = (np.nanmean(controls_grn.loc[idx_signal])/np.nanmean(controls_grn.loc[idx_bg]))
+
+        bg = ["GT Mismatch 4 (MM)", "GT Mismatch 5 (MM)", "GT Mismatch 6 (MM)"]
+        idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
+        match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
+        idx_signal = controls['description'].isin(match_).index
+
+        summary[column].loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
         idx = controls[controls['type'] == 'SPECIFICITY II'].index
-        summary[column].loc['spec2'] = (np.nanmean(controls_red[column].loc[idx])/np.nanmean(controls_grn[column].loc[idx]))
+        summary[column].loc['spec2'] = (np.nanmean(controls_red.loc[idx])/np.nanmean(controls_grn.loc[idx]))
 
         # match 3 
         idx_bg = controls[controls['description'] == ('Biotin (Bkg)')].index
         idx_signal = controls[controls['description'] == ('Biotin (High)')].index
+
+        print (controls_grn[column].loc[idx_signal].values / controls_grn[column].loc[idx_signal].values)
         summary[column].loc['st_grn'] = controls_grn[column].loc[idx_signal].values / controls_grn[column].loc[idx_signal].values
 
         # match 4
