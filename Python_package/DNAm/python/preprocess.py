@@ -378,7 +378,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         idy = probes[probes['chr'] == 'Y'].index
         summary[column].loc['missing_chrY'] = dnam[column].loc[idy].isnull().mean(axis=0)
 
-    samples = summary
+    samples = summary.T
     cpgs = dnam
 
 
