@@ -332,22 +332,24 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         summary[column].loc['np_t'] = controls_red[column].loc[idd].values 
 
         # match 2
-        bg = ["GT Mismatch 1 (MM)", "GT Mismatch 2 (MM)", "GT Mismatch 3 (MM)"]
-        idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
+
+        controls[controls['description'] == 'GT Mismatch 1 (MM)'] = 'gt_mismatch_1_mm'
+        controls[controls['description'] == 'GT Mismatch 2 (MM)'] = 'gt_mismatch_2_mm'
+        controls[controls['description'] == 'GT Mismatch 3 (MM)'] = 'gt_mismatch_3_mm'
+        bg = ['gt_mismatch_1_mm', 'gt_mismatch_2_mm', 'gt_mismatch_3_mm']
+        idx_bg = controls[controls['description'].str.contains('|'.join(bg))].index
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
         idx_signal = controls['description'].isin(match_).index
 
-        print ('------------------------------------')
-        print ((controls_grn.loc[idx_signal]), controls_grn.loc[idx_bg])
-        print ('------------------------------------')
+        summary[column].loc['spec1_grn'] = (np.nanmean(controls_grn.loc[idx_signal])/np.nanmean(controls_grn[column].loc[idx_bg]))
 
-        summary[column].loc['spec1_grn'] = (np.nanmean(controls_grn.loc[idx_signal])/np.nanmean(controls_grn.loc[idx_bg]))
-
-        bg = ["GT Mismatch 4 (MM)", "GT Mismatch 5 (MM)", "GT Mismatch 6 (MM)"]
-        idx_bg = controls[controls.description.str.contains('|'.join(bg))].index
+        controls[controls['description'] == 'GT Mismatch 4 (MM)'] = 'gt_mismatch_4_mm'
+        controls[controls['description'] == 'GT Mismatch 5 (MM)'] = 'gt_mismatch_5_mm'
+        controls[controls['description'] == 'GT Mismatch 6 (MM)'] = 'gt_mismatch_6_mm'
+        bg = ['gt_mismatch_4_mm', 'gt_mismatch_5_mm', 'gt_mismatch_6_mm']
+        idx_bg = controls[controls['description'].str.contains('|'.join(bg))].index
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
         idx_signal = controls['description'].isin(match_).index
-
         summary[column].loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.nanmean(controls_red.loc[idx_bg]))
 
         idx = controls[controls['type'] == 'SPECIFICITY II'].index
@@ -356,14 +358,12 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         # match 3 
         idx_bg = controls[controls['description'] == ('Biotin (Bkg)')].index
         idx_signal = controls[controls['description'] == ('Biotin (High)')].index
-
-        print (controls_grn[column].loc[idx_signal].values / controls_grn[column].loc[idx_signal].values)
-        summary[column].loc['st_grn'] = controls_grn[column].loc[idx_signal].values / controls_grn[column].loc[idx_signal].values
+        summary[column].loc['st_grn'] = controls_grn[column].loc[idx_signal].values / controls_grn[column].loc[idx_bg].values
 
         # match 4
         idx_bg = controls[controls['description'] == ('DNP (Bkg)')].index
         idx_signal = controls[controls['description'] == ('DNP (High)')].index
-        summary[column].loc['st_red'] = controls_red[column].loc[idx_signal].values / controls_red[column].loc[idx_signal].values
+        summary[column].loc['st_red'] = controls_red[column].loc[idx_signal].values / controls_red[column].loc[idx_bg].values
 
         # match 5
         idx = controls[controls['type'] == ('TARGET REMOVAL')].index
