@@ -83,74 +83,74 @@ covars['sample_id']=samples_sheet['sample.id']
 covars.set_index('sample_id',inplace=True)
 
 #-----------------------------------------------------------------------------------------#
-# 1) remove unreliable functions 'remove_unreliable_samples'
-            #- missing
-            #-outliers
-            
-# samples.shape
-# Out[669]: (560, 28)
-# SMV (573,27)
-# Simple(560,27)
-# PCA (501)
-            
-# input samples,threshold(0.1),cpgs
-# returns samples
-# import numpy as np
-# import pandas as pd
-            
-            
-
-
-
-def remove_unreliable_samples(samples,threshold,cpgs):
+# visualise the distribution of one of the snps as a boxplot
+      
+def snps_distribution_box(snps,i,samples,cpgs):
+    
+        # Boxplot of the 'bc1.grn','bc1.red','bc2' for sample i
+        df = samples[['bc1.grn','bc1.red','bc2']]
+        sns.boxplot(x="variable", y="value", data=pd.melt(df)).set_title("Boxplot")
+        plt.show()
         
-    # Apply the threshold for the missing data per row
+        # Plot of the histgram of the missing sample per row with the threshold
+        samples_prop_na=samples['missing']
+        thresh = 0.1
+        plt.hist(samples_prop_na)
+        plt.title('Distribution of missing variables per row')
+        plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+        plt.show()
+        
+        # Plot of the histgram of the missing sample per column with the threshold
+        samples_col_missing = samples.isnull().mean(axis=0)
+        thresh = 0.1
+        plt.hist(samples_col_missing,bins=100, edgecolor="none")
+        plt.title('Distribution of missing variables per column')
+        plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+        plt.show()
+        
+        # Plot of the methylation β-value-distribution, expecting a bimodal distribution
+        common_1=cpgs.index.intersection(samples.index)
+        cpgs=cpgs.loc[common_1]
+        cpgs_1=cpgs.iloc[i,:]
+        sns.distplot(cpgs_1, hist=True, kde=True, 
+        bins=int(180/5), color = 'darkblue', 
+        hist_kws={'edgecolor':'black'},
+        kde_kws={'linewidth': 4}).set_title("Methylation β-value-distribution")
+        plt.show()
+        
+        
+        
+
+#-----------------------------------------------------------------------------------------#    
+
+# Remove variables based on percentage of missing variables and quality check of 
+# bc1.grn,bc1.red and bc2
+            
+def remove_unreliable_samples(samples,threshold,cpgs,covars):
+        
+    # Apply the threshold for the missing data per row for samples
     samples=samples.loc[samples['missing']<threshold]
+    
+    # Apply the threshold for the missing data per column for cpgs
+    cpgs=cpgs[cpgs.columns[cpgs.isnull().mean() < threshold]]   
+    
+    # Remove unreliable reading of less than 1
+    samples=samples.loc[(samples['bc1.grn']>1)&(samples['bc1.red']>1)&(samples['bc2']>1)]
+
+    # Subset the data based on the previous conditions
     cpgs=cpgs.loc[samples.index.intersection(cpgs.index)]
     
-    # Apply the outlier detection based on the values of  bc1.grn,bc1.red,bc2
-    tech_vars=samples[['bc1.grn','bc1.red','bc2']]
-    #samples.set_index('sample.id',inplace=True)
-    #tech_vars=tech_vars[tech_vars>1]
     
-    
-    mean=[]
-    sd=[]
-    m_1=[]
-    m_2=[]
-    
-    # set the outlier threshold to be between mean + 2sd and mean -2sd
-    for m in range(0,tech_vars.shape[1]):
-        
-        mean_col= tech_vars.iloc[:,m].mean()
-        mean.append(mean_col)
-    
-        sd_col= tech_vars.iloc[:,m].std()
-        sd.append(sd_col)
-        
-        m_1.append(mean[m] - (2 * sd[m]))
-        m_2.append(mean[m] + (2 * sd[m]))    
-        
-          
-    for i in range(0,len(mean)):
-    
-        tech_vars = tech_vars[tech_vars.iloc[:,i]>m_1[i]]
-        tech_vars = tech_vars[tech_vars.iloc[:,i]<m_2[i]]
-        
-        # Print the indices common to the output of the missing data and the ouput of the tech_vars
-        common = samples.index.intersection(tech_vars.index)
-        samples=samples.loc[common]
-        
-    
-    return samples
+    return samples,cpgs,covars
 
 
-covars=covars.loc[covars.index.intersection(samples.index)]
+
 
 #-----------------------------------------------------------------------------------------#    
 
 
-
+# Apply a K-means classification model to investigate the clustering of males and 
+# females based on the missing Y chromosome and the median X chromosome
 
 def k_mean_sex_infer(samples):
 
@@ -161,7 +161,7 @@ def k_mean_sex_infer(samples):
 
     x=samples[['median.chrX','missing.chrY']]
     
-    # K Means Cluster
+    # Apply the Kmeans clustering method with predefined clusters
     model = KMeans(n_clusters=2, init=np.array(((0.25,0.1),(0.5,0.7))),algorithm="elkan")
     model.fit(x)
     centroids = model.cluster_centers_
@@ -176,14 +176,17 @@ def k_mean_sex_infer(samples):
     # Plot the Original Classifications
     plt.subplot(1, 2, 1)
     plt.scatter(x['median.chrX'], x['missing.chrY'], s=40)
-    plt.title('Real Classification')
+    plt.title('Original Plot Without Classification')
+    plt.show()
      
-    # Plot the Models Classifications
+    # Plot the Model Classifications
     plt.subplot(1, 2, 2)
     plt.scatter(x['median.chrX'], x['missing.chrY'], c=colormap[model.labels_], s=40)
     plt.title('K Mean Classification')
-
-    print(centroids)
+    plt.show()
+    
+    # Print the final centroids
+    print('The K-Means classification centroids are: ',centroids)
     
     samples['sex_Kmeans']=model.labels_
     
@@ -196,17 +199,9 @@ def k_mean_sex_infer(samples):
 
 
 #-----------------------------------------------------------------------------------------#    
-#2) infer sex 'infer_sex':
-            # - get the F&M column
-            # - ask for threshold
 
-# Depending on the graph the user can set thresholds in the x & y axis to differentiate the two classes
-# inputs: samples, x-axis threshold,y-axis threshold)
-# outpus: samples with an extra column for sex
-# The user can then check how his classification looks using the final plot
-
-            
-plt.scatter(x=samples['median.chrX'],y=samples['missing.chrY'])
+# Use the print below in the workflow document
+# plt.scatter(x=samples['median.chrX'],y=samples['missing.chrY'])
 
 
 def infer_sex(samples,threshold_chrX=0.37,threshold_chrY=0.39):
@@ -222,36 +217,28 @@ def infer_sex(samples,threshold_chrX=0.37,threshold_chrY=0.39):
     samples.loc[(samples['median.chrX'] < threshold_chrX) & (samples['missing.chrY'] > threshold_chrY), 'sex'] = np.nan
     samples.loc[(samples['median.chrX'] > threshold_chrX) & (samples['missing.chrY'] < threshold_chrY), 'sex'] = np.nan    
     
-    #Count the number of males and females
+    # Count the number of males and females
     num_males=samples.loc[samples.sex == 'M', 'sex'].count()
     num_females=samples.loc[samples.sex == 'F', 'sex'].count()
     print("Number of Males:",num_males)
     print("Number of Females:",num_females)
     
-   
+    genders=['F','M']
+    fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
+    fg.map(plt.scatter, 'median.chrX', 'missing.chrY')
+    plt.legend(loc='upper left')
     
  
     return samples
 
-genders=['F','M']
-fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
-fg.map(plt.scatter, 'median.chrX', 'missing.chrY').add_legend()
-plt.legend(loc='upper left') 
-   
 
 #-----------------------------------------------------------------------------------------#    
 
-# snps distribution plot
+# snps distribution plot for ith snp
 # The allele at a SNP locus can be inferred from SNP intensities measured on the BeadChip.
-# Should axis labels be included?
-# input: snps
-# output: scatterplot which should depict 3 horizontal lines 
 
-
-
-def snps_distribution(snps):
+def snps_distribution(snps,i):
     
-    for i in range(0,snps.shape[0]):
         a=snps.iloc[i]
         b=a.index
         snp_vals=a.values
@@ -264,58 +251,10 @@ def snps_distribution(snps):
         snp_vals.columns=['val','snps_name']
         plt.scatter(snp_vals['snps_name'],snp_vals['val'])
         plt.show()
-        
-        
-        
-        
-        
-        
-        
+           
 #-----------------------------------------------------------------------------------------#    
 
-# visualise the distribution of one of the snps as a boxplot
-# inputs: snps & a sample number
-# output: boxplot
-
-      
-def snps_distribution_box(snps,i,samples,cpgs):
-    
-        df = samples[['bc1.grn','bc1.red','bc2']]
-        sns.boxplot(x="variable", y="value", data=pd.melt(df)).set_title("Boxplot")
-        plt.show()
-        
-        
-        samples_prop_na=samples['missing']
-        thresh = 0.1
-        plt.hist(samples_prop_na)
-        plt.title('Distribution of missing variables per row')
-        plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-        plt.show()
-        
-        samples_col_missing = samples.isnull().mean(axis=0)
-        thresh = 0.1
-        plt.hist(samples_col_missing,bins=100, edgecolor="none")
-        plt.title('Distribution of missing variables per column')
-        plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-        plt.show()
-        
-        common_1=cpgs.index.intersection(samples.index)
-        cpgs=cpgs.loc[common_1]
-        cpgs_1=cpgs.iloc[i,:]
-        sns.distplot(cpgs_1, hist=True, kde=True, 
-        bins=int(180/5), color = 'darkblue', 
-        hist_kws={'edgecolor':'black'},
-        kde_kws={'linewidth': 4}).set_title("Methylation β-value-distribution")
-        plt.show()
-        
-        
-        
-
-#-----------------------------------------------------------------------------------------#    
-
-#3) call SNPS 'call_snps' :
-            # - identify the snps using the thresholds
-            # - plot? ASK tim
+s
 # Need samples['sex'] for this function
 # Need the infer_sex function
 def identify_replicates(snps,threshold,samples):
@@ -323,20 +262,24 @@ def identify_replicates(snps,threshold,samples):
     #snps.set_index('Unnamed: 0',inplace=True)
     snps.index.name='sample_id'
     
+    #set thresholds for snps classifciation
     snps[snps<=0.2]=0
     snps[snps>=0.8]=2
     snps[(snps>0.2 ) & (snps<0.8)]=1
     
+    # Create a distance matrix
     dist_matrix = np.empty((snps.shape[0], snps.shape[0]))
     dist_matrix[:,:] = np.nan
-
+    
+    # Populate the distance matric with the values of the classification
     for i in range(0,snps.shape[0]):
         for j in range(i+1,snps.shape[0]):
             dist_matrix[j, i] = abs(snps.iloc[i,:]-snps.iloc[j,:]).sum()
             dist_m=pd.DataFrame(dist_matrix)
             dist_m.index=snps.index
             dist_m.columns=snps.index
-            
+    
+    # Plot a heatmat of the distance matrix       
     ax = sns.heatmap(dist_m, annot=True)
     ax.set_title('Distance Matrix for SNPSs')
     
@@ -356,6 +299,7 @@ def identify_replicates(snps,threshold,samples):
     
     sex_ident=samples['sex']
     
+    # Print the identified replicates
     for n in range (0,len(rows)):
             
         if sex_ident[rows[n]] == sex_ident[columns[n]]:
@@ -365,27 +309,32 @@ def identify_replicates(snps,threshold,samples):
 
 #-----------------------------------------------------------------------------------------#
 
+# Compare the infered sex with the true sex available throught the covars dataset
+
 def compare_sex(covars,samples):
     
     
-    
+    # Create new columns in samples with the covars gender
     samples['true_sex']=covars['gender']
 
+    # Modify the samples to enable the comparisson
     samples.loc[(samples['true_sex']=='f'),'True_sex']='F'
     samples.loc[(samples['true_sex']=='m'),'True_sex']='M'
     samples.drop(columns='true_sex',inplace=True)
     samples.loc[(samples['sex']== samples['True_sex']),'final_sex']=samples['sex']
     samples.loc[(samples['sex']!= samples['True_sex']),'final_sex']='U'
 
+    # Plot the graph for sex classification and identify the mismmaches
     genders=['F','M','U']
     fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
     fg.map(plt.scatter, 'median.chrX', 'missing.chrY').add_legend()
     plt.legend(loc='upper left')
     
+    # Print the IDs of the mismached samples
     mismatch_sex=samples.loc[samples['final_sex']=='U'].index
     print('The mismatched samples are: ',mismatch_sex)
     
-
+    # Print the % of mismatched samples
     sum_sex=samples['sex'].loc[(samples['sex'])==(samples['True_sex'])].count()
     perc_sex=(sum_sex/samples['sex'].count())*100
     print('The percentage of correctly infered sex samples is: ',perc_sex)
