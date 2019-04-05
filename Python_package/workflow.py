@@ -54,5 +54,10 @@ print(timeit.default_timer() - start_time)
 
 ## Quality control
 
+snps_distribution_box(snps, i, samples, cpgs)
+
+
+#, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
+
 
 
