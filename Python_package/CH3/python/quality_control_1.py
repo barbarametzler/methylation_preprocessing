@@ -36,9 +36,19 @@ import matplotlib.pyplot as plt
 import pyreadr
 from math import sqrt
 import timeit
-import quadprog
+#import quadprog
+from CH3.python.preprocess import preprocess 
+
+
+## load dependencies
+import pandas as pd
+import numpy as np
+import sys
+import os
+import pyreadr
 
 #-----------------------------------------------------------------------------------------#
+'''
 # Data Loading
 
 control_beads = pyreadr.read_r('/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/hm450_controls.Rds')
@@ -81,6 +91,9 @@ covars=covars.loc[common]
 
 covars['sample_id']=samples_sheet['sample.id']
 covars.set_index('sample_id',inplace=True)
+
+
+'''
 
 #-----------------------------------------------------------------------------------------#
 # visualise the distribution of one of the snps as a boxplot
@@ -254,7 +267,7 @@ def snps_distribution(snps,i):
            
 #-----------------------------------------------------------------------------------------#    
 
-s
+
 # Need samples['sex'] for this function
 # Need the infer_sex function
 def identify_replicates(snps,threshold,samples):

@@ -5,8 +5,9 @@ import sys
 import os
 import pyreadr
 import timeit
-from DNAm.python.illuminaio import list_idat
-from DNAm.python.preprocess import preprocess
+from CH3.python.illuminaio import list_idat
+from CH3.python.preprocess import preprocess
+from CH3.python.quality_control_1 import snps_distribution_box, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
 
 start_time = timeit.default_timer()
 
@@ -33,14 +34,13 @@ data_list = [data1, data2, data3, data4, data5]
 #controls_file = 'DNAm/python/illumina_manifests/hm450_controls.rds'
 
 #quick fix -csv file
-probes_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/probes_1.csv'
-controls_file = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/TDS/control_beads.csv'
-idat_files_folder = '/Users/metzlerabarbara/OneDrive - Imperial College London/IMPERIAL/CE/Week 1/Practical1/Data/preprocessing/idat/'
+probes_file = 'CH3/python/testing/probes_1.csv'
+controls_file = 'CH3/python/testing/control_beads.csv'
+idat_files_folder = 'idat'
 
 
 
 ##Preprocessing
-
 
 #for id, df in enumerate(data_list):
 samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocess(probes_file, controls_file,
@@ -50,5 +50,14 @@ print (samples)
 print ('----------------------')
 
 print(timeit.default_timer() - start_time)
+
+
+## Quality control
+
+snps_distribution_box(snps, i, samples, cpgs)
+
+
+#, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
+
 
 
