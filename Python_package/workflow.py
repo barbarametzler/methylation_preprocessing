@@ -39,6 +39,15 @@ controls_file = 'CH3/python/testing/control_beads.csv'
 idat_files_folder = 'idat'
 
 
+# load covars
+covars = pyreadr.read_r('Covariates.Rds')
+covars = covars[None]
+covars.set_index('gsm',inplace=True)
+
+
+# load sample sheet
+samples_sheet = pyreadr.read_r('Sample_sheet.Rds')
+samples_sheet = samples_sheet[None]
 
 ##Preprocessing
 
@@ -52,12 +61,29 @@ print ('----------------------')
 print(timeit.default_timer() - start_time)
 
 
+
+print (covars.shape)
+print (samples.shape)
+print (cpgs.shape)
+print (snps.shape)
+
 ## Quality control
+# create 3 plots
+#snps_distribution_box(snps, 1, samples, cpgs)
 
-snps_distribution_box(snps, i, samples, cpgs)
+samples, cpgs, covars = remove_unreliable_samples(samples, 0.1, cpgs, covars)
+
+#creates plots and prints stuff
+#k_mean_sex_infer(samples)
+
+# returns samples and plots (it is not plotting!)
+samples = infer_sex(samples, 0.37, 0.39)
+
+#snps plotting distribution
+snps_distribution (snps, 3)
 
 
-#, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
+#, identify_replicates, compare_sex, estimate_leukocytes
 
 
 
