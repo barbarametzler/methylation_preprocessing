@@ -5,6 +5,8 @@ import sys
 import os
 import pyreadr
 import timeit
+import seaborn as sns
+import matplotlib.pyplot as plt
 from CH3.python.illuminaio import list_idat
 from CH3.python.preprocess import preprocess
 from CH3.python.quality_control_1 import snps_distribution_box, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
@@ -74,7 +76,7 @@ print (snps.shape)
 samples, cpgs, covars = remove_unreliable_samples(samples, 0.1, cpgs, covars)
 
 #creates plots and prints stuff
-#k_mean_sex_infer(samples)
+k_mean_sex_infer(samples)
 
 # returns samples and plots (it is not plotting!)
 samples = infer_sex(samples, 0.37, 0.39)
@@ -82,8 +84,14 @@ samples = infer_sex(samples, 0.37, 0.39)
 #snps plotting distribution
 snps_distribution (snps, 3)
 
+#plots and prints
+identify_replicates(snps, 44, samples)
 
-#, identify_replicates, compare_sex, estimate_leukocytes
+#plotting
+compare_sex(covars, samples)
+
+##last function
+#, estimate_leukocytes
 
 
 

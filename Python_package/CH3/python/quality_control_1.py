@@ -233,14 +233,14 @@ def infer_sex(samples,threshold_chrX=0.37,threshold_chrY=0.39):
     # Count the number of males and females
     num_males=samples.loc[samples.sex == 'M', 'sex'].count()
     num_females=samples.loc[samples.sex == 'F', 'sex'].count()
-    #print("Number of Males:",num_males)
-    #print("Number of Females:",num_females)
+    print("Number of Males:",num_males)
+    print("Number of Females:",num_females)
     
     genders=['F','M']
     fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
     fg.map(plt.scatter, 'median_chrX', 'missing_chrY')
     plt.legend(loc='upper left')
-    
+    plt.show()
  
     return samples
 
@@ -312,6 +312,8 @@ def identify_replicates(snps,threshold,samples):
     
     sex_ident=samples['sex']
     
+    plt.show()
+
     # Print the identified replicates
     for n in range (0,len(rows)):
             
@@ -342,6 +344,7 @@ def compare_sex(covars,samples):
     fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
     fg.map(plt.scatter, 'median_chrX', 'missing_chrY').add_legend()
     plt.legend(loc='upper left')
+    plt.show()
     
     # Print the IDs of the mismached samples
     mismatch_sex=samples.loc[samples['final_sex']=='U'].index

@@ -388,6 +388,8 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     cpgs = dnam.T
     snps = snps.T
 
+    print(dnam.shape)
+
 
     if return_intensities == True:
         return samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn
