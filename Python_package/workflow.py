@@ -51,6 +51,8 @@ covars.set_index('gsm',inplace=True)
 samples_sheet = pyreadr.read_r('Sample_sheet.Rds')
 samples_sheet = samples_sheet[None]
 
+
+
 ##Preprocessing
 
 #for id, df in enumerate(data_list):
@@ -63,11 +65,10 @@ print ('----------------------')
 print(timeit.default_timer() - start_time)
 
 
+samples.to_csv('samples_pre.csv')
+cpgs.to_csv('cpgs_pre.csv')
+snps.to_csv('snps_pre.csv')
 
-print (covars.shape)
-print (samples.shape)
-print (cpgs.shape)
-print (snps.shape)
 
 ## Quality control
 # create 3 plots
@@ -75,23 +76,29 @@ print (snps.shape)
 
 samples, cpgs, covars = remove_unreliable_samples(samples, 0.1, cpgs, covars)
 
+
 #creates plots and prints stuff
 k_mean_sex_infer(samples)
+plt.close()
 
+'''
 # returns samples and plots (it is not plotting!)
 samples = infer_sex(samples, 0.37, 0.39)
 
 #snps plotting distribution
 snps_distribution (snps, 3)
+plt.close()
 
 #plots and prints
 identify_replicates(snps, 44, samples)
+plt.close()
 
 #plotting
 compare_sex(covars, samples)
+plt.close()
 
 ##last function
 #, estimate_leukocytes
 
-
+'''
 
