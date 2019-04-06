@@ -48,7 +48,7 @@ import os
 import pyreadr
 
 #-----------------------------------------------------------------------------------------#
-'''
+
 # Data Loading
 
 control_beads = pyreadr.read_r('/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/hm450_controls.Rds')
@@ -93,7 +93,7 @@ covars['sample_id']=samples_sheet['sample.id']
 covars.set_index('sample_id',inplace=True)
 
 
-'''
+
 
 #-----------------------------------------------------------------------------------------#
 # visualise the distribution of one of the snps as a boxplot
