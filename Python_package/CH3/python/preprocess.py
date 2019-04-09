@@ -35,19 +35,19 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         
         dataframe 
             containing sample metadata and summary statistics
-        matrix
+        dataframe
             containing CpG beta-values (= methylation proportions)
-        matrix
+        dataframe
             containing theta-values of SNPs in polar coordinate system
-        matrix  
+        dataframe  
             containing r-values of SNPs in polar coordinate system (optional))
-        matrix 
+        dataframe 
             containing unmethylated-intensities (A-beads for Illumina I, red channel for Illumina II, optional))
-        matrix
+        dataframe
             containing methylated-intensities (B-beads for Illumina I, green channel for Illumina II, optional))
-        matrix
+        dataframe
             containing control-bead-intensities on red channel (optional))
-        matrix
+        dataframe
             containing control-bead-intensities on green channel (optional))
 
         {

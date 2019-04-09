@@ -65,9 +65,17 @@ print ('----------------------')
 print(timeit.default_timer() - start_time)
 
 
-samples.to_csv('samples_pre.csv')
-cpgs.to_csv('cpgs_pre.csv')
-snps.to_csv('snps_pre.csv')
+print (type(samples)) #[5 rows x 23 columns]
+print (type(cpgs)) #[5 rows x 485577 columns]n
+print (type(snps)) # [5 rows x 65 columns]
+print (type(intensities_A)) # [485577 rows x 5 columns]
+print (type(intensities_B)) # [485577 rows x 5 columns]
+print (type(controls_grn)) #[835 rows x 5 columns]
+print (type(controls_red)) #[835 rows x 5 columns]
+
+#samples.to_csv('samples_pre.csv')
+#cpgs.to_csv('cpgs_pre.csv')
+#snps.to_csv('snps_pre.csv')
 
 
 ## Quality control
@@ -79,7 +87,7 @@ samples, cpgs, covars = remove_unreliable_samples(samples, 0.1, cpgs, covars)
 
 #creates plots and prints stuff
 k_mean_sex_infer(samples)
-plt.close()
+#plt.close()
 
 '''
 # returns samples and plots (it is not plotting!)
