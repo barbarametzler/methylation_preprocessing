@@ -9,7 +9,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from CH3.python.illuminaio import list_idat
 from CH3.python.preprocess import preprocess
-from CH3.python.quality_control_1 import snps_distribution_box, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
+#from CH3.python.quality_control_1 import snps_distribution_box, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
 
 start_time = timeit.default_timer()
 
@@ -59,7 +59,7 @@ samples_sheet = samples_sheet[None]
 samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocess(probes_file, controls_file,
     idat_files_folder, min_beads=3, detection=0.05, return_intensities=True)
 print ('----------------------')
-print (samples)
+print (samples['7800246024_R05C01'].round(4))
 print ('----------------------')
 
 print(timeit.default_timer() - start_time)
@@ -82,11 +82,11 @@ print (type(controls_red)) #[835 rows x 5 columns]
 # create 3 plots
 #snps_distribution_box(snps, 1, samples, cpgs)
 
-samples, cpgs, covars = remove_unreliable_samples(samples, 0.1, cpgs, covars)
+#samples, cpgs, covars = remove_unreliable_samples(samples, 0.1, cpgs, covars)
 
 
 #creates plots and prints stuff
-k_mean_sex_infer(samples)
+#k_mean_sex_infer(samples)
 #plt.close()
 
 '''

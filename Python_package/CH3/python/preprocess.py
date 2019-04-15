@@ -154,16 +154,33 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= min_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
         intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
+
+    z = norm.ppf(1 - detection)
+
+    neg_means_grn_list = []
+    neg_sds_grn_list = []
+    threshold_inf1grn_list = []
+
     for column, data in zip(controls_grn, data_list):
         dataa = data.set_index('sample_id')
         controls_grn[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'grn_n'] > 0,
                                                       dataa.loc[con_ind, 'grn_mean'],
                                                       np.nan)
+        
 
         neg_beads_grn = controls[controls['type'] == "NEGATIVE"].index
         neg_means_grn = (controls_grn[column].loc[neg_beads_grn]).mean()
         neg_sds_grn = (controls_grn[column].loc[neg_beads_grn]).std(axis=0)
+        threshold_inf1grn = 2 * neg_means_grn + z * np.sqrt(2) * neg_sds_grn
 
+        neg_means_grn_list.append(neg_means_grn)
+        neg_sds_grn_list.append(neg_sds_grn)
+        threshold_inf1grn_list.append(threshold_inf1grn)
+
+
+    neg_means_red_list = []
+    neg_sds_red_list = []
+    threshold_inf1red_list = []
 
     for column, data in zip(controls_red, data_list):
         dataa = data.set_index('sample_id')
@@ -174,53 +191,55 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         neg_beads_red = controls[controls['type'] == "NEGATIVE"].index
         neg_means_red = (controls_red[column].loc[neg_beads_red]).mean()
         neg_sds_red = (controls_red[column].loc[neg_beads_red]).std(axis=0)
+        threshold_inf1red = 2 * neg_means_red + z * np.sqrt(2) * neg_sds_red
+
+        neg_means_red_list.append(neg_means_red)
+        neg_sds_red_list.append(neg_sds_red)
+        threshold_inf1red_list.append(threshold_inf1red)
 
 
+    threshold_inf2_list =[]
     ## Defining a threshold of detection
-    neg_means_ = np.mean([neg_means_grn, neg_means_red])
-    neg_sds_ = np.std([neg_sds_grn, neg_sds_red])
+    for x, y, j, i in zip(neg_means_grn_list, neg_means_red_list, neg_sds_grn_list, neg_sds_red_list):
+        neg_means_ = (x + y)
+        threshold_inf2 = neg_means_ + z * np.sqrt(j**2 + i**2 )
+        threshold_inf2_list.append(threshold_inf2)
 
-    z = norm.ppf(1 - detection)
-
-    threshold_inf1grn = 2 * neg_means_grn + z * np.sqrt(2) * neg_sds_grn
-    threshold_inf1red = 2 * neg_means_red + z * np.sqrt(2) * neg_sds_red
-    threshold_inf2 = np.sum(neg_means_) + z * np.sqrt(np.sum(neg_sds_ ** 2))
 
     # Censoring of values below the detection limit and background subtraction
     # Background subtraction
 
-    for column in intensities_A:
+    for column, x, y, z in zip(intensities_A, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list):
         I_A = (intensities_A).sum(axis=1) #sum(axis=1)
-
         ## slower, alternative way of censoring values
         #intensities_AA[column].loc[inf1grn] = (np.where((intensities_AA.loc[inf1grn].gt(neg_means_grn).values & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)),
         #                                            (intensities_AA[column].loc[inf1grn] - neg_means_grn),
         #                                            np.nan))
         
         intensities_A_grn = intensities_A[column].loc[inf1grn]
-        intensities_A_grn[column] = intensities_A_grn[(intensities_A_grn.gt(neg_means_grn).values) & (I_A.loc[inf1grn].gt(threshold_inf1grn).values)]
+        intensities_A_grn[column] = intensities_A_grn[(intensities_A_grn.gt(neg_means_grn).values) & (I_A.loc[inf1grn].gt(x).values)]
 
 
         intensities_A_red = intensities_A[column].loc[inf1red]
-        intensities_A_red[column] = intensities_A_red[(intensities_A_red.gt(neg_means_red).values) & (I_A.loc[inf1red].gt(threshold_inf1red).values)]
+        intensities_A_red[column] = intensities_A_red[(intensities_A_red.gt(neg_means_red).values) & (I_A.loc[inf1red].gt(y).values)]
 
 
         intensities_A_inf2 = intensities_A[column].loc[inf2]
-        intensities_A_inf2[column] = intensities_A_inf2[(intensities_A_inf2.gt(neg_means_red).values) & (I_A.loc[inf2].gt(threshold_inf2).values)]
+        intensities_A_inf2[column] = intensities_A_inf2[(intensities_A_inf2.gt(neg_means_red).values) & (I_A.loc[inf2].gt(z).values)]
 
 
-    for column in intensities_B:
+    for column, x, y, z in zip(intensities_B, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list):
         I_B = (intensities_B).sum(axis=1)
         intensities_B_grn = intensities_B[column].loc[inf1grn]
-        intensities_B_grn[column] = intensities_B_grn[(intensities_B_grn.gt(neg_means_grn).values) & (I_B.loc[inf1grn].gt(threshold_inf1grn).values)]
+        intensities_B_grn[column] = intensities_B_grn[(intensities_B_grn.gt(neg_means_grn).values) & (I_B.loc[inf1grn].gt(x).values)]
 
 
         intensities_B_red = intensities_B[column].loc[inf1red]
-        intensities_B_red[column] = intensities_B_red[(intensities_B_red.gt(neg_means_red).values) & (I_B.loc[inf1red].gt(threshold_inf1red).values)]
+        intensities_B_red[column] = intensities_B_red[(intensities_B_red.gt(neg_means_red).values) & (I_B.loc[inf1red].gt(y).values)]
 
 
         intensities_B_inf2 = intensities_B[column].loc[inf2]
-        intensities_B_inf2[column] = intensities_B_inf2[(intensities_B_inf2.gt(neg_means_red).values) & (I_B.loc[inf2].gt(threshold_inf2).values)]
+        intensities_B_inf2[column] = intensities_B_inf2[(intensities_B_inf2.gt(neg_means_red).values) & (I_B.loc[inf2].gt(z).values)]
 
 
     # Extract normalization probes for Grn and Red, and form the dye bias correction constant
@@ -242,32 +261,36 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         intensities_B.loc[inf2] = intensities_B.loc[inf2] * corrections_grn
 
 
-
-
     ## Computing DNA methylation ratios (β values)
     #Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
 
     # Create DNAm ratios as B (methylated) over total
-
     probes.set_index(['Unnamed: 0'], inplace=True)
     probes.index.names = ['sample_id']
-    idx = probes[probes.index.str.contains('rs')].index
-    intensities = intensities_A.add(intensities_B, fill_value=0)
-
-    dnam = intensities_B.loc[intensities_B.index.difference(idx)]/intensities
-
-
-    ## SNPS
 
     intensities_A.set_index(probes.index, inplace=True)
     intensities_B.set_index(probes.index, inplace=True)
 
-    #snps = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=pd.unique(idat_files['sample.id']))
-    
-    idx = probes[probes.index.str.contains('rs')].index
-    snps = np.arctan2(intensities_B.loc[idx], intensities_A.loc[idx]) / (np.pi/2)
-    
+    idx = probes[probes.index.str.startswith('rs')].index ##'rs10796216', 'rs715359',..
 
+    intensities = intensities_A.add(intensities_B, fill_value=0)
+    intensities.set_index(probes.index, inplace=True)
+
+    intensities_A_wo = intensities_A.index.isin(idx)
+    intensities_B_wo = intensities_B.index.isin(idx)
+    intensities_wo = intensities.index.isin(idx)
+    #print (intensities_B[~intensities_B_wo]) #485512, 5
+
+    dnam = intensities_B[~intensities_B_wo] / np.sum(intensities[~intensities_wo])
+
+
+    ## SNPS
+
+    #snps = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=pd.unique(idat_files['sample.id']))
+
+    #idx = probes[probes.index.str.contains('rs')].index
+    snps = np.arctan2(intensities_B_wo, intensities_A_wo) / (np.pi/2)
+    print (snps)
 
     ### matching 
     # Extract all control probes data, and add summary statistics to samples table
@@ -285,22 +308,19 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         bg = ['BS Conversion I-U1', 'BS Conversion I-U2','BS Conversion I-U3']
         idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
-        idx_signal = controls['description'].isin(match_).index
-
-        #print (np.nanmean(controls_grn.loc[idx_signal]))  ### this is not the same as in R
-        #print (np.mean(controls_grn.loc[idx_bg]))
-        summary[column].loc['bc1_grn'] = (np.nanmean(controls_grn[column].loc[idx_signal])/np.mean(controls_grn[column].loc[idx_bg]))
-
+        idx_signal = controls['description'].isin(match_)
+        new_ind = controls_grn[idx_signal].index
+        summary[column].loc['bc1_grn'] = (np.nanmean(controls_grn[column].loc[new_ind])/np.mean(controls_grn[column].loc[idx_bg]))
 
         bg = ['BS Conversion I-U4', 'BS Conversion I-U5','BS Conversion I-U6']
         idx_bg = (controls[controls['description'].str.contains('|'.join(bg))]).index
-
         match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('U', 'C'))
-        idx_signal = controls['description'].isin(match_).index
-        summary[column].loc['bc1_red'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.mean(controls_red[column].loc[idx_bg]))
+        idx_signal = controls['description'].isin(match_)
+        new_ind = controls_red[idx_signal].index
+        summary[column].loc['bc1_red'] = (np.nanmean(controls_red[column].loc[new_ind])/np.mean(controls_red[column].loc[idx_bg]))
 
         idx = controls[controls['type'] == 'BISULFITE CONVERSION II'].index
-        summary[column].loc['bc2'] = np.nanmean(controls_red.loc[idx]/np.nanmean(controls_grn.loc[idx]))
+        summary[column].loc['bc2'] = np.nanmean(controls_red[column].loc[idx]/np.nanmean(controls_grn[column].loc[idx]))
 
         idd = controls[controls['description'] == 'Extension (A)'].index
         summary[column].loc['ext_a'] = controls_red[column].loc[idd].values
@@ -342,19 +362,30 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         controls[controls['description'] == 'GT Mismatch 3 (MM)'] = 'gt_mismatch_3_mm'
         bg = ['gt_mismatch_1_mm', 'gt_mismatch_2_mm', 'gt_mismatch_3_mm']
         idx_bg = controls[controls['description'].str.contains('|'.join(bg))].index
-        match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
-        idx_signal = controls['description'].isin(match_).index
+
+        controls[controls['description'] == 'GT Mismatch 1 (PM)'] = 'gt_mismatch_1_pm'
+        controls[controls['description'] == 'GT Mismatch 2 (PM)'] = 'gt_mismatch_2_pm'
+        controls[controls['description'] == 'GT Mismatch 3 (PM)'] = 'gt_mismatch_3_pm'
+        signal = ['gt_mismatch_1_pm', 'gt_mismatch_2_pm', 'gt_mismatch_3_pm']
+        idx_signal = controls[controls['description'].str.contains('|'.join(signal))].index
 
         summary[column].loc['spec1_grn'] = (np.nanmean(controls_grn[column].loc[idx_signal])/np.mean(controls_grn[column].loc[idx_bg]))
 
+    
         controls[controls['description'] == 'GT Mismatch 4 (MM)'] = 'gt_mismatch_4_mm'
         controls[controls['description'] == 'GT Mismatch 5 (MM)'] = 'gt_mismatch_5_mm'
         controls[controls['description'] == 'GT Mismatch 6 (MM)'] = 'gt_mismatch_6_mm'
-        bg = ['gt_mismatch_4_mm', 'gt_mismatch_5_mm', 'gt_mismatch_6_mm']
+        bg = ['gt_mismatch_4_', 'gt_mismatch_5_', 'gt_mismatch_6_']
         idx_bg = controls[controls['description'].str.contains('|'.join(bg))].index
-        match_ = controls['description'].loc[idx_bg].str.translate(str.maketrans('MM', 'PM'))
-        idx_signal = controls['description'].isin(match_).index
-        summary[column].loc['spec1_red'] = (np.nanmean(controls_red.loc[idx_signal])/np.mean(controls_red[column].loc[idx_bg]))
+
+        controls[controls['description'] == 'GT Mismatch 4 (PM)'] = 'gt_mismatch_4_pm'
+        controls[controls['description'] == 'GT Mismatch 5 (PM)'] = 'gt_mismatch_5_pm'
+        controls[controls['description'] == 'GT Mismatch 6 (PM)'] = 'gt_mismatch_6_pm'
+        signal = ['gt_mismatch_4_pm', 'gt_mismatch_5_pm', 'gt_mismatch_6_pm']
+        idx_signal = controls[controls['description'].str.contains('|'.join(signal))].index
+
+        summary[column].loc['spec1_red'] = (np.nanmean(controls_red[column].loc[idx_signal])/np.mean(controls_red[column].loc[idx_bg]))
+
 
         idx = controls[controls['type'] == 'SPECIFICITY II'].index
         summary[column].loc['spec2'] = (np.nanmean(controls_red[column].loc[idx])/np.mean(controls_grn[column].loc[idx]))
@@ -376,7 +407,6 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
         # match 6
         idx = probes[probes['chr'] == 'X'].index
-        dnam.set_index(probes.index, inplace=True)
         summary[column].loc['median_chrX'] = np.nanmedian(dnam[column].loc[idx], axis=0)
 
         idy = probes[probes['chr'] == 'Y'].index
@@ -384,7 +414,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         print (dnam[column].loc[idy].isna().sum())
         summary[column].loc['missing_chrY'] = dnam[column].loc[idy].isna().mean()
 
-    samples = summary.T
+    samples = summary
     cpgs = dnam.T
     snps = snps.T
 
