@@ -9,7 +9,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from CH3.python.illuminaio import list_idat
 from CH3.python.preprocess import preprocess
-#from CH3.python.quality_control_1 import snps_distribution_box, remove_unreliable_samples, k_mean_sex_infer, infer_sex, snps_distribution, identify_replicates, compare_sex, estimate_leukocytes
+from CH3.python.quality_control_1 import visualisation_plots
 
 start_time = timeit.default_timer()
 
@@ -60,18 +60,18 @@ samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = 
     idat_files_folder, min_beads=3, detection=0.05, return_intensities=True)
 print ('----------------------')
 print (samples['7800246024_R05C01'].round(4))
-print ('----------------------')
+
 
 print(timeit.default_timer() - start_time)
 
 
-print (type(samples)) #[5 rows x 23 columns]
-print (type(cpgs)) #[5 rows x 485577 columns]n
-print (type(snps)) # [5 rows x 65 columns]
-print (type(intensities_A)) # [485577 rows x 5 columns]
-print (type(intensities_B)) # [485577 rows x 5 columns]
-print (type(controls_grn)) #[835 rows x 5 columns]
-print (type(controls_red)) #[835 rows x 5 columns]
+#print (type(samples)) #[5 rows x 23 columns]
+#print (type(cpgs)) #[5 rows x 485577 columns]n
+#print (type(snps)) # [5 rows x 65 columns]
+#print (type(intensities_A)) # [485577 rows x 5 columns]
+#print (type(intensities_B)) # [485577 rows x 5 columns]
+#print (type(controls_grn)) #[835 rows x 5 columns]
+#print (type(controls_red)) #[835 rows x 5 columns]
 
 #samples.to_csv('samples_pre.csv')
 #cpgs.to_csv('cpgs_pre.csv')
@@ -80,33 +80,37 @@ print (type(controls_red)) #[835 rows x 5 columns]
 
 ## Quality control
 # create 3 plots
-#snps_distribution_box(snps, 1, samples, cpgs)
 
-#samples, cpgs, covars = remove_unreliable_samples(samples, 0.1, cpgs, covars)
+# Boxplot of the 'bc1.grn','bc1.red','bc2' for sample i
+samples = samples.T
+df = samples[['bc1_grn','bc1_red','bc2']]
+sns.boxplot(x="variable", y="value", data=pd.melt(df)).set_title("Boxplot")
+plt.show()
 
+# Plot of the histgram of the missing sample per row with the threshold
+samples_prop_na=samples['missing']
+thresh = 0.1
+plt.hist(samples_prop_na)
+plt.title('Distribution of missing variables per row')
+plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+plt.show()
 
-#creates plots and prints stuff
-#k_mean_sex_infer(samples)
-#plt.close()
+# Plot of the histgram of the missing sample per column with the threshold
+samples_col_missing = samples.isnull().mean(axis=0)
+thresh = 0.1
+plt.hist(samples_col_missing,bins=100, edgecolor="none")
+plt.title('Distribution of missing variables per column')
+plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+plt.show()
 
-'''
-# returns samples and plots (it is not plotting!)
-samples = infer_sex(samples, 0.37, 0.39)
+# Plot of the methylation β-value-distribution, expecting a bimodal distribution
+common_1=cpgs.index.intersection(samples.index)
+cpgs=cpgs.loc[common_1]
+cpgs_1=cpgs.iloc[i,:]
+sns.distplot(cpgs_1, hist=True, kde=True, 
+bins=int(180/5), color = 'darkblue', 
+hist_kws={'edgecolor':'black'},
+kde_kws={'linewidth': 4}).set_title("Methylation β-value-distribution")
+plt.show()
 
-#snps plotting distribution
-snps_distribution (snps, 3)
-plt.close()
-
-#plots and prints
-identify_replicates(snps, 44, samples)
-plt.close()
-
-#plotting
-compare_sex(covars, samples)
-plt.close()
-
-##last function
-#, estimate_leukocytes
-
-'''
 
