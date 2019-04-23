@@ -59,7 +59,7 @@ samples_sheet = samples_sheet[None]
 samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocess(probes_file, controls_file,
     idat_files_folder, min_beads=3, detection=0.05, return_intensities=True)
 print ('----------------------')
-print (samples['7800246024_R05C01'].round(4))
+print (samples["7800246024_R02C01"].round(4))
 
 
 print(timeit.default_timer() - start_time)
