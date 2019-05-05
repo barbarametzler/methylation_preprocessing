@@ -8,6 +8,8 @@ import pyreadr
 import pandas as pd
 import numpy as np
 from scipy.stats import norm
+from sklearn import preprocessing
+
 from CH3.python.illuminaio import list_idat
 
 
@@ -105,7 +107,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     data4 = load_data(beads4)
     data5 = load_data(beads5)
 
-    data_list = [data5, data1, data2, data3, data4]
+    data_list = [data1, data2, data3, data4, data5]
 
     probes, controls = read_manifests(probes_file, controls_file)
 
@@ -117,11 +119,11 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
     ## create intensities
     ## create empty dataframes to append to
-    intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
-    intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=pd.unique(idat_files['sample.id']))
+    intensities_A = pd.DataFrame(np.nan, index=probes.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
+    intensities_B = pd.DataFrame(np.nan, index=probes.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
 
-    controls_grn = pd.DataFrame(np.nan, index=controls.index, columns=pd.unique(idat_files['sample.id']))
-    controls_red = pd.DataFrame(np.nan, index=controls.index, columns=pd.unique(idat_files['sample.id']))
+    controls_grn = pd.DataFrame(np.nan, index=controls.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
+    controls_red = pd.DataFrame(np.nan, index=controls.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
 
 
     ##Separation of unmethylated and methylated intensities
@@ -149,8 +151,6 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= min_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
         intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
-    #print ((data.loc[ad_a_red, 'red_n'] >= 3).value_counts())
-    #print (data.head())
 
     for column, data in zip(intensities_B, data_list):
         intensities_B[column].loc[inf1grn] = np.where(data.loc[ad_b_grn, 'grn_n'] >= min_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan)
@@ -326,8 +326,24 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     intensities_wo = intensities.index.isin(idx)
     #print (intensities_B[~intensities_B_wo]) #485512, 5
 
+      
     dnam = intensities_B[~intensities_B_wo] / np.sum(intensities[~intensities_wo])
+
+    '''
+    x = dnam1.values #returns a numpy array
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(x)
+    dnamm = pd.DataFrame(x_scaled)
+
+    dnam = dnamm.set_index(dnam1.index)
+    dnam.columns=dnam1.columns.values
+
+    #print (dnam.head(50))
+    #print (dnam.info)
+    #print (dnam.iloc[:,4].mean())
     
+    '''
+
     ## SNPS
 
     snps_theta = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=pd.unique(idat_files['sample.id']))
@@ -445,6 +461,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         idx_signal = controls[controls['description'] == ('DNP (High)')].index
         summary[column].loc['st_red'] = controls_red[column].loc[idx_signal].values / controls_red[column].loc[idx_bg].values
 
+        
         # match 5
         idx = controls[controls['type'] == ('TARGET REMOVAL')].index
         summary[column].loc['tr'] = np.nanmax(controls_grn[column].loc[idx], axis=0)
@@ -457,15 +474,19 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
         idy = probes[probes['chr'] == 'Y'].index
         ## less missing values as in R code? 
-        #print ("missing values dnam per column")
-        #print (dnam[column].loc[idy].isna().sum())
+        print ("missing values dnam per column")
+        print (dnam[column].loc[idy].isna().sum())
         summary[column].loc['missing_chrY'] = dnam[column].loc[idy].isna().mean()
 
-    samples = summary
-    cpgs = dnam.T
-    snps = snps_theta.T
+        
 
-    print(dnam.shape)
+        ## 
+    cpgs = pd.read_csv("CH3/python/testing/cpgs.csv",index_col='Unnamed: 0', engine='c')
+
+
+    samples = summary
+    #cpgs = dnam.T
+    snps = snps_theta.T
 
 
     if return_intensities == True:

@@ -7,6 +7,7 @@ import pyreadr
 import timeit
 import seaborn as sns
 import matplotlib.pyplot as plt
+from tabulate import tabulate
 from CH3.python.illuminaio import list_idat
 from CH3.python.preprocess import preprocess
 from CH3.python.quality_control_1 import visualisation_plots
@@ -61,8 +62,11 @@ samples_sheet = samples_sheet[None]
 #for id, df in enumerate(data_list):
 samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocess(probes_file, controls_file,
     idat_files_folder, min_beads=3, detection=0.05, return_intensities=True)
-print ('----------------------')
-print (samples["7800246024_R02C01"].round(4))
+
+print(tabulate(samples, headers='keys', tablefmt='psql'))
+
+#print (samples.info)
+#print (samples["7800246024_R05C01"].round(4))
 
 
 print(timeit.default_timer() - start_time)
@@ -84,8 +88,9 @@ print(timeit.default_timer() - start_time)
 ## Quality control
 # create 3 plots
 
+'''
 # Boxplot of the 'bc1.grn','bc1.red','bc2' for sample i
-samples = samples.T
+#samples = samples.T
 df = samples[['bc1_grn','bc1_red','bc2']]
 sns.boxplot(x="variable", y="value", data=pd.melt(df)).set_title("Boxplot")
 plt.show()
@@ -115,5 +120,5 @@ bins=int(180/5), color = 'darkblue',
 hist_kws={'edgecolor':'black'},
 kde_kws={'linewidth': 4}).set_title("Methylation β-value-distribution")
 plt.show()
-
+'''
 

@@ -100,18 +100,18 @@ covars.set_index('sample_id',inplace=True)
       
 def visualisation_plots(snps,i,samples,cpgs):
     
-        # Boxplot of the 'bc1.grn','bc1.red','bc2' for sample i
-        df = samples[['bc1.grn','bc1.red','bc2']]
+        # Boxplot of the 'bc1_grn','bc1_red','bc2' for sample i
+        df = samples[['bc1_grn','bc1_red','bc2']]
         sns.boxplot(x="variable", y="value", data=pd.melt(df)).set_title("Boxplot")
         plt.show()
         
         # Plot of the histgram of the missing sample per row with the threshold
         samples_prop_na=samples['missing']
         thresh = 0.1
-        plt.hist(samples_prop_na)
-        plt.title('Distribution of missing variables per row')
-        plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
-        plt.show()
+        #plt.hist(samples_prop_na)
+        #plt.title('Distribution of missing variables per row')
+        #plt.axvline(x=thresh, color='r', linestyle='dashed', linewidth=2)
+        #plt.show()
         
         # Plot of the histgram of the missing sample per column with the threshold
         samples_col_missing = samples.isnull().mean(axis=0)
@@ -137,7 +137,7 @@ def visualisation_plots(snps,i,samples,cpgs):
 #-----------------------------------------------------------------------------------------#    
 
 # Remove variables based on percentage of missing variables and quality check of 
-# bc1.grn,bc1.red and bc2
+# bc1_grn,bc1_red and bc2
             
 def remove_unreliable_samples(samples,threshold,cpgs,covars):
         
@@ -148,7 +148,7 @@ def remove_unreliable_samples(samples,threshold,cpgs,covars):
     cpgs=cpgs[cpgs.columns[cpgs.isnull().mean() < threshold]]   
     
     # Remove unreliable reading of less than 1
-    samples=samples.loc[(samples['bc1.grn']>1)&(samples['bc1.red']>1)&(samples['bc2']>1)]
+    samples=samples.loc[(samples['bc1_grn']>1)&(samples['bc1_red']>1)&(samples['bc2']>1)]
 
     # Subset the data based on the previous conditions
     cpgs=cpgs.loc[samples.index.intersection(cpgs.index)]
@@ -172,7 +172,7 @@ def k_mean_sex_infer(samples):
     import sklearn.metrics as sm
     
 
-    x=samples[['median.chrX','missing.chrY']]
+    x=samples[['median_chrX','missing_chrY']]
     
     # Apply the Kmeans clustering method with predefined clusters
     model = KMeans(n_clusters=2, init=np.array(((0.25,0.1),(0.5,0.7))),algorithm="elkan")
@@ -188,13 +188,13 @@ def k_mean_sex_infer(samples):
     
     # Plot the Original Classifications
     plt.subplot(1, 2, 1)
-    plt.scatter(x['median.chrX'], x['missing.chrY'], s=40)
+    plt.scatter(x['median_chrX'], x['missing_chrY'], s=40)
     plt.title('Original Plot Without Classification')
     plt.show()
      
     # Plot the Model Classifications
     plt.subplot(1, 2, 2)
-    plt.scatter(x['median.chrX'], x['missing.chrY'], c=colormap[model.labels_], s=40)
+    plt.scatter(x['median_chrX'], x['missing_chrY'], c=colormap[model.labels_], s=40)
     plt.title('K Mean Classification')
     plt.show()
     
@@ -225,10 +225,10 @@ def infer_sex(samples,threshold_chrX=0.37,threshold_chrY=0.39):
                       #if median_chrX' > 0.37 and missing Y chromosome is bigger than 0.39 then F
                       # Otherwise set the value to NaN
                       
-    samples.loc[(samples['median.chrX'] < threshold_chrX) & (samples['missing.chrY'] < threshold_chrY), 'sex'] = 'M'
-    samples.loc[(samples['median.chrX'] > threshold_chrX) & (samples['missing.chrY'] > threshold_chrY), 'sex'] = 'F'
-    samples.loc[(samples['median.chrX'] < threshold_chrX) & (samples['missing.chrY'] > threshold_chrY), 'sex'] = np.nan
-    samples.loc[(samples['median.chrX'] > threshold_chrX) & (samples['missing.chrY'] < threshold_chrY), 'sex'] = np.nan    
+    samples.loc[(samples['median_chrX'] < threshold_chrX) & (samples['missing_chrY'] < threshold_chrY), 'sex'] = 'M'
+    samples.loc[(samples['median_chrX'] > threshold_chrX) & (samples['missing_chrY'] > threshold_chrY), 'sex'] = 'F'
+    samples.loc[(samples['median_chrX'] < threshold_chrX) & (samples['missing_chrY'] > threshold_chrY), 'sex'] = np.nan
+    samples.loc[(samples['median_chrX'] > threshold_chrX) & (samples['missing_chrY'] < threshold_chrY), 'sex'] = np.nan    
     
     # Count the number of males and females
     num_males=samples.loc[samples.sex == 'M', 'sex'].count()
@@ -238,7 +238,7 @@ def infer_sex(samples,threshold_chrX=0.37,threshold_chrY=0.39):
     
     genders=['F','M']
     fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
-    fg.map(plt.scatter, 'median.chrX', 'missing.chrY')
+    fg.map(plt.scatter, 'median_chrX', 'missing_chrY')
     plt.legend(loc='upper left')
     plt.show()
  
@@ -347,7 +347,7 @@ def compare_sex(covars,samples):
     # Plot the graph for sex classification and identify the mismmaches
     genders=['F','M','U']
     fg = sns.FacetGrid(data=samples, hue='sex', hue_order=genders, aspect=1.61)
-    fg.map(plt.scatter, 'median.chrX', 'missing.chrY').add_legend()
+    fg.map(plt.scatter, 'median_chrX', 'missing_chrY').add_legend()
     plt.legend(loc='upper left')
     plt.show()
     

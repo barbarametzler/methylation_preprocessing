@@ -26,6 +26,8 @@ import pyreadr
 
 from CH3.python.quality_control_1 import visualisation_plots, remove_unreliable_samples, k_mean_sex_infer, infer_sex, call_snps, identify_replicates, compare_sex
 
+
+'''
 control_beads = pyreadr.read_r('/Users/nicolasagrotis/Desktop/illuminAlysis/illumiData/hm450_controls.Rds')
 control_beads = control_beads[None]
 
@@ -67,6 +69,54 @@ covars=covars.loc[common]
 covars['sample_id']=samples_sheet['sample.id']
 covars.set_index('sample_id',inplace=True)
 
+
+'''
+##### added Barbs
+
+
+## load dependencies
+import pandas as pd
+import numpy as np
+import sys
+import os
+import pyreadr
+import timeit
+import seaborn as sns
+import matplotlib.pyplot as plt
+from CH3.python.illuminaio import list_idat
+from CH3.python.preprocess import preprocess
+from CH3.python.quality_control_1 import visualisation_plots
+
+
+probes_file = 'CH3/python/testing/probes_1.csv'
+controls_file = 'CH3/python/testing/control_beads.csv'
+idat_files_folder = 'idat'
+
+
+#control_beads = spyreadr.read_r('/Users/metzlerabarbara/Documents/GitHub/methylation_preprocessing/Python_package/CH3/illumina_manifests/hm450_controls.rds')
+#control_beads = control_beads[None]
+
+# load covars
+covars = pyreadr.read_r('Covariates.Rds')
+covars = covars[None]
+covars.set_index('gsm',inplace=True)
+
+
+# load sample sheet
+samples_sheet = pyreadr.read_r('Sample_sheet.Rds')
+samples_sheet = samples_sheet[None]
+
+
+
+##Preprocessing
+
+#for id, df in enumerate(data_list):
+samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocess(probes_file, controls_file,
+    idat_files_folder, min_beads=3, detection=0.05, return_intensities=True)
+
+#cpgs = pd.read_csv("/Users/metzlerabarbara/Downloads/cpgs.csv",index_col='Unnamed: 0', engine='c')
+
+
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
 # Visualisation of data 
@@ -92,7 +142,7 @@ samples,cpgs,covars=remove_unreliable_samples(samples,0.1,cpgs,covars)
 # Apply a K-means classification model to investigate the clustering of males and 
 # females based on the missing Y chromosome and the median X chromosome
 
-k_mean_sex_infer(samples)
+#k_mean_sex_infer(samples)
 
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------#
 
