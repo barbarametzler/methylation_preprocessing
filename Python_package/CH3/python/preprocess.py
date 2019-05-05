@@ -92,11 +92,12 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
     ### quick solution - needs to be removed in final package
 
-    beads5 = '/python/dnam/R05C01_beads.csv'
-    beads4 = '/python/dnam/R04C01_beads.csv'
-    beads3 = '/python/dnam/R03C01_beads.csv'
-    beads2 = '/python/dnam/R02C01_beads.csv'
-    beads1 = '/python/dnam/R01C01_beads.csv'
+    beads5 = 'CH3/python/dnam/R05C01_beads.csv'
+    beads4 = 'CH3/python/dnam/R04C01_beads.csv'
+    beads3 = 'CH3/python/dnam/R03C01_beads.csv'
+    beads2 = 'CH3/python/dnam/R02C01_beads.csv'
+    beads1 = 'CH3/python/dnam/R01C01_beads.csv'
+
 
     data1 = load_data(beads1)
     data2 = load_data(beads2)
