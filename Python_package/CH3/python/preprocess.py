@@ -92,11 +92,11 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
     ### quick solution - needs to be removed in final package
 
-    beads5 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R05C01_beads.csv'
-    beads4 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R04C01_beads.csv'
-    beads3 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R03C01_beads.csv'
-    beads2 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R02C01_beads.csv'
-    beads1 = '/Users/metzlerabarbara/Library/Mobile Documents/com~apple~CloudDocs/dnam/R01C01_beads.csv'
+    beads5 = '/dnam/R05C01_beads.csv'
+    beads4 = '/dnam/R04C01_beads.csv'
+    beads3 = '/dnam/R03C01_beads.csv'
+    beads2 = '/dnam/R02C01_beads.csv'
+    beads1 = '/dnam/R01C01_beads.csv'
 
     data1 = load_data(beads1)
     data2 = load_data(beads2)
