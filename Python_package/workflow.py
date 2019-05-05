@@ -41,6 +41,9 @@ controls_file = 'CH3/python/testing/control_beads.csv'
 idat_files_folder = 'idat'
 
 
+#control_beads = spyreadr.read_r('/Users/metzlerabarbara/Documents/GitHub/methylation_preprocessing/Python_package/CH3/illumina_manifests/hm450_controls.rds')
+#control_beads = control_beads[None]
+
 # load covars
 covars = pyreadr.read_r('Covariates.Rds')
 covars = covars[None]
