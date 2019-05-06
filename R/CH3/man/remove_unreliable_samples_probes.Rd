@@ -19,10 +19,13 @@ remove_unreliable_samples_probes(dnam, threshold_NA_sample = 0.1,
 \item{plot}{\code{TRUE} for quality control plots showing NA fractions per row/column, bc-failure and average methylation beta-value-distribution among all samples}
 }
 \value{
-Returns list in same format as preprocess(
+Returns list in same format as \link{preprocess}
 }
 \description{
 Samples are deemed unreliable if they have too many NA values in CpG matrix or have failed bisulfite conversion according to 3 summary statistics in samples dataframe (bc1.grn, bc1.red, bc2). CpG sites are deemed unreliable if they have too many NA values.
+}
+\references{
+Illumina BeadArray Controls Reporter Software Guide (Document #1000000004009 v00, October 2015): https://support.illumina.com/content/dam/illumina-support/documents/documentation/chemistry_documentation/infinium_assays/infinium_hd_methylation/beadarray-controls-reporter-user-guide-1000000004009-00.pdf
 }
 \seealso{
 \link{preprocess}
