@@ -63,7 +63,7 @@ samples_sheet = samples_sheet[None]
 samples, cpgs, snps, intensities_A, intensities_B, controls_red, controls_grn = preprocess(probes_file, controls_file,
     idat_files_folder, min_beads=3, detection=0.05, return_intensities=True)
 
-print(tabulate(samples, headers='keys', tablefmt='psql'))
+print(tabulate(samples, headers='keys', tablefmt='psql')) # numalign="right"))
 
 #print (samples.info)
 #print (samples["7800246024_R05C01"].round(4))
