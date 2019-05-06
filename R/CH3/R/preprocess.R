@@ -10,7 +10,7 @@
 #' @param return_snps_r returns matrix containing SNP r-coordinate in polar coordinate system
 #' @param verbose prints timestamp per sample and overall time taken
 #'
-#' @return Returns list with at least three elements:
+#' @return Returns a list with at least three elements:
 #' \enumerate{
 #'   \item \code{samples}-dataframe containing sample metadata and summary statistics
 #'   \item \code{cpgs}-matrix containing CpG beta-values (= methylation proportions)

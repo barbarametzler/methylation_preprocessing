@@ -11,13 +11,15 @@
 #' @param bc_threshold samples that failed bisulfite conversion (bc) according to this lower-threshold for bc-summary-statistics in samples dataframe will be removed (default 1)
 #' @param plot \code{TRUE} for quality control plots showing NA fractions per row/column, bc-failure and average methylation beta-value-distribution among all samples
 #'
-#' @return Returns list in same format as preprocess(
+#' @return Returns list in same format as \link{preprocess}
+#'
+#' @references Illumina BeadArray Controls Reporter Software Guide (Document #1000000004009 v00, October 2015): https://support.illumina.com/content/dam/illumina-support/documents/documentation/chemistry_documentation/infinium_assays/infinium_hd_methylation/beadarray-controls-reporter-user-guide-1000000004009-00.pdf
 #'
 #' @seealso \link{preprocess}
 #'
 #' @export
 remove_unreliable_samples_probes = function(dnam, threshold_NA_sample = 0.1, threshold_NA_cpg = 0.2, bc_threshold = 1, plot=T) {
-  # Define samples with failed bisulfite conversion (Illumina recommends threshold of 1 (Heiss 2019, https://doi.org/10.1186/s13148-019-0615-3)
+  # Define samples with failed bisulfite conversion (Illumina recommends threshold of 1: Illumina BeadArray Controls Reporter Software Guide (Document #1000000004009 v00, October 2015): https://support.illumina.com/content/dam/illumina-support/documents/documentation/chemistry_documentation/infinium_assays/infinium_hd_methylation/beadarray-controls-reporter-user-guide-1000000004009-00.pdf)
   bc1_grn_failed = dnam$samples$bc1.grn < bc_threshold
   bc1_red_failed = dnam$samples$bc1.red < bc_threshold
   bc2_failed = dnam$samples$bc2 < bc_threshold
@@ -43,7 +45,7 @@ remove_unreliable_samples_probes = function(dnam, threshold_NA_sample = 0.1, thr
     boxplot(c(dnam$samples$bc1.grn, dnam$samples$bc1.red, dnam$samples$bc2) ~ rep(c("BC1 green", "BC1 red", "BC2"), each=nrow(dnam$samples)), ylim=c(0,50), main=paste0(sum(bc1_grn_failed, bc1_red_failed, bc2_failed), "/", nrow(dnam$samples), " samples failed bisulfite conversion"))
     abline(h=bc_threshold)
 
-    plot(density(colMeans(eira$cpgs[keep_samples, keep_cpgs], na.rm=T), from=0, to=1), las=1, lwd=2, col="navy", main="Avg. methylation β-value-distribution", xlab="")
+    plot(density(colMeans(dnam$cpgs[keep_samples, keep_cpgs], na.rm=T), from=0, to=1), las=1, lwd=2, col="navy", main="Avg. methylation β-value-distribution", xlab="")
 
     par(op)
   }
@@ -141,7 +143,7 @@ infer_sex = function(dnam, kmeans=kmeans_default, centroids=centroids_default, p
 compare_sex = function(dnam, specified_sex, kmeans=kmeans_default, centroids=centroids_default, plot=T) {
   stopifnot(rownames(dnam$samples) %in% names(specified_sex))
 
-  specified_sex = specified_sex[rownames(eira$samples)]
+  specified_sex = specified_sex[rownames(dnam$samples)]
   inferred_sex = infer_sex(dnam, kmeans, centroids, plot=F)
 
   if (plot) {
@@ -204,7 +206,7 @@ call_snps = function(dnam, non_carrier_threshold = 0.2, homozygous_threshold = 0
 #'
 #' @export
 snp_distance = function(dnam, plot_histogram=TRUE, plot_heatmap=FALSE) {
-  dist = dist(call_snps(dnam), method="manhattan")
+  dist = dist(call_snps(dnam, plot=F), method="manhattan")
 
   if (plot_histogram) {
     hist(dist, main="Genotype distance according to all SNPs", xlab="Absolute number of different alleles", freq=F)
@@ -236,7 +238,7 @@ identify_replicates = function(dnam, snp_distance_margin = 0, kmeans=kmeans_defa
   snp.distance = snp_distance(dnam, plot_histogram=F)
 
   # Identify possible replicate pairs: those with (near) zero SNP distance
-  replicate_ids_in_lower_tri = which(snp.distance < snp_distance_margin)
+  replicate_ids_in_lower_tri = which(snp.distance <= snp_distance_margin)
 
   if (!length(replicate_ids_in_lower_tri)) return(0)
 

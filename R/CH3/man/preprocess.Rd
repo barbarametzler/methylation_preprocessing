@@ -23,7 +23,7 @@ preprocess(platform, input_folder, min_beads = 3, detection = 0.05,
 \item{verbose}{prints timestamp per sample and overall time taken}
 }
 \value{
-Returns list with at least three elements:
+Returns a list with at least three elements:
 \enumerate{
   \item \code{samples}-dataframe containing sample metadata and summary statistics
   \item \code{cpgs}-matrix containing CpG beta-values (= methylation proportions)
