@@ -71,7 +71,8 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
     def load_data(csv_file):
         data = pd.read_csv(csv_file)
-        data.columns = ['sample_id', 'grn_n', 'grn_mean', 'grn_sd', 'red_n', 'red_mean', 'red_sd']
+        data.columns = ['probe_address', 'grn_n', 'grn_mean', 'grn_sd', 'red_n', 'red_mean', 'red_sd']
+        data.set_index(['probe_address'], inplace=True)
         return data
 
     def read_manifests(probes_file, controls_file):
@@ -87,8 +88,8 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         controls.index.names = ['sample_id']
 
         probes = pd.read_csv(probes_file, low_memory=True)
-        #probes.set_index(['Unnamed: 0'], inplace=True)
-        #probes.index.names = ['sample_id']
+        probes.set_index(['Unnamed: 0'], inplace=True)
+        probes.index.names = ['probe_address']
         return probes, controls
 
 
@@ -107,9 +108,12 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     data4 = load_data(beads4)
     data5 = load_data(beads5)
 
+    print (data1.head(50), data1.shape)
+
     data_list = [data1, data2, data3, data4, data5]
 
     probes, controls = read_manifests(probes_file, controls_file)
+
 
     ## preparation of outputs
     inf1grn = probes[probes['type'] == "I-Grn"]
@@ -125,30 +129,47 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     controls_grn = pd.DataFrame(np.nan, index=controls.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
     controls_red = pd.DataFrame(np.nan, index=controls.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
 
+    print (intensities_A.shape)
 
     ##Separation of unmethylated and methylated intensities
     # Separate Grn/Red intensities into A (unmethylated) and B (methylated) intensities
     # depending on their type
 
-    ad_a_grn = (probes['address.a'].loc[probes['type'] == 'I-Grn']).index
-    ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn']).index
-    ad_a_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
-    ad_b_red = (probes['address.b'].loc[probes['type'] == 'I-Red']).index
-    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'II']).index
+    ad_a_grn = (probes['address.a'].loc[probes['type'] == 'I-Grn'])
+    ad_b_grn = (probes['address.b'].loc[probes['type'] == 'I-Grn'])
+    ad_a_red = (probes['address.b'].loc[probes['type'] == 'I-Red'])
+    ad_b_red = (probes['address.b'].loc[probes['type'] == 'I-Red'])
+    ad_a_inf = (probes['address.a'].loc[probes['type'] == 'II'])
 
     inf1grn = probes[probes['type'] == "I-Grn"].index
     inf1red = probes[probes['type'] == "I-Red"].index
     inf2 = probes[probes['type'] == "II"].index
 
     con_ind = controls.index
-    sample_ids = pd.unique(idat_files['sample.id'])
+    sample_ids = np.sort(pd.unique(idat_files['sample.id']))
 
 
     #loop over sample id index and fill out rows based on if value is in data
 
-    for column, data in zip(intensities_A, data_list):        
+    for column, data in zip(intensities_A, data_list):  
+
+
         intensities_A[column].loc[inf1grn] = np.where(data.loc[ad_a_grn, 'grn_n'] >= min_beads, data.loc[ad_a_grn, 'grn_mean'], np.nan)
+        
+        #print(data.loc[ad_a_grn,:][data.loc[ad_a_grn, 'grn_n'] > 45])
+
+        #print (data.loc[ad_a_grn])
+        #print (data.loc[ad_a_grn, 'grn_n'] >= min_beads)
+        #print (intensities_A[column].loc[inf1grn].isna().sum())
+
+        #data.loc[ad_a_grn].to_csv('data_ad_a_grn.csv')
+
+        #pd.to_csv(data.loc[ad_a_grn])
+
         intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= min_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
+        
+
+
         intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
 
@@ -157,7 +178,6 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= min_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
         intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
-
     z = norm.ppf(1 - detection)
 
     neg_means_grn_list = []
@@ -165,9 +185,9 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     threshold_inf1grn_list = []
 
     for column, data in zip(controls_grn, data_list):
-        dataa = data.set_index('sample_id')
-        controls_grn[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'grn_n'] > 0,
-                                                      dataa.loc[con_ind, 'grn_mean'],
+        #dataa = data.set_index('probe_address')
+        controls_grn[column].loc[con_ind] = np.where(data.loc[con_ind, 'grn_n'] > 0,
+                                                      data.loc[con_ind, 'grn_mean'],
                                                       np.nan)
         
 
@@ -186,9 +206,9 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     threshold_inf1red_list = []
 
     for column, data in zip(controls_red, data_list):
-        dataa = data.set_index('sample_id')
-        controls_red[column].loc[con_ind] = np.where(dataa.loc[con_ind, 'red_n'] > 0,
-                                                      dataa.loc[con_ind, 'red_mean'],
+        #dataa = data.set_index('probe_address')
+        controls_red[column].loc[con_ind] = np.where(data.loc[con_ind, 'red_n'] > 0,
+                                                      data.loc[con_ind, 'red_mean'],
                                                       np.nan)
 
         neg_beads_red = controls[controls['type'] == "NEGATIVE"].index
@@ -202,6 +222,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
 
     threshold_inf2_list =[]
+
     ## Defining a threshold of detection
     for x, y, j, i in zip(neg_means_grn_list, neg_means_red_list, neg_sds_grn_list, neg_sds_red_list):
         neg_means_ = (x + y)
@@ -310,8 +331,8 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     #Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
 
     # Create DNAm ratios as B (methylated) over total
-    probes.set_index(['Unnamed: 0'], inplace=True)
-    probes.index.names = ['sample_id']
+    #probes.set_index(['Unnamed: 0'], inplace=True)
+    #probes.index.names = ['sample_id']
 
     intensities_A.set_index(probes.index, inplace=True)
     intensities_B.set_index(probes.index, inplace=True)
@@ -324,9 +345,9 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     intensities_A_wo = intensities_A.index.isin(idx)
     intensities_B_wo = intensities_B.index.isin(idx)
     intensities_wo = intensities.index.isin(idx)
+    
     #print (intensities_B[~intensities_B_wo]) #485512, 5
-
-      
+ 
     dnam = intensities_B[~intensities_B_wo] / np.sum(intensities[~intensities_wo])
 
     '''
@@ -346,17 +367,17 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
     ## SNPS
 
-    snps_theta = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=pd.unique(idat_files['sample.id']))
-    snps_r = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=pd.unique(idat_files['sample.id']))
+    snps_theta = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=np.sort(pd.unique(idat_files['sample.id'])))
+    snps_r = pd.DataFrame(np.nan, index=probes.loc[idx].index, columns=np.sort(pd.unique(idat_files['sample.id'])))
     
-    #idx = probes[probes.index.str.contains('rs')].index
-    snps_theta[column] = np.arctan2(intensities_B[intensities_B_wo][column], intensities_A[intensities_A_wo][column]) #/ (np.pi/2)
-
+    idx = probes[probes.index.str.contains('rs')].index
+    snps_theta[column] = np.arctan2(intensities_B[intensities_B_wo][column], intensities_A[intensities_A_wo][column])/ (np.pi/2)
+    snps_r[column] = np.sqrt(np.sum(intensities.loc[idx]**2))
 
     ### matching 
     # Extract all control probes data, and add summary statistics to samples table
 
-    summary = pd.DataFrame(np.nan, columns=pd.unique(idat_files['sample.id']), 
+    summary = pd.DataFrame(np.nan, columns=np.sort(pd.unique(idat_files['sample.id'])), 
         index=['bc1_grn', 'bc1_red', 'bc2', 'ext_a', 'ext_c', 'ext_g', 'ext_t',
                 'hyp_low', 'hyp_med', 'hyp_high', 'np_a', 'np_c',
                 'np_g', 'np_t', 'spec1_grn', 'spec1_red', 'spec2', 'st_grn', 'st_red',
@@ -460,7 +481,6 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         idx_bg = controls[controls['description'] == ('DNP (Bkg)')].index
         idx_signal = controls[controls['description'] == ('DNP (High)')].index
         summary[column].loc['st_red'] = controls_red[column].loc[idx_signal].values / controls_red[column].loc[idx_bg].values
-
         
         # match 5
         idx = controls[controls['type'] == ('TARGET REMOVAL')].index
@@ -478,14 +498,13 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         print (dnam[column].loc[idy].isna().sum())
         summary[column].loc['missing_chrY'] = dnam[column].loc[idy].isna().mean()
 
-        
 
         ## 
-    cpgs = pd.read_csv("CH3/python/testing/cpgs.csv",index_col='Unnamed: 0', engine='c')
+    #cpgs = pd.read_csv("CH3/python/testing/cpgs.csv",index_col='Unnamed: 0', engine='c')
 
 
     samples = summary
-    #cpgs = dnam.T
+    cpgs = dnam.T
     snps = snps_theta.T
 
 
