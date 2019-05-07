@@ -128,7 +128,6 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     controls_grn = pd.DataFrame(np.nan, index=controls.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
     controls_red = pd.DataFrame(np.nan, index=controls.index, columns=np.sort(pd.unique(idat_files['sample.id'])))
 
-    print (intensities_A.shape)
 
     ##Separation of unmethylated and methylated intensities
     # Separate Grn/Red intensities into A (unmethylated) and B (methylated) intensities
@@ -155,11 +154,18 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         intensities_A[column].loc[inf1red] = np.where(data.loc[ad_a_red, 'red_n'] >= min_beads, data.loc[ad_a_red, 'red_mean'], np.nan)
         intensities_A[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'grn_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
 
+    
+
+        ##checked - the same
 
     for column, data in zip(intensities_B, data_list):
         intensities_B[column].loc[inf1grn] = np.where(data.loc[ad_b_grn, 'grn_n'] >= min_beads, data.loc[ad_b_grn, 'grn_mean'], np.nan)
         intensities_B[column].loc[inf1red] = np.where(data.loc[ad_b_red, 'red_n'] >= min_beads, data.loc[ad_b_red, 'red_mean'], np.nan)
         intensities_B[column].loc[inf2] = np.where(data.loc[ad_a_inf, 'red_n'] >= min_beads, data.loc[ad_a_inf, 'grn_mean'], np.nan)
+
+    #print (intensities_B.head())
+    #print (intensities_A.describe())
+    #print (intensities_B.describe())
 
     z = norm.ppf(1 - detection)
 
@@ -171,7 +177,7 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         controls_grn[column].loc[con_ind] = np.where(data.loc[con_ind, 'grn_n'] > 0,
                                                       data.loc[con_ind, 'grn_mean'],
                                                       np.nan)
-        
+        #checked- the same
 
         neg_beads_grn = controls[controls['type'] == "NEGATIVE"].index
         neg_means_grn = (controls_grn[column].loc[neg_beads_grn]).mean()
@@ -209,36 +215,61 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         threshold_inf2 = neg_means_ + z * np.sqrt(j**2 + i**2 )
         threshold_inf2_list.append(threshold_inf2)
 
+    ## thresholds are the same
 
     # Censoring of values below the detection limit and background subtraction
     # Background subtraction
 
+
+    I = pd.concat([intensities_A, intensities_B], axis=1)
+
+    for column in intensities_A:
+        I[column] = I[column].sum(axis=1) 
+
+    I = I.loc[:,~I.columns.duplicated()]
+    print (I)
+
     for column, x, y, z, a, b in zip(intensities_A, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
 
-        intensities_A[column].loc[inf1grn] = (np.where((intensities_A[column].loc[inf1grn].gt(a) & (intensities_A[column].loc[inf1grn].gt(x))),
+        #print ((intensities_A[column].loc[inf1grn]).describe()) this is still the same
+
+        #print ((intensities_A[column].loc[inf1grn] > a).describe()) # this is correct 
+        #print ((intensities_A[column].loc[inf1grn] > x).describe()) this is not the same
+        #print (I[column])
+
+
+        intensities_A[column].loc[inf1grn] = (np.where((intensities_A[column].loc[inf1grn] > a) & (I[column].loc[inf1grn] > x),
                                                     (intensities_A[column].loc[inf1grn] - a),
                                                     np.nan))
 
-        intensities_A[column].loc[inf1red] = (np.where((intensities_A[column].loc[inf1red].gt(b) & (intensities_A[column].loc[inf1red].gt(y))),
+        #print ((intensities_A[column].loc[inf1grn] > a).sum())
+
+        #print ((intensities_A[column].loc[inf1grn] > 301.7267).describe())
+        #print ((intensities_A[column].loc[inf1grn] - a).describe())
+
+        #print ((intensities_A[column].loc[inf1grn]).describe()) not the same anymore
+
+        intensities_A[column].loc[inf1red] = (np.where((intensities_A[column].loc[inf1red] > b) & (I[column].loc[inf1red] > y),
                                                     (intensities_A[column].loc[inf1red] - b),
                                                     np.nan))   
 
-        intensities_A[column].loc[inf2] = (np.where((intensities_A[column].loc[inf2].gt(b) & (intensities_A[column].loc[inf2].gt(z))),
+        intensities_A[column].loc[inf2] = (np.where((intensities_A[column].loc[inf2] > b) & (I[column].loc[inf2] > z),
                                                     (intensities_A[column].loc[inf2] - b),
                                                     np.nan))
     
 
     for column, x, y, z, a, b in zip(intensities_B, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
 
-        intensities_B[column].loc[inf1grn] = (np.where((intensities_B[column].loc[inf1grn].gt(a) & (intensities_B[column].loc[inf1grn].gt(x))),
+
+        intensities_B[column].loc[inf1grn] = (np.where((intensities_B[column].loc[inf1grn] > a) & (I[column].loc[inf1grn] > x),
                                                     (intensities_B[column].loc[inf1grn] - a),
                                                     np.nan))
 
-        intensities_B[column].loc[inf1red] = (np.where((intensities_B[column].loc[inf1red].gt(b) & (intensities_B[column].loc[inf1red].gt(y))),
+        intensities_B[column].loc[inf1red] = (np.where((intensities_B[column].loc[inf1red] > b) & (I[column].loc[inf1red] > y),
                                                     (intensities_B[column].loc[inf1red] - b),
                                                     np.nan))   
 
-        intensities_B[column].loc[inf2] = (np.where((intensities_B[column].loc[inf2].gt(a) & (intensities_B[column].loc[inf2].gt(z))),
+        intensities_B[column].loc[inf2] = (np.where((intensities_B[column].loc[inf2] > a) & (I[column].loc[inf2] > z),
                                                     (intensities_B[column].loc[inf2] - a),
                                                     np.nan))
 
@@ -252,17 +283,12 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     corrections_grn_list = []
     corrections_red_list = []
 
-    #print (norm_grn_beads)
-
-    #print (norm_red_beads)
 
     for column1, column2 in zip(controls_grn, controls_red):
         grn = controls_grn[column1].loc[norm_grn_beads].values
         red = controls_red[column2].loc[norm_red_beads].values
         
         norm_data = pd.DataFrame([grn, red]).T
-
-        print (norm_data)
 
         corrections_grn = (np.mean(norm_data,  axis=1)/ grn).mean(axis=0)
         corrections_red = (np.mean(norm_data, axis=1)/ red).mean(axis=0)
@@ -275,14 +301,14 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     ## Apply dye bias correction
     for column1, column2, x, y in zip(intensities_A, intensities_B, corrections_red_list, corrections_grn_list):
         
-        print ((intensities_A[column1].loc[inf2]).head())
+        #print ((intensities_A[column1].loc[inf2]).head())
 
         intensities_A[column1].loc[inf2] = intensities_A[column1].loc[inf2] * x
         intensities_B[column2].loc[inf2] = intensities_B[column2].loc[inf2] * y
 
-        print (intensities_A[column].isna().sum())
+        #print (intensities_A[column].isna().sum())
         print ("****")
-        print (intensities_B[column].isna().sum())
+        #print (intensities_B[column].isna().sum())
  
     #print (intensities_A.isna().sum()) 
     #print (intensities_B.shape) #(485577, 5)
@@ -292,9 +318,6 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     #Some of the probes are SNPs (N=65), these can be identified because they start with the prefix “rs”
 
     # Create DNAm ratios as B (methylated) over total
-
-    intensities_A.set_index(probes.index, inplace=True)
-    intensities_B.set_index(probes.index, inplace=True)
 
     idx = probes[probes.index.str.startswith('rs')].index ##'rs10796216', 'rs715359',..
 
