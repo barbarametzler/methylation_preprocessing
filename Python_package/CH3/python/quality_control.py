@@ -394,7 +394,7 @@ def estimate_leukocytes(coefs,cpgs):
     
     #cpgs.to_csv('coef_clean.csv')
 
-#$ sudo pip install quadprog
+
 
 def quadprog_solve_qp(P, q, G, A):
     qp_G = .5 * (P + P.T)   # make sure P is symmetric

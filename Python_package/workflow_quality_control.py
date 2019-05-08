@@ -130,11 +130,6 @@ visualisation_plots(snps,3,samples,cpgs)
 # bc1.grn,bc1.red and bc2
 # functioning correctly
 
-#samples.shape
-#Out[69]: (601, 27)
-
-#cpgs.shape
-#Out[70]: (5, 453567)
 
 samples,cpgs,covars=remove_unreliable_samples(samples,0.1,cpgs,covars)
 
