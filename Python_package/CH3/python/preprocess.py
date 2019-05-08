@@ -219,7 +219,6 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
         I[column] = I[column].sum(axis=1) 
 
     I = I.loc[:,~I.columns.duplicated()]
-    print (I)
 
     for column, x, y, z, a, b in zip(intensities_A, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
 
@@ -431,8 +430,8 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
         idy = probes[probes['chr'] == 'Y'].index
         ## less missing values as in R code? 
-        print ("missing values dnam per column")
-        print (dnam[column].loc[idy].isna().sum())
+        #print ("missing values dnam per column")
+        #print (dnam[column].loc[idy].isna().sum())
         summary[column].loc['missing_chrY'] = dnam[column].loc[idy].isna().mean()
 
 
