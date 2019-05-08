@@ -20,7 +20,6 @@ Created on Mon Mar 11 14:30:07 2019
             
 #3) call SNPS 'call_snps' :
             # - identify the snps using the thresholds
-            # - plot? ASK tim
             
 #4) snps distance matrix 'snp_distance':
             # - plot the heatmap
