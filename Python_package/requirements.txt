@@ -8,3 +8,7 @@ glob
 re
 pyreadr
 scipy
+seaborn
+math
+tabulate
+
