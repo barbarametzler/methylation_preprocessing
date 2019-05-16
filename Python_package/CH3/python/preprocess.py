@@ -220,38 +220,34 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
 
     I = I.loc[:,~I.columns.duplicated()]
 
-    for column, x, y, z, a, b in zip(intensities_A, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
+    for column1, column2, x, y, z, a, b in zip(intensities_A, I, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
 
-
-
-        intensities_A[column].loc[inf1grn] = (np.where((intensities_A[column].loc[inf1grn] > a) & (I[column].loc[inf1grn] > x),
-                                                    (intensities_A[column].loc[inf1grn] - a),
+        intensities_A[column1].loc[inf1grn] = (np.where((intensities_A[column1].loc[inf1grn] > a) & (I[column2].loc[inf1grn] > x),
+                                                    (intensities_A[column1].loc[inf1grn] - a),
                                                     np.nan))
 
-        intensities_A[column].loc[inf1red] = (np.where((intensities_A[column].loc[inf1red] > b) & (I[column].loc[inf1red] > y),
-                                                    (intensities_A[column].loc[inf1red] - b),
+        intensities_A[column1].loc[inf1red] = (np.where((intensities_A[column1].loc[inf1red] > b) & (I[column2].loc[inf1red] > y),
+                                                    (intensities_A[column1].loc[inf1red] - b),
                                                     np.nan))   
 
-        intensities_A[column].loc[inf2] = (np.where((intensities_A[column].loc[inf2] > b) & (I[column].loc[inf2] > z),
-                                                    (intensities_A[column].loc[inf2] - b),
+        intensities_A[column1].loc[inf2] = (np.where((intensities_A[column1].loc[inf2] > b) & (I[column2].loc[inf2] > z),
+                                                    (intensities_A[column1].loc[inf2] - b),
                                                     np.nan))
     
 
-    for column, x, y, z, a, b in zip(intensities_B, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
+    for column1, column2, x, y, z, a, b in zip(intensities_B, I, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
 
-
-        intensities_B[column].loc[inf1grn] = (np.where((intensities_B[column].loc[inf1grn] > a) & (I[column].loc[inf1grn] > x),
+        intensities_B[column1].loc[inf1grn] = (np.where((intensities_B[column1].loc[inf1grn] > a) & (I[column2].loc[inf1grn] > x),
                                                     (intensities_B[column].loc[inf1grn] - a),
                                                     np.nan))
 
-        intensities_B[column].loc[inf1red] = (np.where((intensities_B[column].loc[inf1red] > b) & (I[column].loc[inf1red] > y),
+        intensities_B[column1].loc[inf1red] = (np.where((intensities_B[column1].loc[inf1red] > b) & (I[column2].loc[inf1red] > y),
                                                     (intensities_B[column].loc[inf1red] - b),
                                                     np.nan))   
 
-        intensities_B[column].loc[inf2] = (np.where((intensities_B[column].loc[inf2] > a) & (I[column].loc[inf2] > z),
+        intensities_B[column1].loc[inf2] = (np.where((intensities_B[column1].loc[inf2] > a) & (I[column2].loc[inf2] > z),
                                                     (intensities_B[column].loc[inf2] - a),
                                                     np.nan))
-
 
     
     # Extract normalization probes for Grn and Red, and form the dye bias correction constant
