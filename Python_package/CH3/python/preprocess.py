@@ -238,15 +238,15 @@ def preprocess(probes_file, controls_file, idat_files_folder, min_beads=3, detec
     for column1, column2, x, y, z, a, b in zip(intensities_B, I, threshold_inf1grn_list, threshold_inf1red_list, threshold_inf2_list, neg_means_grn_list, neg_means_red_list):
 
         intensities_B[column1].loc[inf1grn] = (np.where((intensities_B[column1].loc[inf1grn] > a) & (I[column2].loc[inf1grn] > x),
-                                                    (intensities_B[column].loc[inf1grn] - a),
+                                                    (intensities_B[column1].loc[inf1grn] - a),
                                                     np.nan))
 
         intensities_B[column1].loc[inf1red] = (np.where((intensities_B[column1].loc[inf1red] > b) & (I[column2].loc[inf1red] > y),
-                                                    (intensities_B[column].loc[inf1red] - b),
+                                                    (intensities_B[column1].loc[inf1red] - b),
                                                     np.nan))   
 
         intensities_B[column1].loc[inf2] = (np.where((intensities_B[column1].loc[inf2] > a) & (I[column2].loc[inf2] > z),
-                                                    (intensities_B[column].loc[inf2] - a),
+                                                    (intensities_B[column1].loc[inf2] - a),
                                                     np.nan))
 
     
